@@ -11,7 +11,7 @@ const {
 
 router.route("/").get(authenticateUser, getAllUsers);
 
-router.route("/updateUserPassword").patch(authenticateUser, updateUserPassword);
+router.route("/updateUserPassword").patch(authenticateUser, updateUser);
 
 router.route("/:id").get(authenticateUser, getSingleUser);
 

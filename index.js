@@ -53,10 +53,10 @@ app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
 const PORT = process.env.PORT || 4000;
-
+const DB_URL = process.env.MONGO_URL || "mongodb://127.0.0.1:27017/task-manager-api";
 const start = async () => {
   try {
-    await connectDB(process.env.MONGO_URL);
+    await connectDB(DB_URL);
     app.listen(PORT, (err) => {
       if (err) throw err;
       console.log(`Server is up and running on ${PORT}`);
