@@ -13,7 +13,7 @@ router.route("/").get(authenticateUser, getAllUsers);
 
 router.route("/updateUserPassword").patch(authenticateUser, updateUser);
 
-router.route("/:id").get(authenticateUser, getSingleUser);
+router.route("/:token").get(authenticateUser, getSingleUser);
 
 router.route("/nonce/:publicAddress").get(getUserNonceByAddress);
 
