@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Token = require("../models/Token");
 const { StatusCodes } = require("http-status-codes");
 const CustomError = require("../errors");
 const { createTokenPayload } = require("../utils");
@@ -11,7 +12,9 @@ const getAllUsers = async (req, res) => {
 };
 
 const getSingleUser = async (req, res) => {
-  const user = await User.findOne({ _id: req.params.id }).select("-password");
+  const token = await Token.findOne({ token: req.params.token })
+  console.log(token.user)
+  const user = await User.findOne({ _id: token.user }).select("-password");
   if (!user) {
     throw new CustomError.NotFoundError(`No user with id : ${req.params.id}`);
   }
@@ -22,7 +25,7 @@ const getUserNonceByAddress = async (req, res) => {
   const walletAddress = req.params.publicAddress;
   const checkAddress = await web3.utils.isAddress(walletAddress);
   if (checkAddress) {
-    const user = await User.findOne({ wallets: walletAddress }, { nonce: 1 });
+    const user = await User.findOne({ wallets: { $regex : new RegExp(walletAddress, "i") }}, { nonce: 1 });
     if (user) {
       res
         .status(StatusCodes.OK)

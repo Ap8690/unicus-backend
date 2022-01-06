@@ -6,6 +6,7 @@ const NFTStates = require("../models/NFT-States");
 const ObjectId = mongoose.Types.ObjectId;
 
 const create = async (req, res) => {
+  console.log("cretae")
   const { imageIpfs, jsonIpfs, name, description, imageUrl, nftType } =
     req.body;
 

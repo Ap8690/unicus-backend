@@ -27,17 +27,17 @@ const register = async (req, res) => {
       throw new CustomError.BadRequestError("Please provide the password");
     }
 
-    const emailAlreadyExists = await User.findOne({ email });
+    const emailAlreadyExists = await User.findOne({ email: { $regex : new RegExp(email, "i") }});
     if (emailAlreadyExists) {
       throw new CustomError.BadRequestError("Email already exists");
     }
 
-    const usernameAlreadyExists = await User.findOne({ username });
+    const usernameAlreadyExists = await User.findOne({ username: { $regex : new RegExp(username, "i") }});
     if (usernameAlreadyExists) {
       throw new CustomError.BadRequestError("Username already exists");
     }
 
-    const walletAlreadyExists = await User.findOne({ wallets: walletAddress });
+    const walletAlreadyExists = await User.findOne({ wallets: { $regex : new RegExp(walletAddress, "i") }});
     if (walletAlreadyExists) {
       throw new CustomError.BadRequestError(
         "User already exists with this wallet"
@@ -67,7 +67,7 @@ const register = async (req, res) => {
     };
 
     const user = await User.create(createObj);
-    const origin = "http://localhost:3000";
+    const origin = "http://localhost:4000";
 
     await sendVerificationEmail({
       name: user.username,
@@ -86,9 +86,10 @@ const register = async (req, res) => {
 
 const verifyEmail = async (req, res) => {
   try {
-    const { verificationToken, email } = req.body;
+    const email = req.query.email;
+    const verificationToken = req.query.token
     const user = await User.findOne({ email });
-
+    console.log("JK")
     if (!user) {
       throw new CustomError.UnauthenticatedError("Invalid Email");
     }
@@ -110,6 +111,8 @@ const verifyEmail = async (req, res) => {
   } catch (e) {
     throw new CustomError.BadRequestError(e.message);
   }
+
+  return res.redirect("http://localhost:3000")
 };
 
 const login = async (req, res) => {
@@ -156,7 +159,7 @@ const login = async (req, res) => {
         throw new CustomError.BadRequestError("Please enter the password");
       }
 
-      const user = await User.findOne({ email });
+      const user = await User.findOne({ email: { $regex : new RegExp(email, "i") }});
 
       if (!user) {
         throw new CustomError.UnauthenticatedError("Invalid Credentials");
@@ -211,12 +214,12 @@ const forgotPassword = async (req, res) => {
       throw new CustomError.BadRequestError("Please provide valid email");
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: { $regex : new RegExp(email, "i") }});
 
     if (user) {
       const passwordToken = crypto.randomBytes(70).toString("hex");
       // send email
-      const origin = "http://localhost:3000";
+      const origin = "http://localhost:4000";
       await sendResetPasswordEmail({
         name: user.username,
         email: user.email,
@@ -253,11 +256,11 @@ const resetPassword = async (req, res) => {
       throw new CustomError.BadRequestError("Please provide the token");
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: { $regex : new RegExp(email, "i") }});
 
     if (user) {
       const currentDate = new Date();
-
+      console.log(createHash(token))
       if (
         user.passwordToken === createHash(token) &&
         user.passwordTokenExpirationDate > currentDate
@@ -266,6 +269,8 @@ const resetPassword = async (req, res) => {
         user.passwordToken = null;
         user.passwordTokenExpirationDate = null;
         await user.save();
+        // $2a$10$NI/cqg38P7DhL8cpx50WxuXbmCr78v4yZ8pJButCQt.ZXLoE73HtG
+        // $2a$10$NI/cqg38P7DhL8cpx50WxuXbmCr78v4yZ8pJButCQt.ZXLoE73HtG
       }
 
       res
