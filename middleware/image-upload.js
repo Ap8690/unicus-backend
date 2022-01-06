@@ -1,10 +1,11 @@
 const multer = require("multer");
 const path = require("path");
 
+console.log("uploadimg")
 const imageStorage = multer.diskStorage({
   // Destination to store image
   destination: (req, file, cb) => {
-    cb(null, '../public/uploads');
+    cb(null, path.join(__dirname));
   },
   filename: (req, file, cb) => {
     const dateStamp = Date.now();
