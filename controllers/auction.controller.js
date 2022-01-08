@@ -53,8 +53,8 @@ const create = async (req, res) => {
         auctionStatus: 1,
       };
 
-      await Auction.create(createObj);
-      res.status(StatusCodes.Ok).json("Auction created");
+      const auction = await Auction.create(createObj)
+      res.status(StatusCodes.OK).json(auction);
     }
   } catch (e) {
     throw new CustomError.BadRequestError("Please try again..!");
@@ -214,7 +214,7 @@ const endAuction = async (req, res) => {
       const nft = await Nft.findOne({ _id: nftId });
       let auctionWinner;
       if (auctionBids) {
-        auctionBids.forEach((a, i) => {
+        auctionBids.forEach(async (a, i) => {
           if (i === 0 && a?.email) {
             await sendAuctionSoldEmail({
               email: a.email,

@@ -13,7 +13,6 @@ const getAllUsers = async (req, res) => {
 
 const getSingleUser = async (req, res) => {
   const token = await Token.findOne({ token: req.params.token })
-  console.log(token.user)
   const user = await User.findOne({ _id: token.user }).select("-password");
   if (!user) {
     throw new CustomError.NotFoundError(`No user with id : ${req.params.id}`);

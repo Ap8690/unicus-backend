@@ -21,6 +21,7 @@ const connectDB = require("./db/connect");
 const authRouter = require("./routes/authRoutes");
 const userRouter = require("./routes/userRoutes");
 const nftRouter = require("./routes/nftRoutes");
+const auctionRouter = require("./routes/auctionRoute");
 
 // middleware
 const notFoundMiddleware = require("./middleware/not-found");
@@ -48,10 +49,10 @@ app.use(express.static("./public"));
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
 app.use("/nft", nftRouter);
+app.use("/auction", auctionRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
-console.log("BOoom")
 
 const PORT = process.env.PORT || 4000;
 const DB_URL = process.env.MONGO_URL || "mongodb://127.0.0.1:27017/task-manager-api";

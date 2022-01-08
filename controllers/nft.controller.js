@@ -6,7 +6,6 @@ const NFTStates = require("../models/NFT-States");
 const ObjectId = mongoose.Types.ObjectId;
 
 const create = async (req, res) => {
-  console.log("cretae")
   const { imageIpfs, jsonIpfs, name, description, imageUrl, nftType } =
     req.body;
 
@@ -119,7 +118,6 @@ const mintNFT = async (req, res) => {
       from: receipt.from,
       to: "contract",
     });
-    console.log(updateNFT);
     res.status(StatusCodes.OK).send("NFT minted successfully");
   }
 };

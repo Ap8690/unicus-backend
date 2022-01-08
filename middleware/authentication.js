@@ -14,12 +14,10 @@ const authenticateUser = async (req, res, next) => {
       }
 
       req.user = payload;
-      console.log("authenticate")
 
       return next();
     } else {
-      console.log("authenticate")
-
+      
       return res
         .status(StatusCodes.UNAUTHORIZED)
         .json({ error: "Invalid Token" });
