@@ -8,18 +8,11 @@ const NftSchema = new mongoose.Schema(
     },
     imageHash: { type: String, required: [true, "Image Hash required"] },
     jsonHash: { type: String, required: [true, "JSON Hash required"] },
-    imageUrl: { type: String, required: [true, "Image URL required"] },
     nftType: {
       type: String,
-      enum: {
-        values: ["image", "audio", "video"],
-        message: `{VALUE} is not supported`,
-      },
-      default: "image",
     },
     description: {
       type: String,
-      required: [true, "Nft description is required"],
     },
     tags: [String],
     isApproved: { type: Boolean, default: false },
@@ -40,8 +33,29 @@ const NftSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "User",
     },
+    nftStatus: {
+      type: Number,
+      enum: { values: [1, 2, 3], message: `{VALUE} is not a valid` }, // 1- NFT In wallet,2- NFT on Sale, 3- NFT on Auction
+      default: 1,
+    },
     chain: {
+      type: Number,
+    },
+    royalty: {
+      type: Number,
+    },
+    category: {
       type: String,
+    },
+    collectionName: {
+      type: String,
+    },
+    cloudinaryUrl: {
+      type: String,
+    },
+    owner: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
     },
   },
   { timestamps: true }

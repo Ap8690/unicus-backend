@@ -35,6 +35,10 @@ const AuctionSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    lastBidId: {
+      type: mongoose.Types.ObjectId,
+      ref: "Bids",
+    },
     bidsPlaced: {
       type: Number,
       default: 0,
@@ -43,9 +47,22 @@ const AuctionSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    name: {
+      type: String,
+    },
+    sellerWallet: {
+      type: String,
+    },
+    sellerId: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
+    },
     views: {
       type: Number,
       default: 0,
+    },
+    cloudinaryUrl: {
+      type: String,
     },
     auctionWinner: {
       type: mongoose.Types.ObjectId,

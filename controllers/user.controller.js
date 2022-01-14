@@ -13,7 +13,32 @@ const getAllUsers = async (req, res) => {
 
 const getSingleUser = async (req, res) => {
   const token = await Token.findOne({ token: req.params.token })
-  const user = await User.findOne({ _id: token.user }).select("-password");
+  const userId = req.user.userId;
+  console.log(userId)
+  const user = await User.findOne({ _id: userId }).select("-password");
+  if (!user) {
+    throw new CustomError.NotFoundError(`No user with id : ${req.params.id}`);
+  }
+  res.status(StatusCodes.OK).json({ user });
+};
+
+const getUserById = async (req, res) => {
+  const userId = await Token.findOne({ token: req.params.id })
+  console.log(userId)
+  const user = await User.findOne({ _id: `Object(${userId})` }).select("-password");
+  if (!user) {
+    throw new CustomError.NotFoundError(`No user with id : ${req.params.id}`);
+  }
+  res.status(StatusCodes.OK).json({ user });
+};
+
+const addBalance = async (req, res) => {
+  const amount = await Token.findOne({ token: req.params.amount })
+  const userId = req.user.userId;
+  console.log(`Object(${userId})`)
+  const user = await User.updateOne({ _id: `Object(${userId})` }, { balances: amount }, (err) => {
+    console.log(err)
+  });
   if (!user) {
     throw new CustomError.NotFoundError(`No user with id : ${req.params.id}`);
   }
@@ -76,5 +101,7 @@ module.exports = {
   getSingleUser,
   showCurrentUser,
   updateUser,
+  getUserById,
+  addBalance,
   getUserNonceByAddress,
 };

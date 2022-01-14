@@ -6,7 +6,7 @@ const NFTStates = require("../models/NFT-States");
 const ObjectId = mongoose.Types.ObjectId;
 
 const create = async (req, res) => {
-  const { imageIpfs, jsonIpfs, name, description, imageUrl, nftType } =
+  const { imageIpfs, jsonIpfs, name, nftType, description, chain, tokenId, mintedBy, collectionName, category, royalty,cloudinaryUrl,owner } =
     req.body;
 
   if (!imageIpfs) {
@@ -15,10 +15,6 @@ const create = async (req, res) => {
     throw new CustomError.BadRequestError("Please provide the json IPFS");
   } else if (!name) {
     throw new CustomError.BadRequestError("Please provide the nft name");
-  } else if (!description) {
-    throw new CustomError.BadRequestError("Please provide the nft description");
-  } else if (!imageUrl) {
-    throw new CustomError.BadRequestError("Please provide the url");
   } else if (!nftType) {
     throw new CustomError.BadRequestError("Please provide the nft type");
   }
@@ -34,9 +30,16 @@ const create = async (req, res) => {
     jsonHash: jsonIpfs,
     name,
     description,
-    imageUrl,
     nftType,
     uploadedBy,
+    chain, 
+    tokenId, 
+    mintedBy,
+    collectionName,
+    category,
+    cloudinaryUrl,
+    royalty, 
+    owner
   };
 
   const data = await Nft.create(createObj);
@@ -85,7 +88,8 @@ const get = async (req, res) => {
 };
 
 const getAll = async (req, res) => {
-  const nfts = await Nft.find({});
+  const userId = req.user.userId;
+  const nfts = await Nft.find({ owner: userId });
   res.status(StatusCodes.OK).json({ data: nfts });
 };
 

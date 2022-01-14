@@ -38,7 +38,8 @@ const register = async (req, res) => {
     }
 
     const walletAlreadyExists = await User.findOne({ wallets: { $regex : new RegExp(walletAddress, "i") }});
-    if (walletAlreadyExists) {
+    console.log(!walletAddress)
+    if (walletAlreadyExists && !!walletAddress) {
       throw new CustomError.BadRequestError(
         "User already exists with this wallet"
       );
@@ -55,7 +56,6 @@ const register = async (req, res) => {
       nonce = verifyNonce;
     }
     const verificationToken = crypto.randomBytes(40).toString("hex");
-
     let createObj = {
       username,
       email,
@@ -89,7 +89,6 @@ const verifyEmail = async (req, res) => {
     const email = req.query.email;
     const verificationToken = req.query.token
     const user = await User.findOne({ email });
-    console.log("JK")
     if (!user) {
       throw new CustomError.UnauthenticatedError("Invalid Email");
     }
@@ -117,16 +116,12 @@ const verifyEmail = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const { email, password, walletAddress, signature } = req.body;
+    const { email, password, walletAddress } = req.body;
 
-    if (walletAddress && !email && !password) {
-      if (signature) {
+    if (walletAddress) {
         const user = await User.findOne({ wallets: walletAddress });
-        const signatureAddress = await web3.eth.accounts.recover(
-          user.nonce,
-          signature
-        );
-        if (walletAddress === signatureAddress) {
+        
+        if (user) {
           const tokenUser = createWalletAddressPayload(user, walletAddress);
 
           // check for existing token
@@ -143,15 +138,39 @@ const login = async (req, res) => {
 
           await Token.create(userToken);
 
-          res.status(StatusCodes.OK).json({ accessToken: token });
+          res.status(StatusCodes.OK).json({ accessToken: token, user: user });
         } else {
-          throw new CustomError.BadRequestError(
-            "Invalid Signature. Please try again..!"
-          );
+          let createObj = {
+            username: `Username${walletAddress}`,
+            email: `username${walletAddress}@gmail.com`,
+            password: `username@gmail.com${walletAddress}`,
+            userType: 2,
+            verificationToken: '',
+            verified: Date.now(),
+            isVerified: true,
+            wallets: [walletAddress],
+          };
+      
+          const user = await User.create(createObj);
+
+          const tokenUser = createWalletAddressPayload(user, walletAddress);
+
+          // check for existing token
+          const existingToken = await Token.findOne({ user: user._id });
+
+          if (existingToken) {
+            await Token.findOneAndDelete({ user: user._id });
+          }
+
+          const token = createJWT({ payload: tokenUser });
+          const userAgent = req.headers["user-agent"];
+          const ip = req.ip;
+          const userToken = { token, ip, userAgent, user: user._id };
+
+          await Token.create(userToken);
+
+          res.status(StatusCodes.OK).json({ accessToken: token, user: user });
         }
-      } else {
-        throw new CustomError.BadRequestError("Please provide the signature.");
-      }
     } else {
       if (!email) {
         throw new CustomError.BadRequestError("Please provide an email.");
@@ -260,7 +279,6 @@ const resetPassword = async (req, res) => {
 
     if (user) {
       const currentDate = new Date();
-      console.log(createHash(token))
       if (
         user.passwordToken === createHash(token) &&
         user.passwordTokenExpirationDate > currentDate
@@ -272,7 +290,6 @@ const resetPassword = async (req, res) => {
         // $2a$10$NI/cqg38P7DhL8cpx50WxuXbmCr78v4yZ8pJButCQt.ZXLoE73HtG
         // $2a$10$NI/cqg38P7DhL8cpx50WxuXbmCr78v4yZ8pJButCQt.ZXLoE73HtG
       }
-
       res
         .status(StatusCodes.OK)
         .json({ msg: "Password has been successfully updated" });

@@ -1,6 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const CustomError = require("../errors");
-const { Auction, Nft } = require("../models");
+const { Auction, Nft, Bids, NFTStates } = require("../models");
 const {
   sendBidEmail,
   sendBidRefundEmail,
@@ -17,10 +17,14 @@ const create = async (req, res) => {
       auctionId,
       startBid,
       auctionType,
-      auctionTime,
       auctionHash,
       tokenId,
+      auctionTimer,
       chain,
+      name,
+      sellerWallet,
+      sellerId,
+      cloudinaryUrl
     } = req.body;
 
     if (!nftId) {
@@ -31,7 +35,7 @@ const create = async (req, res) => {
       throw new CustomError.BadRequestError("please provide the start bid");
     } else if (!auctionType) {
       throw new CustomError.BadRequestError("please provide the auction type");
-    } else if (!auctionTime) {
+    } else if (!auctionTimer) {
       throw new CustomError.BadRequestError("please provide the auction time");
     } else if (!auctionHash) {
       throw new CustomError.BadRequestError("please provide the auction hash");
@@ -45,26 +49,139 @@ const create = async (req, res) => {
         auctionId,
         startBid,
         auctionType,
-        auctionTime,
+        auctionTimer,
         auctionStartOn: new Date(),
         auctionStartTxnHash: auctionHash,
         tokenId,
         chain,
         auctionStatus: 1,
+        name,
+        sellerWallet,
+        sellerId,
+        cloudinaryUrl
       };
 
       const auction = await Auction.create(createObj)
-      res.status(StatusCodes.OK).json(auction);
+      const nft = await Nft.updateOne(
+        {
+          nftId: ObjectId(nftId),
+        },
+        {
+          owner: "61e031128ef7d9d1b48a4a7e",
+          nftStatus: 3
+        }
+      );
+      res.status(StatusCodes.OK).json({auction, nft});
     }
   } catch (e) {
-    throw new CustomError.BadRequestError("Please try again..!");
+    throw new CustomError.BadRequestError(e);
   }
+};
+
+const sell = async (req, res) => {
+  try {
+    const {
+      nftId,
+      auctionId,
+      startBid,
+      auctionType,
+      auctionHash,
+      tokenId,
+      chain,
+      name,
+      sellerWallet,
+      sellerId,
+      cloudinaryUrl
+    } = req.body;
+
+    if (!nftId) {
+      throw new CustomError.BadRequestError("Please provide the NFT id");
+    } else if (!auctionId) {
+      throw new CustomError.BadRequestError("Please provide the auction id");
+    } else if (!startBid) {
+      throw new CustomError.BadRequestError("please provide the start bid");
+    } else if (!auctionType) {
+      throw new CustomError.BadRequestError("please provide the auction type");
+    } else if (!auctionHash) {
+      throw new CustomError.BadRequestError("please provide the auction hash");
+    } else if (tokenId != 0 && !tokenId) {
+      throw new CustomError.BadRequestError("Please provide the token id");
+    } else if (!chain) {
+      throw new CustomError.BadRequestError("Please provide the auction chain");
+    } else {
+      let createObj = {
+        nftId,
+        auctionId,
+        startBid,
+        auctionType,
+        auctionStartOn: new Date(),
+        auctionStartTxnHash: auctionHash,
+        tokenId,
+        chain,
+        auctionStatus: 1,
+        name,
+        sellerWallet,
+        sellerId,
+        cloudinaryUrl
+      };
+
+      const auction = await Auction.create(createObj)
+      const nft = await Nft.updateOne(
+        {
+          nftId: ObjectId(nftId),
+        },
+        {
+          owner: "61e031128ef7d9d1b48a4a7e",
+          nftStatus: 2
+        }
+      );
+      res.status(StatusCodes.OK).json({ auction, nft });
+    }
+  } catch (e) {
+    throw new CustomError.BadRequestError(e);
+  }
+};
+
+const buy = async (req, res) => {
+  try {
+      const { auctionId, nftId, owner, endAuctionHash } = req.body
+      const auction = await Auction.updateOne(
+        { auctionId, nftId },
+        {
+          auctionStatus: 3,
+          auctionEndedOn: new Date(),
+          auctionEndTxnHash: endAuctionHash
+        }
+      );
+      const nft = await Nft.updateOne(
+        {
+          nftId: nftId,
+        },
+        {
+          owner,
+          nftStatus: 1
+        }
+      );
+      res.status(StatusCodes.OK).json({ auction, nft });
+  } catch (e) {
+    throw new CustomError.BadRequestError(e);
+  }
+};
+
+const getAllSale = async (req, res) => {
+  const auctions = await Auction.find({ auctionType: "Sale" });
+  res.status(StatusCodes.OK).json({ data: auctions });
+};
+
+const getAllAuction = async (req, res) => {
+  const auctions = await Auction.find({ auctionType: "Auction" });
+  res.status(StatusCodes.OK).json({ data: auctions });
 };
 
 const startAuction = async (req, res) => {
   try {
     const { auctionId, nftId, auctionHash } = req.body;
-    await Auction.updateOne(
+    const auction = await Auction.updateOne(
       { auctionId, nftId },
       {
         auctionStatus: 2,
@@ -72,7 +189,7 @@ const startAuction = async (req, res) => {
         auctionStartTxnHash: auctionHash,
       }
     );
-    res.status(StatusCodes.OK).json("Auction Started");
+    res.status(StatusCodes.OK).json(auction);
   } catch (e) {
     throw new CustomError.BadRequestError(e);
   }
@@ -91,6 +208,33 @@ const placeBid = async (req, res) => {
       bidSuccess,
       bidObject,
     } = req.body;
+
+    const auctionData = await Auction.findOne({
+      auctionId,
+      nftId: ObjectId(nftId),
+    });
+
+    let bidNumber = 1;
+    if (auctionData?.bidsPlaced) {
+      // const lastBid = await getAuctionBids(auctionId, nftId, 1);
+      const lastBidId = auctionData.lastBidId
+      if (lastBidId) {
+        const data = await Bids.findOne({
+          _id: ObjectId(lastBidId)
+        });
+        console.log("data----------->", data);
+        await sendBidRefundEmail({
+          email: data.email,
+          username: data.username,
+          bidValue: data.bidValue,
+          bidValue,
+          nftId,
+        });
+      }
+      bidNumber = auctionData.bidsPlaced + 1;
+    }
+
+    await sendBidEmail({ email, username, bidValue });
 
     if (auctionId != 0 && !auctionId) {
       throw new CustomError.BadRequestError("Please provide the auction id");
@@ -137,39 +281,18 @@ const placeBid = async (req, res) => {
         bidSuccess,
         bidObj: bidObject,
       };
-      await Bids.create(createObj);
 
-      const auctionData = await Auction.findOne({
-        auctionId,
-        nftId: ObjectId(nftId),
-      });
-      let bidNumber = 1;
-      if (auctionData?.bidsPlaced) {
-        const lastBid = await getAuctionBids(auctionId, nftId, 1);
-
-        if (lastBid) {
-          const data = lastBid[0];
-          console.log("data----------->", data);
-          await sendBidRefundEmail({
-            email: data.email,
-            username: data.username,
-            bidValue: data.bidValue,
-            bidValue,
-            origin,
-            nftId,
-          });
-        }
-        bidNumber = auctionData.bidsPlaced + 1;
-      }
+      var bid = await Bids.create(createObj);
 
       await Auction.updateOne(
         { auctionId, nftId: ObjectId(nftId) },
-        { bidsPlaced: bidNumber }
+        { bidsPlaced: bidNumber, lastBidId: bid._id, lastBid: bidValue }
       );
-      await sendBidEmail({ email, username, bidValue });
+
+      res.status(StatusCodes.OK).json(bid);
     }
   } catch (e) {
-    throw new Error(e);
+    throw new Error(`${e} Last Error`);
   }
 };
 
@@ -196,6 +319,7 @@ const getAuctionBids = async (auctionId, nftId, bidsLimit) => {
 
 const endAuction = async (req, res) => {
   try {
+    const userId = req.user.userId;
     const { nftId, auctionId, endAuctionHash } = req.body;
     if (!nftId) {
       throw new CustomError.BadRequestError("Please provide the nft id");
@@ -206,51 +330,83 @@ const endAuction = async (req, res) => {
         "Please provide the transaction hash"
       );
     } else {
-      const auction = await Auction.findOne({ auctionId, nftId, status: 3 });
+      const auction = await Auction.findOne({ auctionId, nftId });
       if (auction.auctionStatus === 3)
         throw new CustomError.BadRequestError("Auction already ended");
+      if (auction.auctionStatus === 4)
+        throw new CustomError.BadRequestError("Auction already cancelled");
 
-      const auctionBids = await getAuctionBids(auctionId, nftId, 0);
+      // const auctionBids = await getAuctionBids(auctionId, nftId, 0);
+      const lastBidId = auction.lastBidId
       const nft = await Nft.findOne({ _id: nftId });
-      let auctionWinner;
-      if (auctionBids) {
-        auctionBids.forEach(async (a, i) => {
-          if (i === 0 && a?.email) {
-            await sendAuctionSoldEmail({
-              email: a.email,
-              username: a.username,
-              imageHash: nft.imageHash,
-              name: nft.name,
-              lastBid: a.bidValue,
-            });
-            auctionWinner = a.bidder;
-          } else if (a?.email) {
-            await sendEndAuctionEmail({
-              email: a.email,
-              username: a.username,
-              imageHash: nft.imageHash,
-              name: nft.name,
-              lastBid: a.bidValue,
-            });
-          }
+      if (auction.bidsPlaced) {
+        const bid = await Bids.findOne({
+          _id: ObjectId(lastBidId)
+        });  
+
+        await sendAuctionSoldEmail({
+          email: bid.email,
+          username: bid.username,
+          imageHash: nft.imageHash,
+          name: nft.name,
+          lastBid: bid.bidValue,
         });
+
+        const auctionWinner = bid.bidder
+        await Auction.updateOne(
+          { auctionId, nftId },
+          {
+            auctionStatus: 3,
+            auctionEndedOn: new Date(),
+            auctionEndTxnHash: endAuctionHash,
+            auctionWinner: auctionWinner,
+          }
+        );
+
+        await NFTStates.create({
+          nftId: ObjectId(nftId),
+          state: "Transfer",
+          from: "address",
+          to: "contract",
+        });
+
+        await Nft.updateOne(
+          {
+            nftId: ObjectId(nftId),
+          },
+          {
+            owner: auctionWinner,
+            nftStatus: 1,
+          }
+        );
+      } else {
+        await Auction.updateOne(
+          { auctionId, nftId },
+          {
+            auctionStatus: 3,
+            auctionEndedOn: new Date(),
+            auctionEndTxnHash: endAuctionHash
+          }
+        );
+
+        await NFTStates.create({
+          nftId: ObjectId(nftId),
+          state: "Transfer",
+          from: "address",
+          to: "contract",
+        });
+
+        await Nft.updateOne(
+          {
+            nftId: ObjectId(nftId),
+          },
+          {
+            owner: userId,
+            nftStatus: 1,
+          }
+        );
       }
 
-      await Auction.updateOne(
-        { auctionId, nftId },
-        {
-          auctionStatus: 3,
-          auctionEndedOn: new Date(),
-          auctionEndTxnHash: endAuctionHash,
-          auctionWinner: auctionWinner,
-        }
-      );
-      await NFTStates.create({
-        nftId: ObjectId(nftId),
-        state: "Transfer",
-        from: "address",
-        to: "contract",
-      });
       res.status(StatusCodes.OK).json("Auction Ended");
     }
   } catch (e) {
@@ -260,11 +416,13 @@ const endAuction = async (req, res) => {
 
 const cancelAuction = async (req, res) => {
   try {
+    const userId = req.user.userId;
     const { auctionId, nftId, transactionHash } = req.body;
-    const auctionDetails = Auction.findOne({
+    const auctionDetails = await Auction.findOne({
       auctionId,
       nftId: ObjectId(nftId),
     });
+    console.log(auctionDetails._id);
     if (auctionDetails.auctionStatus === 4)
       throw new CustomError.BadRequestError("Auction already cancelled");
     if (auctionDetails.auctionStatus === 3)
@@ -283,6 +441,16 @@ const cancelAuction = async (req, res) => {
         auctionCancelledOn: new Date(),
         auctionCancelTxnHash: transactionHash,
         auctionStatus: 4,
+      }
+    );
+
+    const nft = await Nft.updateOne(
+      {
+        nftId: ObjectId(nftId),
+      },
+      {
+        owner: userId,
+        nftStatus: 1,
       }
     );
     res.status(StatusCodes.OK).json("Auction Cancelled");
@@ -309,6 +477,10 @@ const addViews = async (req, res) => {
 };
 
 module.exports = {
+  sell,
+  buy,
+  getAllSale,
+  getAllAuction,
   create,
   startAuction,
   placeBid,
