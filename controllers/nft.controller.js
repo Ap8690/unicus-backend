@@ -6,12 +6,11 @@ const NFTStates = require("../models/NFT-States");
 const ObjectId = mongoose.Types.ObjectId;
 
 const create = async (req, res) => {
-  const { imageIpfs, jsonIpfs, name, nftType, description, chain, tokenId, mintedBy, collectionName, category, royalty,cloudinaryUrl,owner } =
+  const { jsonIpfs, name, nftType, description, chain, tokenId, mintedBy, collectionName, category, royalty, cloudinaryUrl,owner, uploadedBy } =
     req.body;
-
-  if (!imageIpfs) {
-    throw new CustomError.BadRequestError("Please provide the image IPFS");
-  } else if (!jsonIpfs) {
+    const jk = "kkdskds"
+  console.log(req, req.body)
+  if (!jsonIpfs) {
     throw new CustomError.BadRequestError("Please provide the json IPFS");
   } else if (!name) {
     throw new CustomError.BadRequestError("Please provide the nft name");
@@ -19,14 +18,7 @@ const create = async (req, res) => {
     throw new CustomError.BadRequestError("Please provide the nft type");
   }
 
-  const nft = await Nft.findOne({ imageHash: imageIpfs });
-  if (nft) {
-    throw new CustomError.BadRequestError("NFT already exists");
-  }
-
-  const uploadedBy = req.user.userId;
   const createObj = {
-    imageHash: imageIpfs,
     jsonHash: jsonIpfs,
     name,
     description,
@@ -46,51 +38,26 @@ const create = async (req, res) => {
   res.status(StatusCodes.CREATED).json({ data });
 };
 
-const get = async (req, res) => {
-  const nftId = req.params.id;
-
-  if (!nftId)
-    throw new CustomError.BadRequestError("Please provide the NFT id");
-
-  const nft = await Nft.aggregate([
-    {
-      $match: {
-        _id: ObjectId(nftId),
-      },
-    },
-    {
-      $lookup: {
-        from: "Bids",
-        let: { bidId: "$_id" },
-        pipeline: [
-          { $match: { $expr: { $eq: ["$nftId", "$$bidId"] } } },
-          { $sort: { createdAt: -1 } },
-        ],
-        as: "Bids",
-      },
-    },
-    {
-      $lookup: {
-        from: "NftStates",
-        let: { nftId: "$_id" },
-        pipeline: [
-          { $match: { $expr: { $eq: ["$nftId", "$$nftId"] } } },
-          { $sort: { createdAt: -1 } },
-        ],
-        as: "states",
-      },
-    },
-  ]);
-
-  if (!nft.length) throw new CustomError.NotFoundError(`Invalid Nft`);
-
-  res.status(StatusCodes.OK).json({ data: nft });
+const getNFTByTokenId = async (req, res) => {
+  const tokenId = req.params.tokenId;
+  console.log(tokenId)
+  const nft = await Nft.findOne({
+    tokenId
+  });
+  console.log(nft)
+  res.status(StatusCodes.OK).json({ nft });
 };
 
 const getAll = async (req, res) => {
   const userId = req.user.userId;
   const nfts = await Nft.find({ owner: userId });
   res.status(StatusCodes.OK).json({ data: nfts });
+};
+
+const getNFTByUserId = async (req, res) => {
+  const userId = req.params.userId;
+  const nfts = await Nft.find({ owner: userId,  });
+  res.status(StatusCodes.OK).json(nfts);
 };
 
 const mintNFT = async (req, res) => {
@@ -147,4 +114,4 @@ const approveNFT = async (req, res) => {
   }
 };
 
-module.exports = { create, get, getAll, mintNFT, approveNFT };
+module.exports = { create, getNFTByTokenId, getAll, mintNFT, approveNFT, getNFTByUserId };

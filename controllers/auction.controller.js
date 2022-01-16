@@ -60,17 +60,19 @@ const create = async (req, res) => {
         sellerId,
         cloudinaryUrl
       };
-
+      const nftOne = await Nft.findOne({ _id: nftId });
+      console.log(nftOne)
       const auction = await Auction.create(createObj)
       const nft = await Nft.updateOne(
         {
-          nftId: ObjectId(nftId),
+          nftId
         },
         {
           owner: "61e031128ef7d9d1b48a4a7e",
           nftStatus: 3
         }
       );
+      console.log(nft)
       res.status(StatusCodes.OK).json({auction, nft});
     }
   } catch (e) {
@@ -118,7 +120,7 @@ const sell = async (req, res) => {
         auctionStartTxnHash: auctionHash,
         tokenId,
         chain,
-        auctionStatus: 1,
+        auctionStatus: 2,
         name,
         sellerWallet,
         sellerId,
@@ -128,7 +130,7 @@ const sell = async (req, res) => {
       const auction = await Auction.create(createObj)
       const nft = await Nft.updateOne(
         {
-          nftId: ObjectId(nftId),
+          nftId
         },
         {
           owner: "61e031128ef7d9d1b48a4a7e",
@@ -169,13 +171,25 @@ const buy = async (req, res) => {
 };
 
 const getAllSale = async (req, res) => {
-  const auctions = await Auction.find({ auctionType: "Sale" });
+  const auctions = await Auction.find({ auctionType: "Sale", auctionStatus: 2 });
   res.status(StatusCodes.OK).json({ data: auctions });
 };
 
 const getAllAuction = async (req, res) => {
-  const auctions = await Auction.find({ auctionType: "Auction" });
+  const auctions = await Auction.find({ auctionType: "Auction", auctionStatus: 2 });
   res.status(StatusCodes.OK).json({ data: auctions });
+};
+
+const getAuctionById = async (req, res) => {
+  const auctionId = req.params.auctionId
+  const auction = await Auction.find({ auctionId });
+  res.status(StatusCodes.OK).json(auction);
+};
+
+const getAuctionByTokenId = async (req, res) => {
+  const tokenId = req.params.tokenId
+  const auction = await Auction.find({ tokenId });
+  res.status(StatusCodes.OK).json(auction);
 };
 
 const startAuction = async (req, res) => {
@@ -485,6 +499,8 @@ module.exports = {
   startAuction,
   placeBid,
   endAuction,
+  getAuctionById,
   cancelAuction,
+  getAuctionByTokenId,
   addViews,
 };

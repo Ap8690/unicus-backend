@@ -1,7 +1,8 @@
 const express = require("express");
 const {
   getAll,
-  get,
+  getNFTByTokenId,
+  getNFTByUserId,
   create,
   mintNFT,
   approveNFT,
@@ -14,9 +15,9 @@ const { uploadToPinata } = require("../middleware/upload-pinata");
 router
   .route("/")
   .get(authenticateUser, getAll)
-  .post(authenticateUser, imageUpload.single("image"), uploadToPinata, create);
-
-router.route("/:id").get(authenticateUser, get);
+  .post(authenticateUser, create);
+router.route("/:tokenId").get(getNFTByTokenId);
+router.route("/getNFTByUserId/:userId").get(getNFTByUserId);
 router.route("/mint").post(authenticateUser, mintNFT);
 router.route("/approve").post(authenticateUser, approveNFT);
 

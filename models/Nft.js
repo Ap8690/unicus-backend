@@ -6,7 +6,6 @@ const NftSchema = new mongoose.Schema(
       type: String,
       required: [true, "NFT name is required"],
     },
-    imageHash: { type: String, required: [true, "Image Hash required"] },
     jsonHash: { type: String, required: [true, "JSON Hash required"] },
     nftType: {
       type: String,

@@ -45,7 +45,7 @@ const uploadToPinata = async (req, res, next) => {
         options
       );
     } catch (e) {
-      throw new Error("Error occurred while pin file to IPFS");
+      throw new Error(`Error occurred while pin file to IPFS ${e}`);
     }
     const unicusUrl = "https://unicus.mypinata.cloud/ipfs/";
     data.imageIpfs = unicusUrl + ipfsResult.IpfsHash;
