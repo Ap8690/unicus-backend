@@ -26,18 +26,20 @@ const register = async (req, res) => {
     } else if (!password) {
       throw new CustomError.BadRequestError("Please provide the password");
     }
-
-    const emailAlreadyExists = await User.findOne({ email: { $regex : new RegExp(email, "i") }});
+    var regex = new RegExp(`^${email}$`, "ig");
+    const emailAlreadyExists = await User.findOne({ email: { $regex : regex }});
     if (emailAlreadyExists) {
       throw new CustomError.BadRequestError("Email already exists");
     }
 
-    const usernameAlreadyExists = await User.findOne({ username: { $regex : new RegExp(username, "i") }});
+    var regex = new RegExp(`^${username}$`, "ig");
+    const usernameAlreadyExists = await User.findOne({ username: { $regex : regex }});
     if (usernameAlreadyExists) {
       throw new CustomError.BadRequestError("Username already exists");
     }
 
-    const walletAlreadyExists = await User.findOne({ wallets: { $regex : new RegExp(walletAddress, "i") }});
+    var regex = new RegExp(`^${walletAddress}$`, "ig");
+    const walletAlreadyExists = await User.findOne({ wallets: { $regex : regex }});
     console.log(!walletAddress)
     if (walletAlreadyExists && !!walletAddress) {
       throw new CustomError.BadRequestError(
@@ -141,9 +143,9 @@ const login = async (req, res) => {
           res.status(StatusCodes.OK).json({ accessToken: token, user: user });
         } else {
           let createObj = {
-            username: `Username${walletAddress}`,
+            username: `${walletAddress}`,
             email: `username${walletAddress}@gmail.com`,
-            password: `username@gmail.com${walletAddress}`,
+            password: `username${walletAddress}@gmail.com`,
             userType: 2,
             verificationToken: '',
             verified: Date.now(),
@@ -178,7 +180,8 @@ const login = async (req, res) => {
         throw new CustomError.BadRequestError("Please enter the password");
       }
 
-      const user = await User.findOne({ email: { $regex : new RegExp(email, "i") }});
+      var regex = new RegExp(`^${email}$`, "ig");
+      const user = await User.findOne({ email: { $regex : regex }});
 
       if (!user) {
         throw new CustomError.UnauthenticatedError("Invalid Credentials");
@@ -233,7 +236,8 @@ const forgotPassword = async (req, res) => {
       throw new CustomError.BadRequestError("Please provide valid email");
     }
 
-    const user = await User.findOne({ email: { $regex : new RegExp(email, "i") }});
+    var regex = new RegExp(`^${email}$`, "ig");
+    const user = await User.findOne({ email: { $regex : regex }});
 
     if (user) {
       const passwordToken = crypto.randomBytes(70).toString("hex");
@@ -275,7 +279,8 @@ const resetPassword = async (req, res) => {
       throw new CustomError.BadRequestError("Please provide the token");
     }
 
-    const user = await User.findOne({ email: { $regex : new RegExp(email, "i") }});
+    var regex = new RegExp(`^${email}$`, "ig");
+    const user = await User.findOne({ email: { $regex : regex }});
 
     if (user) {
       const currentDate = new Date();

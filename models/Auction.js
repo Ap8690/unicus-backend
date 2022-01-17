@@ -11,7 +11,7 @@ const AuctionSchema = new mongoose.Schema(
       required: true,
     },
     auctionTimer: {
-      type: Number,
+      type: Date,
       default: 0,
     },
     auctionStatus: {
@@ -38,6 +38,10 @@ const AuctionSchema = new mongoose.Schema(
     lastBidId: {
       type: mongoose.Types.ObjectId,
       ref: "Bids",
+    },
+    highestBidder: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
     },
     bidsPlaced: {
       type: Number,

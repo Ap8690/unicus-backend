@@ -19,13 +19,15 @@ const create = async (req, res) => {
       auctionType,
       auctionHash,
       tokenId,
-      auctionTimer,
+      duration,
       chain,
       name,
       sellerWallet,
       sellerId,
       cloudinaryUrl
     } = req.body;
+    var auctionTimer = new Date()
+    const userId = req.user.userId;
 
     if (!nftId) {
       throw new CustomError.BadRequestError("Please provide the NFT id");
@@ -44,6 +46,9 @@ const create = async (req, res) => {
     } else if (!chain) {
       throw new CustomError.BadRequestError("Please provide the auction chain");
     } else {
+      auctionTimer.setSeconds(auctionTimer.getSeconds() + duration)
+      console.log(auctionTimer.toString())
+      // const dateString = `${auctionTimer.getUTCDate} ++ ${auctionTimer.getUTCMonth + 1} ++ ${auctionTimer.getUTCFullYear} ++ ${auctionTimer.getUTCHours} ++ ${auctionTimer.getUTCMinutes}`
       let createObj = {
         nftId,
         auctionId,
@@ -53,6 +58,7 @@ const create = async (req, res) => {
         auctionStartOn: new Date(),
         auctionStartTxnHash: auctionHash,
         tokenId,
+        highestBidder: userId,
         chain,
         auctionStatus: 1,
         name,
@@ -65,7 +71,7 @@ const create = async (req, res) => {
       const auction = await Auction.create(createObj)
       const nft = await Nft.updateOne(
         {
-          nftId
+          _id: nftId
         },
         {
           owner: "61e031128ef7d9d1b48a4a7e",
@@ -130,7 +136,7 @@ const sell = async (req, res) => {
       const auction = await Auction.create(createObj)
       const nft = await Nft.updateOne(
         {
-          nftId
+          _id: nftId
         },
         {
           owner: "61e031128ef7d9d1b48a4a7e",
@@ -157,7 +163,7 @@ const buy = async (req, res) => {
       );
       const nft = await Nft.updateOne(
         {
-          nftId: nftId,
+          _id: nftId
         },
         {
           owner,
@@ -195,8 +201,13 @@ const getAuctionByTokenId = async (req, res) => {
 const startAuction = async (req, res) => {
   try {
     const { auctionId, nftId, auctionHash } = req.body;
+    const auctionData = await Auction.findOne({
+      auctionId,
+      nftId: ObjectId(nftId),
+    });
+    console.log(auctionData)
     const auction = await Auction.updateOne(
-      { auctionId, nftId },
+      { auctionId, nftId: ObjectId(nftId) },
       {
         auctionStatus: 2,
         auctionStartOn: new Date(),
@@ -299,8 +310,8 @@ const placeBid = async (req, res) => {
       var bid = await Bids.create(createObj);
 
       await Auction.updateOne(
-        { auctionId, nftId: ObjectId(nftId) },
-        { bidsPlaced: bidNumber, lastBidId: bid._id, lastBid: bidValue }
+        { auctionId, nftId },
+        { bidsPlaced: bidNumber, lastBidId: bid._id, lastBid: bidValue, highestBidder: bidder }
       );
 
       res.status(StatusCodes.OK).json(bid);
@@ -386,7 +397,7 @@ const endAuction = async (req, res) => {
 
         await Nft.updateOne(
           {
-            nftId: ObjectId(nftId),
+            nftId
           },
           {
             owner: auctionWinner,
@@ -404,7 +415,7 @@ const endAuction = async (req, res) => {
         );
 
         await NFTStates.create({
-          nftId: ObjectId(nftId),
+          nftId,
           state: "Transfer",
           from: "address",
           to: "contract",
@@ -412,7 +423,7 @@ const endAuction = async (req, res) => {
 
         await Nft.updateOne(
           {
-            nftId: ObjectId(nftId),
+            nftId
           },
           {
             owner: userId,
@@ -449,7 +460,7 @@ const cancelAuction = async (req, res) => {
     await Auction.updateOne(
       {
         auctionId,
-        nftId: ObjectId(nftId),
+        nftId
       },
       {
         auctionCancelledOn: new Date(),
@@ -460,7 +471,7 @@ const cancelAuction = async (req, res) => {
 
     const nft = await Nft.updateOne(
       {
-        nftId: ObjectId(nftId),
+        _id: nftId
       },
       {
         owner: userId,
