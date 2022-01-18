@@ -143,7 +143,7 @@ const login = async (req, res) => {
           res.status(StatusCodes.OK).json({ accessToken: token, user: user });
         } else {
           let createObj = {
-            username: `${walletAddress}`,
+            username: `${walletAddress.substr(0, 10)}`,
             email: `username${walletAddress}@gmail.com`,
             password: `username${walletAddress}@gmail.com`,
             userType: 2,
