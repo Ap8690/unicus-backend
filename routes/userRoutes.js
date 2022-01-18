@@ -5,7 +5,7 @@ const {
   getAllUsers,
   getSingleUser,
   showCurrentUser,
-  addBalance,
+  addWallet,
   updateUser,
   getUserById,
   getUserNonceByAddress,
@@ -19,7 +19,7 @@ router.route("/:token").get(authenticateUser, getSingleUser);
 
 router.route("/:id").get(authenticateUser, getUserById); // No Auth
 
-router.route("/balance/:amount").get(authenticateUser, addBalance);
+router.route("/addWallet/:walletAddress").get(authenticateUser, addWallet);
 
 router.route("/nonce/:publicAddress").get(getUserNonceByAddress);
 

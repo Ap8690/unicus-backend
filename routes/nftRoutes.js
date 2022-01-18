@@ -1,9 +1,10 @@
 const express = require("express");
 const {
   getAll,
-  getNFTByTokenId,
+  getNFTByNftId,
   getNFTByUserId,
   create,
+  getNFTByUserName,
   mintNFT,
   approveNFT,
 } = require("../controllers/nft.controller");
@@ -16,8 +17,9 @@ router
   .route("/")
   .get(authenticateUser, getAll)
   .post(authenticateUser, create);
-router.route("/:tokenId").get(getNFTByTokenId);
+router.route("/:nftId").get(getNFTByNftId);
 router.route("/getNFTByUserId/:userId").get(getNFTByUserId);
+router.route("/getNFTByUserName").post(getNFTByUserName);
 router.route("/mint").post(authenticateUser, mintNFT);
 router.route("/approve").post(authenticateUser, approveNFT);
 

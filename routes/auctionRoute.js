@@ -18,7 +18,7 @@ const {
 
 router.route("/sell").post(authenticateUser, sell);
 router.route("/buy").post(authenticateUser, buy);
-router.route("/getAuctionById/:auctionId").get(getAuctionById);
+router.route("/getAuctionById/:id").get(getAuctionById);
 router.route("/getAuctionByTokenId/:tokenId").get(getAuctionByTokenId);
 
 router.route("/getAllSale").get(getAllSale);

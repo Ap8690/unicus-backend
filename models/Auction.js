@@ -54,6 +54,9 @@ const AuctionSchema = new mongoose.Schema(
     name: {
       type: String,
     },
+    sellerInfo: {
+      type: String,
+    },
     sellerWallet: {
       type: String,
     },

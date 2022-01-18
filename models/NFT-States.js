@@ -7,8 +7,10 @@ const NftStateSchema = new mongoose.Schema(
       ref: "Nft",
       required: true,
     },
-    state: { type: String, required: true }, // Mint, Transfer
-    from: { type: String, required: true }, // Public address
+    state: { type: String }, // Mint, Transfer
+    price: { type: Number },
+    date: { type: Date },
+    from: { type: String }, // Public address
     to: { type: String }, // Public Address
   },
   { timestamps: true }

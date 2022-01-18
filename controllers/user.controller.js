@@ -32,16 +32,25 @@ const getUserById = async (req, res) => {
   res.status(StatusCodes.OK).json({ user });
 };
 
-const addBalance = async (req, res) => {
-  const amount = await Token.findOne({ token: req.params.amount })
+const addWallet = async (req, res) => {
+  const walletAddress = req.params.walletAddress
+
+  var regex = new RegExp(`^${walletAddress}$`, "ig");
+    const walletAlreadyExists = await User.findOne({ wallets: { $regex : regex }});
+    if (walletAlreadyExists) {
+      throw new CustomError.BadRequestError(
+        "User already exists with this wallet"
+      );
+    }
+
   const userId = req.user.userId;
-  console.log(`Object(${userId})`)
-  const user = await User.updateOne({ _id: `Object(${userId})` }, { balances: amount }, (err) => {
-    console.log(err)
-  });
-  if (!user) {
-    throw new CustomError.NotFoundError(`No user with id : ${req.params.id}`);
-  }
+  console.log(walletAddress, userId)
+
+  const user = await User.updateOne(
+    { _id: userId }, 
+    {$push: {wallets: walletAddress}},{new: true, upsert: true }
+  );
+
   res.status(StatusCodes.OK).json({ user });
 };
 
@@ -102,6 +111,6 @@ module.exports = {
   showCurrentUser,
   updateUser,
   getUserById,
-  addBalance,
+  addWallet,
   getUserNonceByAddress,
 };

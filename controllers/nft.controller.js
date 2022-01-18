@@ -1,15 +1,17 @@
 const Nft = require("../models/Nft");
+const User = require("../models/User");
 const { StatusCodes } = require("http-status-codes");
 const CustomError = require("../errors");
 const mongoose = require("mongoose");
 const NFTStates = require("../models/NFT-States");
 const ObjectId = mongoose.Types.ObjectId;
+// import { v4 as uuidv4 } from 'uuid';
 
 const create = async (req, res) => {
-  const { jsonIpfs, name, nftType, description, chain, tokenId, mintedBy, collectionName, category, royalty, cloudinaryUrl,owner, uploadedBy } =
+  const { jsonIpfs, name, nftType, description, chain, tokenId, mintedBy, collectionName, category, royalty, cloudinaryUrl,owner, uploadedBy, userInfo } =
     req.body;
-    const jk = "kkdskds"
-  console.log(req, req.body)
+  const userId = req.user.userId;
+
   if (!jsonIpfs) {
     throw new CustomError.BadRequestError("Please provide the json IPFS");
   } else if (!name) {
@@ -19,6 +21,7 @@ const create = async (req, res) => {
   }
 
   const createObj = {
+    userInfo,
     jsonHash: jsonIpfs,
     name,
     description,
@@ -35,14 +38,22 @@ const create = async (req, res) => {
   };
 
   const data = await Nft.create(createObj);
+  console.log(data._id)
+  await NFTStates.create({
+    nftId: ObjectId(data._id),
+    state: "Minted",
+    from: "Null Address",
+    to: userInfo,
+    date: new Date()
+  });
   res.status(StatusCodes.CREATED).json({ data });
 };
 
-const getNFTByTokenId = async (req, res) => {
-  const tokenId = req.params.tokenId;
-  console.log(tokenId)
+const getNFTByNftId = async (req, res) => {
+  const nftId = req.params.nftId;
+  console.log(nftId)
   const nft = await Nft.findOne({
-    tokenId
+    _id: nftId
   });
   console.log(nft)
   res.status(StatusCodes.OK).json({ nft });
@@ -58,6 +69,22 @@ const getNFTByUserId = async (req, res) => {
   const userId = req.params.userId;
   const nfts = await Nft.find({ owner: userId,  });
   res.status(StatusCodes.OK).json(nfts);
+};
+
+const getNFTByUserName = async (req, res) => {
+  const { username } = req.body;
+  var user, nfts;
+  var regex = new RegExp(`^${username}$`, "ig");
+  if(username.length < 15) {
+    user = await User.findOne({ username: { $regex : regex } });
+    nftsOwned = await Nft.find({ owner: user._id });
+    nftsMinted = await Nft.find({ mintedBy: user._id });
+  } else {
+    user = await User.findOne({ wallets: { $regex : regex } });
+    nftsOwned = await Nft.find({ owner: user._id });
+    nftsMinted = await Nft.find({ mintedBy: user._id });
+  }
+  res.status(StatusCodes.OK).json({nftsOwned, nftsMinted});
 };
 
 const mintNFT = async (req, res) => {
@@ -114,4 +141,4 @@ const approveNFT = async (req, res) => {
   }
 };
 
-module.exports = { create, getNFTByTokenId, getAll, mintNFT, approveNFT, getNFTByUserId };
+module.exports = { create, getNFTByNftId, getAll, mintNFT, approveNFT, getNFTByUserId, getNFTByUserName };
