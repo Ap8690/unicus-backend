@@ -13,7 +13,9 @@ const NftSchema = new mongoose.Schema(
     description: {
       type: String,
     },
-    tags: [String],
+    tags: {
+      type: []
+  },
     isApproved: { type: Boolean, default: false },
     approvedAt: Date,
     approveHash: String,

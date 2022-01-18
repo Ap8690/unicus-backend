@@ -4,11 +4,12 @@ const { StatusCodes } = require("http-status-codes");
 const CustomError = require("../errors");
 const mongoose = require("mongoose");
 const NFTStates = require("../models/NFT-States");
+const { Bids } = require("../models");
 const ObjectId = mongoose.Types.ObjectId;
 // import { v4 as uuidv4 } from 'uuid';
 
 const create = async (req, res) => {
-  const { jsonIpfs, name, nftType, description, chain, tokenId, mintedBy, collectionName, category, royalty, cloudinaryUrl,owner, uploadedBy, userInfo } =
+  const { jsonIpfs, name, nftType, description, chain, tokenId, mintedBy, collectionName, category, royalty, cloudinaryUrl,owner, uploadedBy, userInfo, tags } =
     req.body;
   const userId = req.user.userId;
 
@@ -32,6 +33,7 @@ const create = async (req, res) => {
     mintedBy,
     collectionName,
     category,
+    tags,
     cloudinaryUrl,
     royalty, 
     owner
@@ -57,6 +59,22 @@ const getNFTByNftId = async (req, res) => {
   });
   console.log(nft)
   res.status(StatusCodes.OK).json({ nft });
+};
+
+const getNftStates = async (req, res) => {
+  const id = req.params.id
+  console.log(id)
+  const nftStates = await NFTStates.find({ nftId: id });
+  
+  res.status(StatusCodes.OK).json(nftStates);
+};
+
+const getNftBids = async (req, res) => {
+  const id = req.params.id
+  console.log(id)
+  const bids = await Bids.find({ nftId: id });
+  
+  res.status(StatusCodes.OK).json(bids);
 };
 
 const getAll = async (req, res) => {
@@ -141,4 +159,4 @@ const approveNFT = async (req, res) => {
   }
 };
 
-module.exports = { create, getNFTByNftId, getAll, mintNFT, approveNFT, getNFTByUserId, getNFTByUserName };
+module.exports = { create, getNFTByNftId, getAll, mintNFT, approveNFT, getNFTByUserId, getNftStates, getNFTByUserName, getNftBids };
