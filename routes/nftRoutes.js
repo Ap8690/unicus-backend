@@ -15,10 +15,8 @@ const { authenticateUser } = require("../middleware/authentication");
 const imageUpload = require("../middleware/image-upload");
 const { uploadToPinata } = require("../middleware/upload-pinata");
 
-router
-  .route("/")
-  .get(authenticateUser, getAll)
-  .post(authenticateUser, create);
+router.route("/getAll/:skip").get(getAll)
+router.route("/").post(authenticateUser, create);  
 router.route("/:nftId").get(getNFTByNftId);
 router.route("/getNFTByUserId/:userId").get(getNFTByUserId);
 router.route("/getNFTByUserName").post(getNFTByUserName);

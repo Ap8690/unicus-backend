@@ -78,9 +78,19 @@ const getNftBids = async (req, res) => {
 };
 
 const getAll = async (req, res) => {
-  const userId = req.user.userId;
-  const nfts = await Nft.find({ owner: userId });
-  res.status(StatusCodes.OK).json({ data: nfts });
+  const totalNfts = await Nft.find();
+  console.log(totalNfts.length)
+  if(totalNfts.length < skip + 5) {
+    const limit = Math.max(0, totalNfts.length - skip)
+    console.log(skip)
+    const nfts = await Nft.find().limit(limit).skip(skip);
+    res.status(StatusCodes.OK).json({ data: nfts, totalNfts: totalNfts.length });
+  } else {
+    const skip = Math.max(0, req.params.skip)
+    console.log(skip)
+    const nfts = await Nft.find().limit(5).skip(skip);
+    res.status(StatusCodes.OK).json({ data: nfts, totalNfts: totalNfts.length });
+  }
 };
 
 const getNFTByUserId = async (req, res) => {

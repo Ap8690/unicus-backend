@@ -34,6 +34,9 @@ const NftSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "User",
     },
+    userInfo: {
+      type: String,
+    },
     nftStatus: {
       type: Number,
       enum: { values: [1, 2, 3], message: `{VALUE} is not a valid` }, // 1- NFT In wallet,2- NFT on Sale, 3- NFT on Auction

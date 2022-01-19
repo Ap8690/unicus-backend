@@ -17,7 +17,7 @@ router.route("/updateUserPassword").patch(authenticateUser, updateUser);
 
 router.route("/:token").get(authenticateUser, getSingleUser);
 
-router.route("/:id").get(authenticateUser, getUserById); // No Auth
+router.route("/getUserById/:id").get(getUserById); // No Auth
 
 router.route("/addWallet/:walletAddress").get(authenticateUser, addWallet);
 
