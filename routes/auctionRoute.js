@@ -11,6 +11,7 @@ const {
   getAuctionByTokenId,
   buy,
   endAuction,
+  getAllExplore,
   cancelAuction,
   getAuctionById,
   addViews,
@@ -23,6 +24,7 @@ router.route("/getAuctionByTokenId/:tokenId").get(getAuctionByTokenId);
 
 router.route("/getAllSale").get(getAllSale);
 router.route("/getAllAuction").get(getAllAuction);
+router.route("/getAllExplore/:skip").get(getAllExplore);
 router.route("/create").post(authenticateUser, create);
 router.route("/start").post(authenticateUser, startAuction);
 router.route("/placeBid").post(authenticateUser, placeBid);

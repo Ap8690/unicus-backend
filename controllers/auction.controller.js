@@ -202,6 +202,22 @@ const getAllAuction = async (req, res) => {
   res.status(StatusCodes.OK).json({ data: auctions });
 };
 
+const getAllExplore = async (req, res) => {
+  const skip = Math.max(0, req.params.skip)
+  const auctions = await Auction.find({ auctionStatus: 2 })
+  console.log("First", auctions.length, skip)
+  if(auctions.length < skip + 3) {
+    const limit = Math.max(0, auctions.length - skip)
+    console.log(skip)
+    const data = await Auction.find({ auctionStatus: 2 }).limit(limit).skip("Second", skip);
+    res.status(StatusCodes.OK).json({ data: data, totalAuctions: auctions.length });
+  } else {
+    console.log("Third", skip)
+    const data = await Auction.find({ auctionStatus: 2 }).limit(3).skip(skip);
+    res.status(StatusCodes.OK).json({ data: data, totalAuctions: auctions.length });
+  }
+};
+
 const getAuctionById = async (req, res) => {
   const id = req.params.id
   const auction = await Auction.find({ _id: id });
@@ -522,6 +538,7 @@ module.exports = {
   endAuction,
   getAuctionById,
   cancelAuction,
+  getAllExplore,
   getAuctionByTokenId,
   addViews,
 };
