@@ -26,6 +26,7 @@ const register = async (req, res) => {
     } else if (!password) {
       throw new CustomError.BadRequestError("Please provide the password");
     }
+
     var regex = new RegExp(`^${email}$`, "ig");
     const emailAlreadyExists = await User.findOne({ email: { $regex : regex }});
     if (emailAlreadyExists) {
@@ -66,6 +67,8 @@ const register = async (req, res) => {
       verificationToken,
       wallets,
       nonce,
+      profileUrl: '',
+      backgroundUrl: ''
     };
 
     const user = await User.create(createObj);
@@ -151,6 +154,8 @@ const login = async (req, res) => {
             verified: Date.now(),
             isVerified: true,
             wallets: [walletAddress],
+            profileUrl: '',
+            backgroundUrl: ''
           };
       
           const user = await User.create(createObj);
