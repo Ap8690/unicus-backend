@@ -21,3 +21,4 @@ const sendVerificationEmail = async ({
 };
 
 module.exports = sendVerificationEmail;
+
