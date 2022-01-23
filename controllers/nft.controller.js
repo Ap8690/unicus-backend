@@ -4,7 +4,7 @@ const { StatusCodes } = require("http-status-codes");
 const CustomError = require("../errors");
 const mongoose = require("mongoose");
 const NFTStates = require("../models/NFT-States");
-const { Bids } = require("../models");
+const { Bids, Auction } = require("../models");
 const ObjectId = mongoose.Types.ObjectId;
 // import { v4 as uuidv4 } from 'uuid';
 
@@ -78,6 +78,22 @@ const getNftBids = async (req, res) => {
 };
 
 const getAll = async (req, res) => {
+  const totalNfts = await Auction.find();
+  console.log(totalNfts.length)
+  if(totalNfts.length < skip + 5) {
+    const limit = Math.max(0, totalNfts.length - skip)
+    console.log(skip)
+    const nfts = await Auction.find().limit(limit).skip(skip);
+    res.status(StatusCodes.OK).json({ data: nfts, totalNfts: totalNfts.length });
+  } else {
+    const skip = Math.max(0, req.params.skip)
+    console.log(skip)
+    const nfts = await Auction.find().limit(5).skip(skip);
+    res.status(StatusCodes.OK).json({ data: nfts, totalNfts: totalNfts.length });
+  }
+};
+
+const getAllNFTS = async (req, res) => {
   const totalNfts = await Nft.find();
   console.log(totalNfts.length)
   if(totalNfts.length < skip + 5) {
