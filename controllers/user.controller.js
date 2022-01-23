@@ -109,7 +109,8 @@ const updateProfilePicture = async (req, res) => {
     { _id: userId }, 
     { profileUrl: req.body.cloudinaryUrl }
   );
-  res.status(StatusCodes.OK).json({ user: req.user });
+  const finalUser = await User.findOne({ _id: userId });
+  res.status(StatusCodes.OK).json({ user: finalUser });
 };
 
 const updateBackgroundPicture = async (req, res) => {
@@ -127,7 +128,8 @@ const updateBackgroundPicture = async (req, res) => {
     { _id: userId }, 
     { backgroundUrl: req.body.cloudinaryUrl }
   );
-  res.status(StatusCodes.OK).json({ user: req.user });
+  const finalUser = await User.findOne({ _id: userId });
+  res.status(StatusCodes.OK).json({ user: finalUser });
 };
 
 const updateUser = async (req, res) => {
