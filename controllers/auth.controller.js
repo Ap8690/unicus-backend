@@ -52,12 +52,10 @@ const register = async (req, res) => {
       wallets = [],
       nonce = null;
     if (walletAddress) {
-      userType = 2;
+      userType = 3;
       wallets.push(walletAddress);
-      const randomString = crypto.randomBytes(10).toString("hex");
-      const verifyNonce = await createHash(randomString);
-      nonce = verifyNonce;
     }
+
     const verificationToken = crypto.randomBytes(40).toString("hex");
     let createObj = {
       username,
@@ -145,38 +143,7 @@ const login = async (req, res) => {
 
           res.status(StatusCodes.OK).json({ accessToken: token, user: user });
         } else {
-          let createObj = {
-            username: `${walletAddress.substr(0, 10)}`,
-            email: `username${walletAddress}@gmail.com`,
-            password: `username${walletAddress}@gmail.com`,
-            userType: 2,
-            verificationToken: '',
-            verified: Date.now(),
-            isVerified: true,
-            wallets: [walletAddress],
-            profileUrl: '',
-            backgroundUrl: ''
-          };
-      
-          const user = await User.create(createObj);
-
-          const tokenUser = createWalletAddressPayload(user, walletAddress);
-
-          // check for existing token
-          const existingToken = await Token.findOne({ user: user._id });
-
-          if (existingToken) {
-            await Token.findOneAndDelete({ user: user._id });
-          }
-
-          const token = createJWT({ payload: tokenUser });
-          const userAgent = req.headers["user-agent"];
-          const ip = req.ip;
-          const userToken = { token, ip, userAgent, user: user._id };
-
-          await Token.create(userToken);
-
-          res.status(StatusCodes.OK).json({ accessToken: token, user: user });
+          throw new CustomError.BadRequestError("Wallet Address Not Registered");
         }
     } else {
       if (!email) {

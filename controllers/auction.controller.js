@@ -177,6 +177,7 @@ const buy = async (req, res) => {
           nftStatus: 1
         }
       );
+      console.log(nft, owner)
       const auction = await Auction.findOne({ auctionId, nftId })
       await NFTStates.create({
         nftId: ObjectId(nftId),

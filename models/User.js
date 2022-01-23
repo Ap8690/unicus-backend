@@ -37,7 +37,7 @@ const UserSchema = new mongoose.Schema(
     },
     userType: {
       type: Number,
-      enum: [1, 2], //1- Non Crypto & 2- Crypto User
+      enum: [1, 2, 3], //1- Non Crypto & 2- Crypto User
       default: 1,
     },
     verificationToken: String,
