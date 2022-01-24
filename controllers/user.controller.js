@@ -101,7 +101,7 @@ const updateProfilePicture = async (req, res) => {
   if(user.profileUrl) {
     const length = user.profileUrl.split("/").length
     profileToken = user.profileUrl.split("/")[length - 1].split(".")[0]
-    cloudinary.v2.uploader.destroy(`Unicus_56/${profileToken}`, function(error,result) {
+    cloudinary.v2.uploader.destroy(`Unicus_User/${profileToken}`, function(error,result) {
       console.log(result, error) 
     });
   }
@@ -120,7 +120,7 @@ const updateBackgroundPicture = async (req, res) => {
   if(user.backgroundUrl) {
     const length = user.backgroundUrl.split("/").length
     backgroundToken = user.backgroundUrl.split("/")[length - 1].split(".")[0]
-    cloudinary.v2.uploader.destroy(`Unicus_56/${backgroundToken}`, function(error,result) {
+    cloudinary.v2.uploader.destroy(`Unicus_User/${backgroundToken}`, function(error,result) {
       console.log(result, error) 
     });
   }
@@ -133,21 +133,27 @@ const updateBackgroundPicture = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
-  const { email, username } = req.body;
+  const { displayname, username, facebook, linkedIn, twitter, instagram, bio, discord } = req.body;
 
-  if (!email) {
-    throw new CustomError.BadRequestError("Please provide an email");
+  if (!displayname) {
+    throw new CustomError.BadRequestError("Please provide the displayname");
   } else if (!username) {
     throw new CustomError.BadRequestError("Please provide the username");
   }
 
   const user = await User.findOne({ _id: req.user.userId });
 
-  user.email = email;
+  user.displayname = displayname;
   user.username = username;
+  user.facebook = facebook;
+  user.discord = discord;
+  user.linkedIn = linkedIn;
+  user.twitter = twitter;
+  user.instagram = instagram;
+  user.bio = bio;
 
   await user.save();
-  res.status(StatusCodes.OK).json({ msg: "updated" });
+  res.status(StatusCodes.OK).json({ msg: user });
 };
 
 module.exports = {
