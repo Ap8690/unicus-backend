@@ -128,7 +128,7 @@ const getNFTByUserName = async (req, res) => {
     nftsOwned = await Nft.find({ owner: user._id });
     nftsMinted = await Nft.find({ mintedBy: user._id });
   }
-  res.status(StatusCodes.OK).json({nftsOwned, nftsMinted});
+  res.status(StatusCodes.OK).json({nftsOwned, nftsMinted, user});
 };
 
 const mintNFT = async (req, res) => {
