@@ -194,27 +194,44 @@ const buy = async (req, res) => {
 };
 
 const getAllSale = async (req, res) => {
-  const auctions = await Auction.find({ auctionType: "Sale", auctionStatus: 2 });
-  res.status(StatusCodes.OK).json({ data: auctions });
+  const skip = Math.max(0, req.params.skip)
+  const chain = req.params.chain
+  console.log(chain)
+  const auctions = await Auction.find({ auctionType: "Sale", auctionStatus: 2, chain: chain })
+  if(auctions.length < skip + 30) {
+    const limit = Math.max(0, auctions.length - skip)
+    const data = await Auction.find({ auctionType: "Sale", auctionStatus: 2, chain: chain }).limit(limit).skip(skip).sort([['tokenId', -1]]);
+    res.status(StatusCodes.OK).json({ data: data, totalAuctions: auctions.length, msg: "Done" });
+  } else {
+    const data = await Auction.find({ auctionType: "Sale", auctionStatus: 2, chain: chain }).limit(30).skip(skip).sort([['tokenId', -1]]);
+    res.status(StatusCodes.OK).json({ data: data, totalAuctions: auctions.length });
+  }
 };
 
 const getAllAuction = async (req, res) => {
-  const auctions = await Auction.find({ auctionType: "Auction", auctionStatus: 2 });
-  res.status(StatusCodes.OK).json({ data: auctions });
+  const skip = Math.max(0, req.params.skip)
+  const chain = req.params.chain
+  const auctions = await Auction.find({ auctionType: "Auction", auctionStatus: 2, chain: chain })
+  if(auctions.length < skip + 30) {
+    const limit = Math.max(0, auctions.length - skip)
+    const data = await Auction.find({ auctionType: "Auction", auctionStatus: 2, chain: chain }).limit(limit).skip(skip).sort([['tokenId', -1]]);
+    res.status(StatusCodes.OK).json({ data: data, totalAuctions: auctions.length, msg: "Done" });
+  } else {
+    const data = await Auction.find({ auctionType: "Auction", auctionStatus: 2, chain: chain }).limit(30).skip(skip).sort([['tokenId', -1]]);
+    res.status(StatusCodes.OK).json({ data: data, totalAuctions: auctions.length });
+  }
 };
 
 const getAllExplore = async (req, res) => {
   const skip = Math.max(0, req.params.skip)
-  const auctions = await Auction.find({ auctionStatus: 2 })
-  console.log("First", auctions.length, skip)
-  if(auctions.length < skip + 3) {
+  const chain = req.params.chain
+  const auctions = await Auction.find({ auctionStatus: 2, chain: chain })
+  if(auctions.length < skip + 30) {
     const limit = Math.max(0, auctions.length - skip)
-    console.log(skip)
-    const data = await Auction.find({ auctionStatus: 2 }).limit(limit).skip("Second", skip);
-    res.status(StatusCodes.OK).json({ data: data, totalAuctions: auctions.length });
+    const data = await Auction.find({ auctionStatus: 2, chain: chain }).limit(limit).skip(skip).sort([['tokenId', -1]]);
+    res.status(StatusCodes.OK).json({ data: data, totalAuctions: auctions.length, msg: "Done" });
   } else {
-    console.log("Third", skip)
-    const data = await Auction.find({ auctionStatus: 2 }).limit(3).skip(skip);
+    const data = await Auction.find({ auctionStatus: 2, chain: chain }).limit(30).skip(skip).sort([['tokenId', -1]]);
     res.status(StatusCodes.OK).json({ data: data, totalAuctions: auctions.length });
   }
 };

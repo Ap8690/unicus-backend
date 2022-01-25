@@ -22,9 +22,9 @@ router.route("/buy").post(authenticateUser, buy);
 router.route("/getAuctionById/:id").get(getAuctionById);
 router.route("/getAuctionByTokenId/:tokenId").get(getAuctionByTokenId);
 
-router.route("/getAllSale").get(getAllSale);
-router.route("/getAllAuction").get(getAllAuction);
-router.route("/getAllExplore/:skip").get(getAllExplore);
+router.route("/getAllSale/:skip/:chain").get(getAllSale);
+router.route("/getAllAuction/:skip/:chain").get(getAllAuction);
+router.route("/getAllExplore/:skip/:chain").get(getAllExplore);
 router.route("/create").post(authenticateUser, create);
 router.route("/start").post(authenticateUser, startAuction);
 router.route("/placeBid").post(authenticateUser, placeBid);

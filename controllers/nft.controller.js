@@ -111,7 +111,9 @@ const getAllNFTS = async (req, res) => {
 
 const getNFTByUserId = async (req, res) => {
   const userId = req.params.userId;
-  const nfts = await Nft.find({ owner: userId,  });
+  console.log(userId)
+  const nfts = await Nft.find({ owner: userId });
+  console.log(nfts)
   res.status(StatusCodes.OK).json(nfts);
 };
 

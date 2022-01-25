@@ -17,7 +17,7 @@ var web3 = new Web3();
 
 const register = async (req, res) => {
   try {
-    const { email, username, password, walletAddress, displayname, linkedIn, facebook, discord, instagram, twitter, bio } = req.body;
+    const { email, username, password, walletAddress, linkedIn, facebook, discord, instagram, twitter, bio } = req.body;
 
     if (!email) {
       throw new CustomError.BadRequestError("Please provide an email");
@@ -25,8 +25,6 @@ const register = async (req, res) => {
       throw new CustomError.BadRequestError("Please provide the username");
     } else if (!password) {
       throw new CustomError.BadRequestError("Please provide the password");
-    } else if (!displayname) {
-      throw new CustomError.BadRequestError("Please provide the displayname");
     }
 
     var regex = new RegExp(`^${email}$`, "ig");
@@ -61,7 +59,6 @@ const register = async (req, res) => {
     const verificationToken = crypto.randomBytes(40).toString("hex");
     let createObj = {
       username,
-      displayname,
       linkedIn,
       discord,
       instagram,
