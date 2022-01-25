@@ -133,17 +133,14 @@ const updateBackgroundPicture = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
-  const { displayname, username, facebook, linkedIn, twitter, instagram, bio, discord } = req.body;
+  const { username, facebook, linkedIn, twitter, instagram, bio, discord } = req.body;
 
-  if (!displayname) {
-    throw new CustomError.BadRequestError("Please provide the displayname");
-  } else if (!username) {
+  if (!username) {
     throw new CustomError.BadRequestError("Please provide the username");
   }
 
   const user = await User.findOne({ _id: req.user.userId });
 
-  user.displayname = displayname;
   user.username = username;
   user.facebook = facebook;
   user.discord = discord;
