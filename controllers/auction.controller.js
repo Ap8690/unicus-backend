@@ -147,6 +147,7 @@ const sell = async (req, res) => {
           nftStatus: 2
         }
       );
+      console.log(auction, nft)
       res.status(StatusCodes.OK).json({ auction, nft });
     }
   } catch (e) {
@@ -159,7 +160,7 @@ const buy = async (req, res) => {
       const { auctionId, nftId, owner, endAuctionHash, userInfo } = req.body
       const userId = req.user.userId
       await Auction.updateOne(
-        { auctionId, nftId },
+        { _id: auctionId },
         {
           auctionStatus: 3,
           auctionEndedOn: new Date(),
@@ -178,7 +179,7 @@ const buy = async (req, res) => {
         }
       );
       console.log(nft, owner)
-      const auction = await Auction.findOne({ auctionId, nftId })
+      const auction = await Auction.findOne({ _id: auctionId })
       await NFTStates.create({
         nftId: ObjectId(nftId),
         state: "Sale",
@@ -273,6 +274,7 @@ const startAuction = async (req, res) => {
 const placeBid = async (req, res) => {
   try {
     const {
+      _id,
       auctionId,
       nftId,
       bidValue,
@@ -285,11 +287,12 @@ const placeBid = async (req, res) => {
     } = req.body;
 
     const auctionData = await Auction.findOne({
-      auctionId,
-      nftId: ObjectId(nftId),
+      _id: _id,
+      status: 2
     });
 
     let bidNumber = 1;
+    console.log(auctionData?.bidsPlaced)
     if (auctionData?.bidsPlaced) {
       // const lastBid = await getAuctionBids(auctionId, nftId, 1);
       const lastBidId = auctionData.lastBidId
@@ -334,8 +337,8 @@ const placeBid = async (req, res) => {
         "Please provide the bid transaction Object"
       );
     } else {
-      const auction = await Auction.findOne({ auctionId, nftId, status: 3 });
-
+      const auction = await Auction.findOne({ _id: _id, status: 2 });
+      console.log(auction)
       if (auction.auctionStatus === 1)
         throw new CustomError.BadRequestError("Auction not started yet");
       if (auction.auctionStatus === 3)
@@ -345,8 +348,8 @@ const placeBid = async (req, res) => {
 
       const bidder = req.user.userId;
       let createObj = {
-        auctionId: ObjectId(auctionId),
-        nftId: ObjectId(nftId),
+        auctionId: _id,
+        nftId: nftId,
         bidValue,
         bidder,
         username,
@@ -358,9 +361,9 @@ const placeBid = async (req, res) => {
       };
 
       var bid = await Bids.create(createObj);
-
+      console.log(bid)
       await Auction.updateOne(
-        { auctionId, nftId },
+        { _id },
         { bidsPlaced: bidNumber, lastBidId: bid._id, lastBid: bidValue, highestBidder: bidder }
       );
 
@@ -395,7 +398,9 @@ const getAuctionBids = async (auctionId, nftId, bidsLimit) => {
 const endAuction = async (req, res) => {
   try {
     const userId = req.user.userId;
+    console.log("--------->UserID")
     const { nftId, auctionId, endAuctionHash, userInfo } = req.body;
+    console.log(nftId)
     if (!nftId) {
       throw new CustomError.BadRequestError("Please provide the nft id");
     } else if (!auctionId) {
@@ -405,7 +410,7 @@ const endAuction = async (req, res) => {
         "Please provide the transaction hash"
       );
     } else {
-      const auction = await Auction.findOne({ auctionId, nftId });
+      const auction = await Auction.findOne({ _id: auctionId });
       if (auction.auctionStatus === 3)
         throw new CustomError.BadRequestError("Auction already ended");
       if (auction.auctionStatus === 4)
@@ -413,6 +418,7 @@ const endAuction = async (req, res) => {
 
       // const auctionBids = await getAuctionBids(auctionId, nftId, 0);
       const lastBidId = auction.lastBidId
+      console.log(lastBidId, auction.bidsPlaced)
       const nft = await Nft.findOne({ _id: nftId });
       if (auction.bidsPlaced) {
         const bid = await Bids.findOne({
@@ -429,7 +435,7 @@ const endAuction = async (req, res) => {
 
         const auctionWinner = bid.bidder
         await Auction.updateOne(
-          { auctionId, nftId },
+          { _id: auctionId },
           {
             auctionStatus: 3,
             auctionEndedOn: new Date(),
@@ -448,7 +454,7 @@ const endAuction = async (req, res) => {
 
         await Nft.updateOne(
           {
-            nftId
+            _id: nftId
           },
           {
             owner: auctionWinner,
@@ -456,8 +462,10 @@ const endAuction = async (req, res) => {
           }
         );
       } else {
+        console.log("--------->Update")
+
         await Auction.updateOne(
-          { auctionId, nftId },
+          { _id: auctionId },
           {
             auctionStatus: 3,
             auctionEndedOn: new Date(),
@@ -467,7 +475,7 @@ const endAuction = async (req, res) => {
 
         await Nft.updateOne(
           {
-            nftId
+            _id: nftId
           },
           {
             owner: userId,
@@ -475,6 +483,7 @@ const endAuction = async (req, res) => {
           }
         );
       }
+      console.log(auction, nft)
 
       res.status(StatusCodes.OK).json("Auction Ended");
     }
@@ -488,8 +497,7 @@ const cancelAuction = async (req, res) => {
     const userId = req.user.userId;
     const { auctionId, nftId, transactionHash } = req.body;
     const auctionDetails = await Auction.findOne({
-      auctionId,
-      nftId: ObjectId(nftId),
+      _id: auctionId
     });
     console.log(auctionDetails._id);
     if (auctionDetails.auctionStatus === 4)
@@ -501,10 +509,9 @@ const cancelAuction = async (req, res) => {
     if (auctionDetails.auctionStatus === 1)
       throw new CustomError.BadRequestError("Auction not started yet");
 
-    await Auction.updateOne(
+    const auction = await Auction.updateOne(
       {
-        auctionId,
-        nftId
+        _id: auctionId
       },
       {
         auctionCancelledOn: new Date(),
@@ -522,6 +529,7 @@ const cancelAuction = async (req, res) => {
         nftStatus: 1,
       }
     );
+    console.log(nft, auction)
     res.status(StatusCodes.OK).json("Auction Cancelled");
   } catch (e) {
     throw new CustomError.BadRequestError(e);
