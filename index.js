@@ -22,6 +22,7 @@ const authRouter = require("./routes/authRoutes");
 const userRouter = require("./routes/userRoutes");
 const nftRouter = require("./routes/nftRoutes");
 const auctionRouter = require("./routes/auctionRoute");
+const adminRouter = require("./routes/adminRoutes");
 
 // middleware
 const notFoundMiddleware = require("./middleware/not-found");
@@ -55,6 +56,7 @@ app.use("/auth", authRouter);
 app.use("/users", userRouter);
 app.use("/nft", nftRouter);
 app.use("/auction", auctionRouter);
+app.use("/admin", adminRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
