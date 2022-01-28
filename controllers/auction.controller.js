@@ -175,6 +175,7 @@ const buy = async (req, res) => {
         },
         {
           owner,
+          userInfo,
           nftStatus: 1
         }
       );
@@ -458,6 +459,7 @@ const endAuction = async (req, res) => {
           },
           {
             owner: auctionWinner,
+            userInfo,
             nftStatus: 1,
           }
         );

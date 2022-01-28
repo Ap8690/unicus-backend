@@ -118,7 +118,7 @@ const getNFTByUserId = async (req, res) => {
 const getNFTByUserName = async (req, res) => {
   const { username } = req.body;
   var user, nfts;
-  var regex = new RegExp(`^${username}$`, "ig");
+  var regex = new RegExp(`^${username.trim()}$`, "ig");
   if(username.length < 15) {
     user = await User.findOne({ username: { $regex : regex } });
     nftsOwned = await Nft.find({ owner: user._id });

@@ -5,6 +5,7 @@ const CustomError = require("../errors");
 const { createTokenPayload } = require("../utils");
 const Web3 = require("web3");
 var cloudinary = require('cloudinary');
+const { Bids, NFTStates, Nft, Auction } = require("../models");
 var web3 = new Web3();
 
 cloudinary.config({
@@ -42,7 +43,7 @@ const getUserById = async (req, res) => {
 const addWallet = async (req, res) => {
   const walletAddress = req.params.walletAddress
 
-  var regex = new RegExp(`^${walletAddress}$`, "ig");
+  var regex = new RegExp(`^${walletAddress.trim()}$`, "ig");
     const walletAlreadyExists = await User.findOne({ wallets: { $regex : regex }});
     if (walletAlreadyExists) {
       throw new CustomError.BadRequestError(
@@ -65,7 +66,7 @@ const getUserNonceByAddress = async (req, res) => {
   const walletAddress = req.params.publicAddress;
   const checkAddress = await web3.utils.isAddress(walletAddress);
   if (checkAddress) {
-    const user = await User.findOne({ wallets: { $regex : new RegExp(walletAddress, "i") }}, { nonce: 1 });
+    const user = await User.findOne({ wallets: { $regex : new RegExp(walletAddress.trim(), "i") }}, { nonce: 1 });
     if (user) {
       res
         .status(StatusCodes.OK)
@@ -137,9 +138,19 @@ const updateUser = async (req, res) => {
 
   if (!username) {
     throw new CustomError.BadRequestError("Please provide the username");
+  } else if (!bio) {
+    throw new CustomError.BadRequestError("Please provide the bio");
   }
 
   const user = await User.findOne({ _id: req.user.userId });
+
+  // if(username.toLowerCase().trim() !== user.username.toLowerCase().trim()) {
+    const nfts = await Nft.updateMany({ owner: req.user.userId }, { userInfo: username })
+    const auctions = await Auction.updateMany({ sellerId: req.user.userId }, { sellerInfo: username })
+    const bids = await Bids.updateMany({ bidder: req.user.userId }, { username: username })
+    const nftStatesFrom = await NFTStates.updateMany({ from: user.username }, { from: username })
+    const nftStatesTo = await NFTStates.updateMany({ to: user.username }, { to: username })
+  // }
 
   user.username = username;
   user.facebook = facebook;
