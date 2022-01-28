@@ -79,18 +79,11 @@ const register = async (req, res) => {
     const verificationToken = crypto.randomBytes(40).toString("hex");
     let createObj = {
       username,
-      linkedIn,
-      discord,
-      instagram,
-      twitter,
-      bio,
-      facebook,
       email,
       password,
       userType,
       verificationToken,
       wallets,
-      nonce,
       profileUrl: '',
       backgroundUrl: ''
     };
