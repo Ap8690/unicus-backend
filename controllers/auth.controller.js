@@ -17,8 +17,8 @@ var web3 = new Web3();
 
 const register = async (req, res) => {
   try {
-    const { email, username, password, walletAddress, linkedIn, facebook, discord, instagram, twitter, bio } = req.body;
-    
+    const { email, username, password, walletAddress, userType2 } = req.body;
+
     if (!email) {
       throw new CustomError.BadRequestError("Please provide an email");
     } else if (!username) {
@@ -39,19 +39,39 @@ const register = async (req, res) => {
       throw new CustomError.BadRequestError("Username already exists");
     }
 
-    var regex = new RegExp(`^${walletAddress.trim()}$`, "ig");
-    const walletAlreadyExists = await User.findOne({ wallets: { $regex : regex }});
-    console.log(!walletAddress)
-    if (walletAlreadyExists && !!walletAddress) {
-      throw new CustomError.BadRequestError(
-        "User already exists with this wallet"
-      );
+    if(userType2 === "true") {
+      const user = await User.findOne({ wallets: walletAddress });
+
+      user.email = email;
+      user.password = password;
+      await user.save();
+
+      await sendVerificationEmail({
+        name: user.username,
+        email: user.email,
+        verificationToken: user.verificationToken,
+        origin,
+      });
+
+      res.status(StatusCodes.CREATED).json({
+        msg: "Success! Please check your email to verify account",
+      });
+
+      return null
     }
 
     let userType = 1,
       wallets = [],
       nonce = null;
     if (walletAddress) {
+      var regex = new RegExp(`^${walletAddress.trim()}$`, "ig");
+      const walletAlreadyExists = await User.findOne({ wallets: { $regex : regex }});
+      console.log(!walletAddress)
+      if (walletAlreadyExists && !!walletAddress) {
+        throw new CustomError.BadRequestError(
+          "User already exists with this wallet"
+        );
+      }
       userType = 3;
       wallets.push(walletAddress);
     }
