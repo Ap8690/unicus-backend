@@ -146,10 +146,10 @@ const updateUser = async (req, res) => {
 
   // if(username.toLowerCase().trim() !== user.username.toLowerCase().trim()) {
     const nfts = await Nft.updateMany({ owner: req.user.userId }, { userInfo: username })
-    const auctions = await Auction.updateMany({ sellerId: req.user.userId }, { sellerInfo: username })
-    const bids = await Bids.updateMany({ bidder: req.user.userId }, { username: username })
-    const nftStatesFrom = await NFTStates.updateMany({ from: user.username }, { from: username })
-    const nftStatesTo = await NFTStates.updateMany({ to: user.username }, { to: username })
+    await Auction.updateMany({ sellerId: req.user.userId }, { sellerInfo: username })
+    await Bids.updateMany({ bidder: req.user.userId }, { username: username })
+    await NFTStates.updateMany({ from: user.username }, { from: username })
+    await NFTStates.updateMany({ to: user.username }, { to: username })
   // }
 
   user.username = username;
@@ -161,7 +161,7 @@ const updateUser = async (req, res) => {
   user.bio = bio;
 
   await user.save();
-  res.status(StatusCodes.OK).json({ msg: user });
+  res.status(StatusCodes.OK).json({ msg: "user updated", nfts });
 };
 
 module.exports = {
