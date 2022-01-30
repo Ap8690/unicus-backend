@@ -62,6 +62,20 @@ const addWallet = async (req, res) => {
   res.status(StatusCodes.OK).json({ user });
 };
 
+const removeWallet = async (req, res) => {
+  const walletAddress = req.params.walletAddress
+  console.log(walletAddress)
+  var regex = new RegExp(`^${walletAddress.trim()}$`, "ig");
+  const userId = req.user.userId;
+
+  const user = await User.updateOne(
+    { _id: userId }, 
+    { $pull: { wallets: walletAddress } }, {new: true, upsert: true }
+  );
+
+  res.status(StatusCodes.OK).json({ user });
+};
+
 const getUserNonceByAddress = async (req, res) => {
   const walletAddress = req.params.publicAddress;
   const checkAddress = await web3.utils.isAddress(walletAddress);
@@ -144,8 +158,14 @@ const updateUser = async (req, res) => {
 
   const user = await User.findOne({ _id: req.user.userId });
 
+  
+  var regex = new RegExp(`^${username.trim()}$`, "ig");
+  const usernameAlreadyExists = await User.findOne({ username: { $regex : regex }});
+  if (usernameAlreadyExists && (username.toLowerCase().trim() !== user.username.toLowerCase().trim())) {
+    throw new CustomError.BadRequestError("Username already exists");
+  }
   // if(username.toLowerCase().trim() !== user.username.toLowerCase().trim()) {
-    const nfts = await Nft.updateMany({ owner: req.user.userId }, { userInfo: username })
+    const nfts = await Nft.updateMany({ userInfo: user.username }, { userInfo: username })
     await Auction.updateMany({ sellerId: req.user.userId }, { sellerInfo: username })
     await Bids.updateMany({ bidder: req.user.userId }, { username: username })
     await NFTStates.updateMany({ from: user.username }, { from: username })
@@ -161,7 +181,7 @@ const updateUser = async (req, res) => {
   user.bio = bio;
 
   await user.save();
-  res.status(StatusCodes.OK).json({ msg: "user updated", nfts });
+  res.status(StatusCodes.OK).json({ msg: user, nfts });
 };
 
 module.exports = {
@@ -171,6 +191,7 @@ module.exports = {
   updateUser,
   getUserById,
   addWallet,
+  removeWallet,
   updateProfilePicture,
   updateBackgroundPicture,
   getUserNonceByAddress,

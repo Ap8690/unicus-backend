@@ -5,6 +5,7 @@ const {
   getAllUsers,
   getSingleUser,
   showCurrentUser,
+  removeWallet,
   updateBackgroundPicture,
   addWallet,
   updateUser,
@@ -26,6 +27,8 @@ router.route("/update/backgroundPicture").post(authenticateUser, updateBackgroun
 router.route("/getUserById/:id").get(getUserById); // No Auth
 
 router.route("/addWallet/:walletAddress").get(authenticateUser, addWallet);
+
+router.route("/removeWallet/:walletAddress").get(authenticateUser, removeWallet);
 
 router.route("/nonce/:publicAddress").get(getUserNonceByAddress);
 

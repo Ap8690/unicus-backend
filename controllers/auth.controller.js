@@ -21,8 +21,6 @@ const register = async (req, res) => {
 
     if (!email) {
       throw new CustomError.BadRequestError("Please provide an email");
-    } else if (!username) {
-      throw new CustomError.BadRequestError("Please provide the username");
     } else if (!password) {
       throw new CustomError.BadRequestError("Please provide the password");
     }
@@ -33,19 +31,17 @@ const register = async (req, res) => {
       throw new CustomError.BadRequestError("Email already exists");
     }
 
-    var regex = new RegExp(`^${username.trim()}$`, "ig");
-    const usernameAlreadyExists = await User.findOne({ username: { $regex : regex }});
-    if (usernameAlreadyExists) {
-      throw new CustomError.BadRequestError("Username already exists");
-    }
-
     if(userType2 === "true") {
-      const user = await User.findOne({ wallets: walletAddress });
+      var regex = new RegExp(`^${walletAddress.trim()}$`, "ig");
+      const user = await User.findOne({ wallets: { $regex : regex } });
+      const verificationToken = crypto.randomBytes(40).toString("hex");
 
       user.email = email;
       user.password = password;
+      user.verificationToken = verificationToken
       await user.save();
 
+      const origin = "https://unicus.one";
       await sendVerificationEmail({
         name: user.username,
         email: user.email,
@@ -60,13 +56,22 @@ const register = async (req, res) => {
       return null
     }
 
+    if (!username) {
+      throw new CustomError.BadRequestError("Please provide the username");
+    } 
+
+    var regex = new RegExp(`^${username.trim()}$`, "ig");
+    const usernameAlreadyExists = await User.findOne({ username: { $regex : regex }});
+    if (usernameAlreadyExists) {
+      throw new CustomError.BadRequestError("Username already exists");
+    }
+
     let userType = 1,
-      wallets = [],
-      nonce = null;
+      wallets = [];
+
     if (walletAddress) {
       var regex = new RegExp(`^${walletAddress.trim()}$`, "ig");
       const walletAlreadyExists = await User.findOne({ wallets: { $regex : regex }});
-      console.log(!walletAddress)
       if (walletAlreadyExists && !!walletAddress) {
         throw new CustomError.BadRequestError(
           "User already exists with this wallet"
@@ -141,26 +146,30 @@ const login = async (req, res) => {
     const { email, password, walletAddress } = req.body;
 
     if (walletAddress) {
-        const user = await User.findOne({ wallets: walletAddress });
+      var regex = new RegExp(`^${walletAddress.trim()}$`, "ig");
+        const user = await User.findOne({ wallets: { $regex : regex }});
         
         if (user) {
-          const tokenUser = createWalletAddressPayload(user, walletAddress);
-
-          // check for existing token
-          const existingToken = await Token.findOne({ user: user._id });
-
-          if (existingToken) {
-            await Token.findOneAndDelete({ user: user._id });
+          if(user.userType === 2 || user.isVerified) {
+            const tokenUser = createWalletAddressPayload(user, walletAddress);
+            // check for existing token
+            const existingToken = await Token.findOne({ user: user._id });
+  
+            if (existingToken) {
+              await Token.findOneAndDelete({ user: user._id });
+            }
+  
+            const token = createJWT({ payload: tokenUser });
+            const userAgent = req.headers["user-agent"];
+            const ip = req.ip;
+            const userToken = { token, ip, userAgent, user: user._id };
+  
+            await Token.create(userToken);
+  
+            res.status(StatusCodes.OK).json({ accessToken: token, user: user });
+          } else {
+            throw new CustomError.BadRequestError(`Please verify your Email Address ${user.email}`);
           }
-
-          const token = createJWT({ payload: tokenUser });
-          const userAgent = req.headers["user-agent"];
-          const ip = req.ip;
-          const userToken = { token, ip, userAgent, user: user._id };
-
-          await Token.create(userToken);
-
-          res.status(StatusCodes.OK).json({ accessToken: token, user: user });
         } else {
           throw new CustomError.BadRequestError("Wallet Address Not Registered");
         }
