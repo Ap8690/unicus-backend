@@ -68,10 +68,15 @@ const removeWallet = async (req, res) => {
   var regex = new RegExp(`^${walletAddress.trim()}$`, "ig");
   const userId = req.user.userId;
 
-  const user = await User.updateOne(
-    { _id: userId }, 
-    { $pull: { wallets: walletAddress } }, {new: true, upsert: true }
-  );
+  const userDetails = await User.findOne({_id: userId, wallets: walletAddress})
+
+  var user 
+  if(userDetails){
+    user = await User.updateOne(
+      { _id: userId }, 
+      { $pull: { wallets: walletAddress } }
+    );
+  }
 
   res.status(StatusCodes.OK).json({ user });
 };
