@@ -68,17 +68,19 @@ const removeWallet = async (req, res) => {
   var regex = new RegExp(`^${walletAddress.trim()}$`, "ig");
   const userId = req.user.userId;
 
-  const userDetails = await User.findOne({_id: userId, wallets: walletAddress})
+  const userDetails = await User.findOne({_id: userId, wallets: { $regex : regex }})
 
   var user 
   if(userDetails){
     user = await User.updateOne(
       { _id: userId }, 
-      { $pull: { wallets: walletAddress } }
+      { $pull: { wallets: { $regex : regex } } }
     );
   }
 
-  res.status(StatusCodes.OK).json({ user });
+  var user = await User.findOne({ _id: userId })
+
+  res.status(StatusCodes.OK).json(user);
 };
 
 const getUserNonceByAddress = async (req, res) => {

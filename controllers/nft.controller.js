@@ -111,24 +111,28 @@ const getAllNFTS = async (req, res) => {
 
 const getNFTByUserId = async (req, res) => {
   const userId = req.params.userId;
-  const nfts = await Nft.find({ owner: userId });
-  res.status(StatusCodes.OK).json(nfts);
+  const nfts = await Nft.find({ owner: userId, nftStatus: 1 });
+  const auctions = await Auction.find({ sellerId: userId, auctionStatus: 2 })
+  res.status(StatusCodes.OK).json({nfts, auctions});
 };
 
 const getNFTByUserName = async (req, res) => {
   const { username } = req.body;
   var user, nfts;
   var regex = new RegExp(`^${username.trim()}$`, "ig");
+  var auctions
   if(username.length < 15) {
     user = await User.findOne({ username: { $regex : regex } });
     nftsOwned = await Nft.find({ owner: user._id });
+    auctions = await Auction.find({ sellerId: user._id, auctionStatus: 2 })
     nftsMinted = await Nft.find({ mintedBy: user._id });
   } else {
     user = await User.findOne({ wallets: { $regex : regex } });
     nftsOwned = await Nft.find({ owner: user._id });
+    auctions = await Auction.find({ sellerId: user._id, auctionStatus: 2 })
     nftsMinted = await Nft.find({ mintedBy: user._id });
   }
-  res.status(StatusCodes.OK).json({nftsOwned, nftsMinted, user});
+  res.status(StatusCodes.OK).json({nftsOwned, nftsMinted, user, auctions});
 };
 
 const mintNFT = async (req, res) => {
@@ -181,7 +185,7 @@ const approveNFT = async (req, res) => {
       from: "address",
       to: "contract",
     });
-    res.status(StatusCodes.Ok).send("NFT updated");
+    res.status(StatusCodes.OK).send("NFT updated");
   }
 };
 

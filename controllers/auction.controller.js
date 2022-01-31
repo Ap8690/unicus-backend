@@ -244,9 +244,9 @@ const getAuctionById = async (req, res) => {
   res.status(StatusCodes.OK).json(auction);
 };
 
-const getAuctionByTokenId = async (req, res) => {
-  const tokenId = req.params.tokenId
-  const auction = await Auction.find({ tokenId });
+const getAuctionByNftId = async (req, res) => {
+  const NftId = req.params.NftId
+  const auction = await Auction.findOne({ nftId: NftId, auctionStatus: 2 });
   res.status(StatusCodes.OK).json(auction);
 };
 
@@ -567,6 +567,6 @@ module.exports = {
   getAuctionById,
   cancelAuction,
   getAllExplore,
-  getAuctionByTokenId,
+  getAuctionByNftId,
   addViews,
 };
