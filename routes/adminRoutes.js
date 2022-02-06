@@ -5,10 +5,12 @@ const {
   dashboard,
   totalUsers,
   totalNfts,
+  login,
   totalBids,
   totalNftStates
 } = require('../controllers/admin.controller');
 
+router.post('/login', login);
 router.get('/dashboard', dashboard);
 router.get('/users', totalUsers);
 router.get('/nfts', totalNfts);

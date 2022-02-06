@@ -1,5 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const { Bids, User, Nft, Auction, NFTStates } = require("../models");
+const CustomError = require("../errors");
 
 const dashboard = async (req, res) => {
   const totalUsers = await User.find();
@@ -37,10 +38,30 @@ const totalNftStates = async (req, res) => {
     res.status(StatusCodes.OK).json({ totalNftStates });
 };
 
+const login = async (req, res) => {
+    const { email, password } = req.body
+    const obj = [
+      {
+        email: "Info@unicus.one",
+        password: "Info@unicus.one"
+      }
+    ]
+    var admin
+    for(i=0; i<obj.length; i++) {
+      if(email.toLowerCase().trim() == obj[i].email.toLowerCase().trim() && password == obj[i].password) {
+        admin = obj[i]
+        res.status(StatusCodes.OK).json("Admin Valid");
+      } else {
+        throw new CustomError.BadRequestError("Invalid Credentials");
+      }
+    }
+};
+
 module.exports = {
   dashboard,
   totalUsers,
   totalNfts,
   totalBids,
+  login,
   totalNftStates
 };
