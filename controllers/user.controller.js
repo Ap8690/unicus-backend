@@ -15,8 +15,16 @@ cloudinary.config({
 });
 
 const getAllUsers = async (req, res) => {
-  const users = await User.find({}).select("-password");
-  res.status(StatusCodes.OK).json({ users });
+  const skip = Math.max(0, req.params.skip)
+  const users = await User.find({});
+  if(users.length < skip + 30) {
+    const limit = Math.max(0, users.length - skip)
+    const data = await User.find({}).limit(limit).skip(skip).sort([['tokenId', -1]]);
+    res.status(StatusCodes.OK).json({ users: data });
+  } else {
+    const data = await User.find({}).limit(30).skip(skip).sort([['tokenId', -1]]);
+    res.status(StatusCodes.OK).json({ users: data });
+  }
 };
 
 const getSingleUser = async (req, res) => {
@@ -28,6 +36,15 @@ const getSingleUser = async (req, res) => {
     throw new CustomError.NotFoundError(`No user with id : ${req.params.id}`);
   }
   res.status(StatusCodes.OK).json({ user });
+};
+
+const getGlobalSearch = async (req, res) => {
+  const search = req.params.search
+  console.log(search)
+  var regex = new RegExp(`${search.trim()}`, "ig");
+    const users = await User.find({ username: { $regex : regex }});
+    const nfts = await Auction.find({ name: { $regex : regex }});
+    res.status(StatusCodes.OK).json({ users, nfts });
 };
 
 const getUserById = async (req, res) => {
@@ -199,6 +216,7 @@ module.exports = {
   getUserById,
   addWallet,
   removeWallet,
+  getGlobalSearch,
   updateProfilePicture,
   updateBackgroundPicture,
   getUserNonceByAddress,

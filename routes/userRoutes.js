@@ -10,11 +10,12 @@ const {
   addWallet,
   updateUser,
   getUserById,
+  getGlobalSearch,
   updateProfilePicture,
   getUserNonceByAddress,
 } = require("../controllers/user.controller");
 
-router.route("/").get(authenticateUser, getAllUsers);
+router.route("/:skip").get(getAllUsers);
 
 router.route("/update/updateUser").post(authenticateUser, updateUser);
 
@@ -31,5 +32,7 @@ router.route("/addWallet/:walletAddress").get(authenticateUser, addWallet);
 router.route("/removeWallet/:walletAddress").get(authenticateUser, removeWallet);
 
 router.route("/nonce/:publicAddress").get(getUserNonceByAddress);
+
+router.route("/globalSearch/:search").get(getGlobalSearch);
 
 module.exports = router;
