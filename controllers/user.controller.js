@@ -7,6 +7,8 @@ const Web3 = require("web3");
 var cloudinary = require('cloudinary');
 const { Bids, NFTStates, Nft, Auction } = require("../models");
 var web3 = new Web3();
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 
 cloudinary.config({
   cloud_name: 'dhmglymaz',
@@ -20,7 +22,7 @@ const getAllUsers = async (req, res) => {
   if(users.length < skip + 30) {
     const limit = Math.max(0, users.length - skip)
     const data = await User.find({}).limit(limit).skip(skip).sort([['tokenId', -1]]);
-    res.status(StatusCodes.OK).json({ users: data });
+    res.status(StatusCodes.OK).json({ users: data, msg: "Done" });
   } else {
     const data = await User.find({}).limit(30).skip(skip).sort([['tokenId', -1]]);
     res.status(StatusCodes.OK).json({ users: data });
@@ -190,6 +192,8 @@ const updateUser = async (req, res) => {
   }
   // if(username.toLowerCase().trim() !== user.username.toLowerCase().trim()) {
     const nfts = await Nft.updateMany({ owner: user._id }, { userInfo: username })
+    await Nft.updateMany({ mintedBy: ObjectId(user._id) }, { mintedBy: username })
+    await Nft.updateMany({ mintedBy: user.username }, { mintedBy: username })
     await Auction.updateMany({ sellerId: req.user.userId }, { sellerInfo: username })
     await Bids.updateMany({ bidder: req.user.userId }, { username: username })
     await NFTStates.updateMany({ from: user.username }, { from: username })

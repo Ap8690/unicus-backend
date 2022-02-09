@@ -118,19 +118,19 @@ const getNFTByUserId = async (req, res) => {
 
 const getNFTByUserName = async (req, res) => {
   const { username } = req.body;
-  var user, nfts;
+  var user, nftsOwned, nftsMinted;
   var regex = new RegExp(`^${username.trim()}$`, "ig");
   var auctions
   if(username.length < 15) {
     user = await User.findOne({ username: { $regex : regex } });
     nftsOwned = await Nft.find({ owner: user._id });
     auctions = await Auction.find({ sellerId: user._id, auctionStatus: 2 })
-    nftsMinted = await Nft.find({ mintedBy: user._id });
+    nftsMinted = await Nft.find({ mintedBy: ObjectId(user._id) });
   } else {
     user = await User.findOne({ wallets: { $regex : regex } });
     nftsOwned = await Nft.find({ owner: user._id });
     auctions = await Auction.find({ sellerId: user._id, auctionStatus: 2 })
-    nftsMinted = await Nft.find({ mintedBy: user._id });
+    nftsMinted = await Nft.find({ mintedBy: ObjectId(user._id) });
   }
   res.status(StatusCodes.OK).json({nftsOwned, nftsMinted, user, auctions});
 };

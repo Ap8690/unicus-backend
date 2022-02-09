@@ -31,7 +31,8 @@ const NftSchema = new mongoose.Schema(
       ref: "User",
     },
     mintedBy: {
-      type: String
+      type: mongoose.Types.ObjectId,
+      ref: "User"
     },
     userInfo: {
       type: String,
