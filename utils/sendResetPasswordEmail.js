@@ -1,7 +1,7 @@
 const sendEmail = require("./sendEmail");
 
 const sendResetPassswordEmail = async ({ name, email, token, origin }) => {
-  const resetURL = `https://unicus.one/reset-password/${token}/${email}`;
+  const resetURL = `https://marketplace.unicus.one//reset-password/${token}/${email}`;
   const message = `<p>Please reset password by clicking on the following link : 
   <a href="${resetURL}">Reset Password</a></p>`;
 

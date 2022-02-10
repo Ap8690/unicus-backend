@@ -41,7 +41,7 @@ const register = async (req, res) => {
       user.verificationToken = verificationToken
       await user.save();
 
-      const origin = "https://unicus.one";
+      const origin = "https://marketplace.unicus.one/";
       await sendVerificationEmail({
         name: user.username,
         email: user.email,
@@ -94,7 +94,7 @@ const register = async (req, res) => {
     };
 
     const user = await User.create(createObj);
-    const origin = "https://unicus.one";
+    const origin = "https://marketplace.unicus.one/";
 
     await sendVerificationEmail({
       name: user.username,
@@ -138,7 +138,7 @@ const verifyEmail = async (req, res) => {
     throw new CustomError.BadRequestError(e.message);
   }
 
-  return res.redirect("https://unicus.one")
+  return res.redirect("https://marketplace.unicus.one/")
 };
 
 const login = async (req, res) => {
@@ -242,7 +242,7 @@ const forgotPassword = async (req, res) => {
     if (user) {
       const passwordToken = crypto.randomBytes(70).toString("hex");
       // send email
-      const origin = "https://unicus.one";
+      const origin = "https://marketplace.unicus.one/";
       await sendResetPasswordEmail({
         name: user.username,
         email: user.email,

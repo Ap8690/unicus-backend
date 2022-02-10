@@ -38,7 +38,7 @@ app.use(
 app.use(morgan("dev"));
 app.use(helmet());
 const corsOptions ={
-  origin:'https://unicus.one', 
+  origin:'https://marketplace.unicus.one/', 
   credentials:true,            //access-control-allow-credentials:true
   optionSuccessStatus:200
 }
