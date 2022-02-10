@@ -184,18 +184,18 @@ const updateUser = async (req, res) => {
 
   const user = await User.findOne({ _id: req.user.userId });
 
-  
   var regex = new RegExp(`^${username.trim()}$`, "ig");
   const usernameAlreadyExists = await User.findOne({ username: { $regex : regex }});
   if (usernameAlreadyExists && (username.toLowerCase().trim() !== user.username.toLowerCase().trim())) {
     throw new CustomError.BadRequestError("Username already exists");
   }
   // if(username.toLowerCase().trim() !== user.username.toLowerCase().trim()) {
-    const nfts = await Nft.updateMany({ owner: user._id }, { userInfo: username })
-    await Auction.updateMany({ sellerId: req.user.userId }, { sellerInfo: username })
-    await Bids.updateMany({ bidder: req.user.userId }, { username: username })
-    await NFTStates.updateMany({ from: user.username }, { from: username })
-    await NFTStates.updateMany({ to: user.username }, { to: username })
+    const nfts = await Nft.updateMany({ owner: user._id }, { userInfo: username.trim() })
+    await Nft.updateMany({ mintedInfo: user.username }, { mintedInfo: username.trim() })
+    await Auction.updateMany({ sellerId: req.user.userId }, { sellerInfo: username.trim() })
+    await Bids.updateMany({ bidder: req.user.userId }, { username: username.trim() })
+    await NFTStates.updateMany({ from: user.username.trim() }, { from: username.trim() })
+    await NFTStates.updateMany({ to: user.username.trim() }, { to: username.trim() })
   // }
 
   user.username = username;
