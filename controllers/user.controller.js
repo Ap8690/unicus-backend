@@ -73,10 +73,14 @@ const addWallet = async (req, res) => {
   const userId = req.user.userId;
   console.log(walletAddress, userId)
 
-  const user = await User.updateOne(
+  await User.updateOne(
     { _id: userId }, 
     {$push: {wallets: walletAddress}},{new: true, upsert: true }
   );
+
+  const user = await User.findOne({ wallets: { $regex : regex }})
+
+    console.log(user)
 
   res.status(StatusCodes.OK).json({ user });
 };
