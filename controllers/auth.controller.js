@@ -57,13 +57,13 @@ const register = async (req, res) => {
     }
 
     if (!username) {
-      throw new CustomError.BadRequestError("Please provide the username");
+      throw new CustomError.BadRequestError("Please provide the Display Name");
     } 
 
     var regex = new RegExp(`^${username.trim()}$`, "ig");
     const usernameAlreadyExists = await User.findOne({ username: { $regex : regex }});
     if (usernameAlreadyExists) {
-      throw new CustomError.BadRequestError("Username already exists");
+      throw new CustomError.BadRequestError("Display Name already exists");
     }
 
     let userType = 1,
@@ -213,7 +213,7 @@ const login = async (req, res) => {
 
       await Token.create(userToken);
 
-      res.status(StatusCodes.OK).json({ accessToken: token });
+      res.status(StatusCodes.OK).json({ accessToken: token, user: user });
     }
   } catch (e) {
     throw new CustomError.BadRequestError(e.message);

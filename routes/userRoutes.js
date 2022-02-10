@@ -19,7 +19,7 @@ router.route("/:skip").get(getAllUsers);
 
 router.route("/update/updateUser").post(authenticateUser, updateUser);
 
-router.route("/:token").get(authenticateUser, getSingleUser);
+router.route("getSingleUser/:token").get(authenticateUser, getSingleUser);
 
 router.route("/update/profilePicture").post(authenticateUser, updateProfilePicture);
 
