@@ -157,7 +157,7 @@ const sell = async (req, res) => {
 
 const buy = async (req, res) => {
   try {
-      const { auctionId, nftId, owner, endAuctionHash, userInfo } = req.body
+      const { auctionId, nftId, owner, endAuctionHash, userInfo, name } = req.body
       const userId = req.user.userId
       await Auction.updateOne(
         { _id: auctionId },
@@ -184,6 +184,7 @@ const buy = async (req, res) => {
       await NFTStates.create({
         nftId: ObjectId(nftId),
         state: "Sale",
+        name,
         from: auction.sellerInfo,
         to: userInfo,
         price: auction.startBid,
@@ -400,7 +401,7 @@ const endAuction = async (req, res) => {
   try {
     const userId = req.user.userId;
     console.log("--------->UserID")
-    const { nftId, auctionId, endAuctionHash, userInfo } = req.body;
+    const { nftId, auctionId, endAuctionHash, userInfo, name } = req.body;
     console.log(nftId)
     if (!nftId) {
       throw new CustomError.BadRequestError("Please provide the nft id");
@@ -448,6 +449,7 @@ const endAuction = async (req, res) => {
 
         await NFTStates.create({
           nftId: nftId,
+          name,
           state: "Auction",
           from: userInfo,
           to: auctionWinner,

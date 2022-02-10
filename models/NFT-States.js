@@ -8,6 +8,7 @@ const NftStateSchema = new mongoose.Schema(
       required: true,
     },
     state: { type: String }, // Mint, Transfer
+    name: { type: String },
     price: { type: Number },
     date: { type: Date },
     from: { type: String }, // Public address

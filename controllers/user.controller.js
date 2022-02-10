@@ -192,8 +192,6 @@ const updateUser = async (req, res) => {
   }
   // if(username.toLowerCase().trim() !== user.username.toLowerCase().trim()) {
     const nfts = await Nft.updateMany({ owner: user._id }, { userInfo: username })
-    await Nft.updateMany({ mintedBy: ObjectId(user._id) }, { mintedBy: username })
-    await Nft.updateMany({ mintedBy: user.username }, { mintedBy: username })
     await Auction.updateMany({ sellerId: req.user.userId }, { sellerInfo: username })
     await Bids.updateMany({ bidder: req.user.userId }, { username: username })
     await NFTStates.updateMany({ from: user.username }, { from: username })

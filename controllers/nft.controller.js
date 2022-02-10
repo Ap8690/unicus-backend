@@ -9,7 +9,7 @@ const ObjectId = mongoose.Types.ObjectId;
 // import { v4 as uuidv4 } from 'uuid';
 
 const create = async (req, res) => {
-  const { jsonIpfs, name, nftType, description, chain, tokenId, mintedBy, collectionName, category, royalty, cloudinaryUrl,owner, uploadedBy, userInfo, tags } =
+  const { jsonIpfs, name, nftType, description, chain, tokenId, mintedBy, collectionName, category, royalty, cloudinaryUrl,owner, uploadedBy, userInfo, tags, mintedInfo } =
     req.body;
   const userId = req.user.userId;
 
@@ -28,6 +28,7 @@ const create = async (req, res) => {
     description,
     nftType,
     uploadedBy,
+    mintedInfo,
     chain, 
     tokenId, 
     mintedBy,
@@ -43,6 +44,7 @@ const create = async (req, res) => {
   console.log(data._id)
   await NFTStates.create({
     nftId: ObjectId(data._id),
+    name,
     state: "Minted",
     from: "Null Address",
     to: userInfo,
