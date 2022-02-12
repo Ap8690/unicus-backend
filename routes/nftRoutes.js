@@ -4,10 +4,7 @@ const {
   getNFTByNftId,
   getNFTByUserId,
   create,
-  getNftStates,
   getNFTByUserName,
-  getNftBids,
-  // getAllNFTS,
   mintNFT,
   approveNFT,
 } = require("../controllers/nft.controller");
@@ -23,9 +20,6 @@ router.route("/:nftId").get(getNFTByNftId);
 router.route("/getNFTByUserId/:userId").get(getNFTByUserId);
 router.route("/getNFTByUserName").post(getNFTByUserName);
 router.route("/mint").post(authenticateUser, mintNFT);
-
-router.route("/getNftStates/:id").get(getNftStates);
-router.route("/getNftBids/:id").get(getNftBids);
 router.route("/approve").post(authenticateUser, approveNFT);
 
 module.exports = router;

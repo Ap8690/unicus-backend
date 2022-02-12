@@ -55,28 +55,15 @@ const create = async (req, res) => {
 
 const getNFTByNftId = async (req, res) => {
   const nftId = req.params.nftId;
-  console.log(nftId)
   const nft = await Nft.findOne({
     _id: nftId
   });
-  console.log(nft)
-  res.status(StatusCodes.OK).json({ nft });
-};
+  const nftStates = await NFTStates.find({ nftId: nft._id });
+  const bids = await Bids.find({ nftId: nft._id });
+  const mintedUser = await User.findOne({ _id: nft.mintedBy });
+  const auction = await Auction.findOne({ nftId: nft._id, auctionStatus: 2 });
 
-const getNftStates = async (req, res) => {
-  const id = req.params.id
-  console.log(id)
-  const nftStates = await NFTStates.find({ nftId: id });
-  
-  res.status(StatusCodes.OK).json(nftStates);
-};
-
-const getNftBids = async (req, res) => {
-  const id = req.params.id
-  console.log(id)
-  const bids = await Bids.find({ nftId: id });
-  
-  res.status(StatusCodes.OK).json(bids);
+  res.status(StatusCodes.OK).json({ nft, nftStates, bids, mintedUser, auction });
 };
 
 const getAll = async (req, res) => {
@@ -191,4 +178,4 @@ const approveNFT = async (req, res) => {
   }
 };
 
-module.exports = { create, getNFTByNftId, getAll, mintNFT, approveNFT, getNFTByUserId, getNftStates, getNFTByUserName, getNftBids };
+module.exports = { create, getNFTByNftId, getAll, mintNFT, approveNFT, getNFTByUserId, getNFTByUserName };

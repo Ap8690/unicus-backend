@@ -61,7 +61,6 @@ const getUserById = async (req, res) => {
 
 const addWallet = async (req, res) => {
   const walletAddress = req.params.walletAddress
-
   var regex = new RegExp(`^${walletAddress.trim()}$`, "ig");
     const walletAlreadyExists = await User.findOne({ wallets: { $regex : regex }});
     if (walletAlreadyExists) {
