@@ -194,12 +194,12 @@ const updateUser = async (req, res) => {
     throw new CustomError.BadRequestError("Username already exists");
   }
   // if(username.toLowerCase().trim() !== user.username.toLowerCase().trim()) {
-    const nfts = await Nft.updateMany({ owner: user._id }, { userInfo: username.trim() })
+    Nft.updateMany({ userInfo: user.username }, { userInfo: username.trim() })
     await Nft.updateMany({ mintedInfo: user.username }, { mintedInfo: username.trim() })
     await Auction.updateMany({ sellerId: req.user.userId }, { sellerInfo: username.trim() })
     await Bids.updateMany({ bidder: req.user.userId }, { username: username.trim() })
-    await NFTStates.updateMany({ from: user.username.trim() }, { from: username.trim() })
-    await NFTStates.updateMany({ to: user.username.trim() }, { to: username.trim() })
+    await NFTStates.updateMany({ from: user.username }, { from: username.trim() })
+    await NFTStates.updateMany({ to: user.username }, { to: username.trim() })
   // }
 
   user.username = username;
@@ -211,7 +211,7 @@ const updateUser = async (req, res) => {
   user.bio = bio;
 
   await user.save();
-  res.status(StatusCodes.OK).json({ msg: user, nfts });
+  res.status(StatusCodes.OK).json({ msg: user });
 };
 
 module.exports = {

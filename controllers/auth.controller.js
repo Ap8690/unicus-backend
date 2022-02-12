@@ -83,7 +83,7 @@ const register = async (req, res) => {
 
     const verificationToken = crypto.randomBytes(40).toString("hex");
     let createObj = {
-      username,
+      username: username.trim(),
       email,
       password,
       userType,
