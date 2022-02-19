@@ -1,6 +1,154 @@
 const { StatusCodes } = require('http-status-codes')
 const { Bids, User, Nft, Auction, NFTStates } = require('../models')
 const CustomError = require('../errors')
+const crypto = require('crypto')
+const {
+    sendVerificationEmail,
+    sendVerificationAdmin,
+    createHash,
+} = require('../utils')
+const Admin = require('../models/Admin')
+
+const register = async (req, res) => {
+    try {
+        const { email } = req.body
+
+        if (!email) {
+            throw new CustomError.BadRequestError('Please provide an email')
+            // } else if (!password) {
+            //     throw new CustomError.BadRequestError('Please provide the password')
+        }
+
+        var regex = new RegExp(`^${email.trim()}$`, 'ig')
+        const emailAlreadyExists = await Admin.findOne({
+            email: { $regex: regex },
+        })
+        if (emailAlreadyExists) {
+            throw new CustomError.BadRequestError('Email already exists')
+        }
+
+        // var regex = new RegExp(`^${username.trim()}$`, 'ig')
+        // const usernameAlreadyExists = await User.findOne({
+        //     username: { $regex: regex },
+        // })
+        // if (usernameAlreadyExists) {
+        //     throw new CustomError.BadRequestError('Display Name already exists')
+        // }
+
+        const verificationToken = crypto.randomBytes(40).toString('hex')
+        const passwordToken = crypto.randomBytes(70).toString('hex')
+        let createObj = {
+            email,
+            verificationToken,
+        }
+
+        console.log(createObj)
+        const user = await Admin.create(createObj)
+        const origin = 'http://localhost:3000/'
+
+        await sendVerificationAdmin({
+            email: user.email,
+            verificationToken: user.verificationToken,
+            token: passwordToken,
+            origin,
+        })
+
+        const tenMinutes = 1000 * 60 * 10
+        const passwordTokenExpirationDate = new Date(Date.now() + tenMinutes)
+
+        user.passwordToken = createHash(passwordToken)
+        user.passwordTokenExpirationDate = passwordTokenExpirationDate
+        await user.save()
+
+        res.status(StatusCodes.CREATED).json({
+            msg: 'Success! Please check your email to verify yourself as Admin',
+        })
+    } catch (e) {
+        console.log(e.message)
+        throw new CustomError.BadRequestError(e.message)
+    }
+}
+
+const deleteAdmin = async (req, res) => {
+    try {
+        const { email } = req.body
+        console.log(req.body)
+        console.log(email)
+        if (!email) {
+            throw new CustomError.BadRequestError('Please provide an email')
+        }
+
+        const user = await Admin.find({ email: email })
+        if (user) {
+            const deletedUser = await Admin.deleteMany({ email: email })
+            res.status(StatusCodes.OK).json({
+                msg: 'Deleted Admin!',
+                data: deletedUser,
+            })
+        } else {
+            res.json({ status: 400, msg: 'User not found' })
+        }
+    } catch (err) {
+        throw new CustomError.BadRequestError(err.message)
+    }
+}
+
+const verifyEmail = async (req, res) => {
+    try {
+        const email = req.query.email
+        const verificationToken = req.query.token
+        const { password, token } = req.body
+
+        const user = await Admin.findOne({ email })
+        if (!user) {
+            throw new CustomError.UnauthenticatedError('Invalid Email')
+        }
+
+        if (!password) {
+            throw new CustomError.BadRequestError('Please provide the password')
+        }
+
+        if (user.verificationToken === '') {
+            throw new CustomError.UnauthenticatedError('User already verified')
+        }
+        if (user.verificationToken !== verificationToken) {
+            throw new CustomError.UnauthenticatedError(
+                'Invalid verification token'
+            )
+        }
+        console.log('CHECK 1')
+        if (user) {
+            const currentDate = new Date()
+            if (
+                user.passwordToken === createHash(token) &&
+                user.passwordTokenExpirationDate > currentDate
+            ) {
+                console.log('CHECK 2')
+                user.password = password
+                user.passwordToken = null
+                user.passwordTokenExpirationDate = null
+                console.log('CHECK 3')
+                user.isVerified = true
+                user.verified = Date.now()
+                user.verificationToken = ''
+                await user.save()
+                res.status(StatusCodes.OK).json({
+                    msg: 'Admin Verified! Password has been successfully updated',
+                })
+                // $2a$10$NI/cqg38P7DhL8cpx50WxuXbmCr78v4yZ8pJButCQt.ZXLoE73HtG
+                // $2a$10$NI/cqg38P7DhL8cpx50WxuXbmCr78v4yZ8pJButCQt.ZXLoE73HtG
+            }
+            res.status(StatusCodes.OK).json({
+                msg: 'Already Verified!',
+            })
+        }
+        return
+    } catch (e) {
+        throw new CustomError.BadRequestError(e.message)
+    }
+
+    return res.redirect('https://marketplace.unicus.one/')
+}
 
 const dashboard = async (req, res) => {
     const totalUsers = await User.find()
@@ -47,24 +195,37 @@ const totalNftStates = async (req, res) => {
 }
 
 const login = async (req, res) => {
-    const { email, password } = req.body
-    const obj = [
-        {
-            email: 'Info@unicus.one',
-            password: 'Info@unicus.one',
-        },
-    ]
-    var admin
-    for (i = 0; i < obj.length; i++) {
-        if (
-            email.toLowerCase().trim() == obj[i].email.toLowerCase().trim() &&
-            password == obj[i].password
-        ) {
-            admin = obj[i]
-            res.status(StatusCodes.OK).json('Admin Valid')
-        } else {
-            throw new CustomError.BadRequestError('Invalid Credentials')
+    try {
+        const { email, password } = req.body
+
+        if (!email) {
+            throw new CustomError.BadRequestError('Please provide an email.')
+        } else if (!password) {
+            throw new CustomError.BadRequestError('Please enter the password')
         }
+
+        var regex = new RegExp(`^${email.trim()}$`, 'ig')
+        const user = await Admin.findOne({ email: { $regex: regex } })
+
+        if (!user) {
+            throw new CustomError.UnauthenticatedError('Invalid Credentials')
+        }
+
+        const isPasswordCorrect = await user.comparePassword(password)
+
+        if (!isPasswordCorrect) {
+            throw new CustomError.UnauthenticatedError('Invalid Credentials')
+        }
+
+        if (!user.isVerified) {
+            throw new CustomError.UnauthenticatedError(
+                'Please verify your email'
+            )
+        }
+
+        res.status(StatusCodes.OK).json({ user: user })
+    } catch (e) {
+        throw new CustomError.BadRequestError(e.message)
     }
 }
 
@@ -84,7 +245,7 @@ const login = async (req, res) => {
 
 const getAllAdmin = async function (req, res) {
     try {
-        const admin = await User.find({ isAdmin: true })
+        const admin = await Admin.find()
 
         if (admin && admin.length) {
             res.json({ status: 200, msg: 'Success', data: admin })
@@ -204,8 +365,11 @@ module.exports = {
     totalUsers,
     totalNfts,
     totalBids,
+    register,
     login,
     totalNftStates,
     changeUserStatus,
     getAllAdmin,
+    verifyEmail,
+    deleteAdmin,
 }
