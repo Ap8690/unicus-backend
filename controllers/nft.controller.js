@@ -7,6 +7,7 @@ const NFTStates = require('../models/NFT-States')
 const { Bids, Auction } = require('../models')
 const ObjectId = mongoose.Types.ObjectId
 // import { v4 as uuidv4 } from 'uuid';
+const Views = require("../models/Views");
 
 const create = async (req, res) => {
     const {
@@ -71,28 +72,58 @@ const create = async (req, res) => {
 
 const getNFTByNftId = async (req, res) => {
     const nftId = req.params.nftId
-    console.log(nftId)
     const nft = await Nft.findOne({
         _id: nftId,
+    })  
+    const userId = req.params.userId;
+    var totalViews = await Views.find({ nftId })
+    if(totalViews.length == 0) {
+      await Views.create({
+        nftId: ObjectId(nftId),
+        views: [],
+        heart: []
+      })
+      totalViews = await Views.find({ nftId: nftId })
+    }
+  
+    var user
+    var filter = []
+    if(userId !== "none") {
+      user = await User.find({ _id: userId })
+      filter = totalViews[0].views.filter((obj) => {
+        return obj.username == user[0].username
+      })
+    }
+
+    const nftStates = await NFTStates.find({ nftId: nft._id })
+    const bids = await Bids.find({ nftId: nft._id })
+    const mintedUser = await User.findOne({ _id: nft.mintedBy })
+    const auction = await Auction.findOne({ nftId: nft._id, auctionStatus: 2 })
+
+    if (user && filter.length === 0) {
+        const data = {
+            profileUrl: user[0].profileUrl,
+            username: user[0].username,
+            bio: user[0].bio,
+        }
+        await Views.updateOne(
+            { nftId: nftId },
+            { $push: { views: data } },
+            { new: true, upsert: true }
+        )
+        await Nft.updateOne({ _id: nftId }, { views: nft.views + 1 })
+        await Auction.updateOne(
+            { nftId, auctionStatus: 2 },
+            { views: nft.views + 1 }
+        )
+    }
+    res.status(StatusCodes.OK).json({
+        nft,
+        nftStates,
+        bids,
+        mintedUser,
+        auction,
     })
-    console.log(nft)
-    res.status(StatusCodes.OK).json({ nft })
-}
-
-const getNftStates = async (req, res) => {
-    const id = req.params.id
-    console.log(id)
-    const nftStates = await NFTStates.find({ nftId: id })
-
-    res.status(StatusCodes.OK).json(nftStates)
-}
-
-const getNftBids = async (req, res) => {
-    const id = req.params.id
-    console.log(id)
-    const bids = await Bids.find({ nftId: id })
-
-    res.status(StatusCodes.OK).json(bids)
 }
 
 const getAll = async (req, res) => {
@@ -144,6 +175,12 @@ const getNFTByUserId = async (req, res) => {
     const nfts = await Nft.find({ owner: userId, nftStatus: 1 })
     const auctions = await Auction.find({ sellerId: userId, auctionStatus: 2 })
     res.status(StatusCodes.OK).json({ nfts, auctions })
+}
+
+const getNFTViews = async (req, res) => {
+    const nftId = req.params.nftId
+    const views = await Views.find({ nftId })
+    res.status(StatusCodes.OK).json({ views })
 }
 
 const getNFTByUserName = async (req, res) => {
@@ -231,6 +268,7 @@ const banNFT = async (req, res) => {
         throw new CustomError.UnauthenticatedError('Invalid Credentials')
     }
     const user = await Nft.findOne({ _id: userId })
+    const user2 = await Auction.findOne({ nftId: userId, auctionStatus: 2 })
     if (user) {
         const data = await Nft.updateOne(
             { _id: userId },
@@ -240,11 +278,27 @@ const banNFT = async (req, res) => {
                 },
             }
         )
-        res.json({
-            status: 200,
-            msg: 'Success',
-            data: data,
-        })
+        if(user2) {
+            const data2 = await Nft.updateOne(
+                { _id: userId },
+                {
+                    $set: {
+                        active: false,
+                    },
+                }
+            )
+            res.json({
+                status: 200,
+                msg: 'Success',
+                data: data2,
+            })
+        } else {
+            res.json({
+                status: 200,
+                msg: 'Success',
+                data: data,
+            })
+        }
     } else {
         throw new CustomError.BadRequestError('User not found!')
     }
@@ -279,9 +333,8 @@ module.exports = {
     mintNFT,
     approveNFT,
     getNFTByUserId,
-    getNftStates,
     getNFTByUserName,
-    getNftBids,
+    getNFTViews,
     unbanNFT,
     banNFT,
 }

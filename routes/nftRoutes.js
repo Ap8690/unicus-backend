@@ -4,12 +4,11 @@ const {
     getNFTByNftId,
     getNFTByUserId,
     create,
-    getNftStates,
     getNFTByUserName,
-    getNftBids,
     // getAllNFTS,
     mintNFT,
     approveNFT,
+    getNFTViews,
     banNFT,
     unbanNFT,
 } = require('../controllers/nft.controller')
@@ -23,13 +22,12 @@ router.route('/banNFT').post(banNFT)
 router.route('/unbanNFT').post(unbanNFT)
 router.route('/getAllExplore/:skip').get(getAll)
 router.route('/').post(authenticateUser, create)
-router.route('/:nftId').get(getNFTByNftId)
+router.route("/getNFTViews/:nftId").get(getNFTViews);
 router.route('/getNFTByUserId/:userId').get(getNFTByUserId)
+router.route("/getNftById/:nftId/:userId").get(getNFTByNftId);
 router.route('/getNFTByUserName').post(getNFTByUserName)
 router.route('/mint').post(authenticateUser, mintNFT)
 
-router.route('/getNftStates/:id').get(getNftStates)
-router.route('/getNftBids/:id').get(getNftBids)
 router.route('/approve').post(authenticateUser, approveNFT)
 
 module.exports = router

@@ -71,7 +71,6 @@ const getUserById = async (req, res) => {
 
 const addWallet = async (req, res) => {
     const walletAddress = req.params.walletAddress
-
     var regex = new RegExp(`^${walletAddress.trim()}$`, 'ig')
     const walletAlreadyExists = await User.findOne({
         wallets: { $regex: regex },
@@ -229,8 +228,8 @@ const updateUser = async (req, res) => {
         throw new CustomError.BadRequestError('Username already exists')
     }
     // if(username.toLowerCase().trim() !== user.username.toLowerCase().trim()) {
-    const nfts = await Nft.updateMany(
-        { owner: user._id },
+    await Nft.updateMany(
+        { userInfo: user.username },
         { userInfo: username.trim() }
     )
     await Nft.updateMany(
@@ -246,13 +245,10 @@ const updateUser = async (req, res) => {
         { username: username.trim() }
     )
     await NFTStates.updateMany(
-        { from: user.username.trim() },
+        { from: user.username },
         { from: username.trim() }
     )
-    await NFTStates.updateMany(
-        { to: user.username.trim() },
-        { to: username.trim() }
-    )
+    await NFTStates.updateMany({ to: user.username }, { to: username.trim() })
     // }
 
     user.username = username

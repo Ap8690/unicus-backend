@@ -159,6 +159,12 @@ const login = async (req, res) => {
             var regex = new RegExp(`^${walletAddress.trim()}$`, 'ig')
             const user = await User.findOne({ wallets: { $regex: regex } })
 
+            if (!user.active) {
+              throw new CustomError.BadRequestError(
+                  'You are not allowed to login! Contact for Support.'
+              )
+          }
+
             if (user) {
                 if (user.userType === 2 || user.isVerified) {
                     const tokenUser = createWalletAddressPayload(
@@ -224,8 +230,8 @@ const login = async (req, res) => {
             }
 
             if (!user.active) {
-                throw new CustomError.UnauthenticatedError(
-                    'User not allowed to login! Contact for Support.'
+                throw new CustomError.BadRequestError(
+                    'You are not allowed to login! Contact for Support.'
                 )
             }
 
