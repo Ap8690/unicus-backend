@@ -223,6 +223,12 @@ const login = async (req, res) => {
                 )
             }
 
+            if (!user.active) {
+                throw new CustomError.UnauthenticatedError(
+                    'User not allowed to login! Contact for Support.'
+                )
+            }
+
             if (!user.isVerified) {
                 throw new CustomError.UnauthenticatedError(
                     'Please verify your email'
