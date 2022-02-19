@@ -50,6 +50,8 @@ const create = async (req, res) => {
       auctionTimer.setSeconds(auctionTimer.getSeconds() + duration)
       console.log(auctionTimer.toString())
       // const dateString = `${auctionTimer.getUTCDate} ++ ${auctionTimer.getUTCMonth + 1} ++ ${auctionTimer.getUTCFullYear} ++ ${auctionTimer.getUTCHours} ++ ${auctionTimer.getUTCMinutes}`
+      const nftOne = await Nft.findOne({ _id: nftId });
+      console.log(nftOne)
       let createObj = {
         nftId,
         auctionId,
@@ -66,10 +68,9 @@ const create = async (req, res) => {
         sellerWallet,
         sellerId,
         sellerInfo,
-        cloudinaryUrl
+        cloudinaryUrl,
+        views: nftOne.views
       };
-      const nftOne = await Nft.findOne({ _id: nftId });
-      console.log(nftOne)
       const auction = await Auction.create(createObj)
       const nft = await Nft.updateOne(
         {
@@ -120,6 +121,7 @@ const sell = async (req, res) => {
     } else if (!chain) {
       throw new CustomError.BadRequestError("Please provide the auction chain");
     } else {
+      const nftOne = await Nft.findOne({ _id: nftId });
       let createObj = {
         nftId,
         auctionId,
@@ -134,7 +136,8 @@ const sell = async (req, res) => {
         sellerWallet,
         sellerId,
         sellerInfo,
-        cloudinaryUrl
+        cloudinaryUrl,
+        views: nftOne.views
       };
 
       const auction = await Auction.create(createObj)
@@ -165,8 +168,6 @@ const buy = async (req, res) => {
           auctionStatus: 3,
           auctionEndedOn: new Date(),
           auctionEndTxnHash: endAuctionHash,
-          sellerId: userId._id,
-          userInfo
         }
       );
       const nft = await Nft.updateOne(
@@ -212,29 +213,34 @@ const getAllSale = async (req, res) => {
 };
 
 const getAllAuction = async (req, res) => {
+  const sort = req.params.sort
+  console.log(JSON.parse(sort))
   const skip = Math.max(0, req.params.skip)
   const chain = req.params.chain
   const auctions = await Auction.find({ auctionType: "Auction", auctionStatus: 2, chain: chain })
   if(auctions.length < skip + 30) {
     const limit = Math.max(0, auctions.length - skip)
-    const data = await Auction.find({ auctionType: "Auction", auctionStatus: 2, chain: chain }).limit(limit).skip(skip).sort([['tokenId', -1]]);
+    const data = await Auction.find({ auctionType: "Auction", auctionStatus: 2, chain: chain }).limit(limit).skip(skip).sort(JSON.parse(sort));
     res.status(StatusCodes.OK).json({ data: data, totalAuctions: auctions.length, msg: "Done" });
   } else {
-    const data = await Auction.find({ auctionType: "Auction", auctionStatus: 2, chain: chain }).limit(30).skip(skip).sort([['tokenId', -1]]);
+    const data = await Auction.find({ auctionType: "Auction", auctionStatus: 2, chain: chain }).limit(30).skip(skip).sort(JSON.parse(sort));
     res.status(StatusCodes.OK).json({ data: data, totalAuctions: auctions.length });
   }
 };
 
 const getAllExplore = async (req, res) => {
+  const sort = req.params.sort
+  console.log("---------->", sort)
+  console.log("+++++++++++", JSON.parse(sort))
   const skip = Math.max(0, req.params.skip)
   const chain = req.params.chain
   const auctions = await Auction.find({ auctionStatus: 2, chain: chain })
   if(auctions.length < skip + 30) {
     const limit = Math.max(0, auctions.length - skip)
-    const data = await Auction.find({ auctionStatus: 2, chain: chain }).limit(limit).skip(skip).sort([['tokenId', -1]]);
+    const data = await Auction.find({ auctionStatus: 2, chain: chain }).limit(limit).skip(skip).sort(JSON.parse(sort));
     res.status(StatusCodes.OK).json({ data: data, totalAuctions: auctions.length, msg: "Done" });
   } else {
-    const data = await Auction.find({ auctionStatus: 2, chain: chain }).limit(30).skip(skip).sort([['tokenId', -1]]);
+    const data = await Auction.find({ auctionStatus: 2, chain: chain }).limit(30).skip(skip).sort(JSON.parse(sort));
     res.status(StatusCodes.OK).json({ data: data, totalAuctions: auctions.length });
   }
 };
@@ -443,7 +449,6 @@ const endAuction = async (req, res) => {
             auctionEndedOn: new Date(),
             auctionEndTxnHash: endAuctionHash,
             auctionWinner: auctionWinner,
-            sellerId: userId._id,
           }
         );
 
