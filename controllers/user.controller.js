@@ -18,16 +18,16 @@ cloudinary.config({
 
 const getAllUsers = async (req, res) => {
     const skip = Math.max(0, req.params.skip)
-    const users = await User.find({})
+    const users = await User.find({active: true})
     if (users.length < skip + 30) {
         const limit = Math.max(0, users.length - skip)
-        const data = await User.find({})
+        const data = await User.find({active: true})
             .limit(limit)
             .skip(skip)
             .sort([['tokenId', -1]])
         res.status(StatusCodes.OK).json({ users: data, msg: 'Done' })
     } else {
-        const data = await User.find({})
+        const data = await User.find({active: true})
             .limit(30)
             .skip(skip)
             .sort([['tokenId', -1]])
@@ -52,8 +52,8 @@ const getGlobalSearch = async (req, res) => {
     const search = req.params.search
     console.log(search)
     var regex = new RegExp(`${search.trim()}`, 'ig')
-    const users = await User.find({ username: { $regex: regex } })
-    const nfts = await Auction.find({ name: { $regex: regex } })
+    const users = await User.find({ username: { $regex: regex }, active: true })
+    const nfts = await Auction.find({ name: { $regex: regex }, active: true })
     res.status(StatusCodes.OK).json({ users, nfts })
 }
 

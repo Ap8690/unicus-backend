@@ -172,8 +172,8 @@ const getAllNFTS = async (req, res) => {
 
 const getNFTByUserId = async (req, res) => {
     const userId = req.params.userId
-    const nfts = await Nft.find({ owner: userId, nftStatus: 1 })
-    const auctions = await Auction.find({ sellerId: userId, auctionStatus: 2 })
+    const nfts = await Nft.find({ owner: userId, nftStatus: 1, active: true })
+    const auctions = await Auction.find({ sellerId: userId, auctionStatus: 2, active: true })
     res.status(StatusCodes.OK).json({ nfts, auctions })
 }
 
@@ -189,15 +189,15 @@ const getNFTByUserName = async (req, res) => {
     var regex = new RegExp(`^${username.trim()}$`, 'ig')
     var auctions
     if (username.length < 15) {
-        user = await User.findOne({ username: { $regex: regex } })
-        nftsOwned = await Nft.find({ owner: user._id })
-        auctions = await Auction.find({ sellerId: user._id, auctionStatus: 2 })
-        nftsMinted = await Nft.find({ mintedBy: ObjectId(user._id) })
+        user = await User.findOne({ username: { $regex: regex }, active: true })
+        nftsOwned = await Nft.find({ owner: user._id, active: true })
+        auctions = await Auction.find({ sellerId: user._id, auctionStatus: 2, active: true })
+        nftsMinted = await Nft.find({ mintedBy: ObjectId(user._id), active: true })
     } else {
-        user = await User.findOne({ wallets: { $regex: regex } })
-        nftsOwned = await Nft.find({ owner: user._id })
-        auctions = await Auction.find({ sellerId: user._id, auctionStatus: 2 })
-        nftsMinted = await Nft.find({ mintedBy: ObjectId(user._id) })
+        user = await User.findOne({ wallets: { $regex: regex }, active: true })
+        nftsOwned = await Nft.find({ owner: user._id, active: true })
+        auctions = await Auction.find({ sellerId: user._id, auctionStatus: 2, active: true })
+        nftsMinted = await Nft.find({ mintedBy: ObjectId(user._id), active: true })
     }
     res.status(StatusCodes.OK).json({ nftsOwned, nftsMinted, user, auctions })
 }
@@ -279,14 +279,15 @@ const banNFT = async (req, res) => {
             }
         )
         if(user2) {
-            const data2 = await Nft.updateOne(
-                { _id: userId },
+            const data2 = await Auction.updateOne(
+                { nftId: userId },
                 {
                     $set: {
                         active: false,
                     },
                 }
             )
+            console.log(data2)
             res.json({
                 status: 200,
                 msg: 'Success',
@@ -307,6 +308,7 @@ const banNFT = async (req, res) => {
 const unbanNFT = async (req, res) => {
     const userId = req.body.userId
     const user = await Nft.findOne({ _id: userId })
+    const user2 = await Auction.findOne({ nftId: userId, auctionStatus: 2 })
     if (user) {
         const data = await Nft.updateOne(
             { _id: userId },
@@ -316,11 +318,27 @@ const unbanNFT = async (req, res) => {
                 },
             }
         )
-        res.json({
-            status: 200,
-            msg: 'Success',
-            data: data,
-        })
+        if(user2) {
+            const data2 = await Auction.updateOne(
+                { nftId: userId },
+                {
+                    $set: {
+                        active: true,
+                    },
+                }
+            )
+            res.json({
+                status: 200,
+                msg: 'Success',
+                data: data2,
+            })
+        } else {
+            res.json({
+                status: 200,
+                msg: 'Success',
+                data: data,
+            })
+        }
     } else {
         throw new CustomError.BadRequestError('User not found!')
     }

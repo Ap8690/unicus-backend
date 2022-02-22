@@ -71,6 +71,10 @@ const AuctionSchema = new mongoose.Schema(
     cloudinaryUrl: {
       type: String,
     },
+    active: {
+      type: Boolean,
+      default: true,
+    },
     auctionWinner: {
       type: mongoose.Types.ObjectId,
       ref: "User",
