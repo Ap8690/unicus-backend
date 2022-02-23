@@ -1,7 +1,7 @@
 const sendEmail = require('./sendEmail')
 
 const sendVerificationAdmin = async ({ email, verificationToken, token }) => {
-    const verifyEmail = `http://localhost:3000/login/${verificationToken}/${email}/${token}`
+    const verifyEmail = `https://admin-unicus.herokuapp.com/login/${verificationToken}/${email}/${token}`
 
     const message = `<p>Please reset password by clicking following link : 
   <a href="${verifyEmail}">Reset Password</a> to complete steps as Admin.</p>`
