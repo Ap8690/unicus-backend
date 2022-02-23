@@ -9,10 +9,16 @@ const {
     totalBids,
     totalNftStates,
     getAllAdmin,
+    verifyEmail,
     changeUserStatus,
+    deleteAdmin,
+    register,
 } = require('../controllers/admin.controller')
 
 router.post('/login', login)
+router.post('/register', register)
+router.post('/verify-email', verifyEmail)
+router.post('/deleteAdmin', deleteAdmin)
 router.get('/dashboard', dashboard)
 router.get('/users', totalUsers)
 router.get('/nfts', totalNfts)

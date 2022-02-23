@@ -217,13 +217,13 @@ const getAllAuction = async (req, res) => {
   console.log(JSON.parse(sort))
   const skip = Math.max(0, req.params.skip)
   const chain = req.params.chain
-  const auctions = await Auction.find({ auctionType: "Auction", auctionStatus: 2, chain: chain })
+  const auctions = await Auction.find({ auctionType: "Auction", auctionStatus: 2, chain: chain, active: true })
   if(auctions.length < skip + 30) {
     const limit = Math.max(0, auctions.length - skip)
-    const data = await Auction.find({ auctionType: "Auction", auctionStatus: 2, chain: chain }).limit(limit).skip(skip).sort(JSON.parse(sort));
+    const data = await Auction.find({ auctionType: "Auction", auctionStatus: 2, chain: chain, active: true }).limit(limit).skip(skip).sort(JSON.parse(sort));
     res.status(StatusCodes.OK).json({ data: data, totalAuctions: auctions.length, msg: "Done" });
   } else {
-    const data = await Auction.find({ auctionType: "Auction", auctionStatus: 2, chain: chain }).limit(30).skip(skip).sort(JSON.parse(sort));
+    const data = await Auction.find({ auctionType: "Auction", auctionStatus: 2, chain: chain, active: true }).limit(30).skip(skip).sort(JSON.parse(sort));
     res.status(StatusCodes.OK).json({ data: data, totalAuctions: auctions.length });
   }
 };
@@ -234,13 +234,13 @@ const getAllExplore = async (req, res) => {
   console.log("+++++++++++", JSON.parse(sort))
   const skip = Math.max(0, req.params.skip)
   const chain = req.params.chain
-  const auctions = await Auction.find({ auctionStatus: 2, chain: chain })
+  const auctions = await Auction.find({ auctionStatus: 2, chain: chain, active: true })
   if(auctions.length < skip + 30) {
     const limit = Math.max(0, auctions.length - skip)
-    const data = await Auction.find({ auctionStatus: 2, chain: chain }).limit(limit).skip(skip).sort(JSON.parse(sort));
+    const data = await Auction.find({ auctionStatus: 2, chain: chain, active: true }).limit(limit).skip(skip).sort(JSON.parse(sort));
     res.status(StatusCodes.OK).json({ data: data, totalAuctions: auctions.length, msg: "Done" });
   } else {
-    const data = await Auction.find({ auctionStatus: 2, chain: chain }).limit(30).skip(skip).sort(JSON.parse(sort));
+    const data = await Auction.find({ auctionStatus: 2, chain: chain, active: true }).limit(30).skip(skip).sort(JSON.parse(sort));
     res.status(StatusCodes.OK).json({ data: data, totalAuctions: auctions.length });
   }
 };
