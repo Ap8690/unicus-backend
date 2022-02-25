@@ -1,4 +1,4 @@
-const { getBasicSettings, getContactUs, getCookies, getNameLogo, getSocialLinks, getStoreFees, updateBasicSettings, updateContactUs, updateCookies, updateNameLogo, updateSocialLinks, updateStoreFees } =require( "./../../../controllers/storefront/myStore/general.controller");
+const { getBasicSettings, getContactUs, getCookies, getNameLogo, getSocialLinks, getStoreFees, updateBasicSettings, updateContactUs, updateCookies, updateNameLogo, updateSocialLinks, updateStoreFees } =require( "./../../../controllers/settings/myStore/general.controller");
 const { authenticateUser } = require("../../../middleware/authentication");
 
 const express = require("express");

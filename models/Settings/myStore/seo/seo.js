@@ -68,16 +68,20 @@ const SeoSchema = new mongoose.Schema(
     showAssetsFeed: {
       type: Boolean,
     },
-    showAssetsSchema:{
-      type: Boolean
+    showAssetsSchema: {
+      type: Boolean,
     },
-    showCollectionSchema:{
-      type: Boolean
+    showCollectionSchema: {
+      type: Boolean,
     },
     user: {
       type: mongoose.Types.ObjectId,
       ref: "User",
     },
+    storefront: {
+      type: mongoose.Types.ObjectId,
+      ref: "Storefront",
+    }
   },
   { timestamps: true }
 );

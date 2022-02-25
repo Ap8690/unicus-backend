@@ -38,6 +38,10 @@ const AnalyticsIntegrationSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "User",
     },
+    storefront: {
+      type: mongoose.Types.ObjectId,
+      ref: "Storefront",
+    },
   },
   { timestamps: true }
 );

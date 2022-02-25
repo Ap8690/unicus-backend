@@ -6,15 +6,19 @@ const PostsSchema = new mongoose.Schema(
       {
         title: String,
         slug: String,
-        status:String,
-        date:String,
-        manage:String
+        status: String,
+        date: String,
+        manage: String,
       },
     ],
     user: {
       type: mongoose.Types.ObjectId,
       ref: "User",
     },
+    storefront: {
+      type: mongoose.Types.ObjectId,
+      ref: "Storefront",
+    }
   },
   { timestamps: true }
 );

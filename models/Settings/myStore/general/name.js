@@ -15,11 +15,15 @@ const NameLogoSchema = new mongoose.Schema(
     },
     country: { type: String, required: false },
     logoUrl: { type: String, required: false },
-   
+
     user: {
       type: mongoose.Types.ObjectId,
       ref: "User",
     },
+    storefront: {
+      type: mongoose.Types.ObjectId,
+      ref: "Storefront",
+    }
   },
   { timestamps: true }
 );

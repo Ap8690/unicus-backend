@@ -6,6 +6,9 @@ const connectDB = (url) => {
     throw new CustomError.BadRequestError(
       "Please provide db connection string"
     );
+    else{
+      console.log("Db connected");
+    }
 
   return mongoose.connect(url);
 };

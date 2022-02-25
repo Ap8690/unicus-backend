@@ -1,6 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const { Team } = require("../../../models");
-const CustomError = require("./../../../errors");
+const CustomError = require("../../../errors");
 
 const getTeam = async (req, res) => {
   try {

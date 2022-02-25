@@ -14,8 +14,8 @@ const NftSchema = new mongoose.Schema(
       type: String,
     },
     tags: {
-      type: []
-  },
+      type: [],
+    },
     isApproved: { type: Boolean, default: false },
     approvedAt: Date,
     approveHash: String,
@@ -32,7 +32,7 @@ const NftSchema = new mongoose.Schema(
     },
     mintedBy: {
       type: mongoose.Types.ObjectId,
-      ref: "User"
+      ref: "User",
     },
     mintedInfo: {
       type: String,
@@ -63,6 +63,10 @@ const NftSchema = new mongoose.Schema(
     owner: {
       type: mongoose.Types.ObjectId,
       ref: "User",
+    },
+    storefront: {
+      type: mongoose.Types.ObjectId,
+      ref: "Storefront",
     },
   },
   { timestamps: true }

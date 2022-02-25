@@ -5,20 +5,21 @@ const Nft = require("./Nft");
 const Token = require("./Token");
 const User = require("./User");
 const WalletTransactions = require("./Wallet-Transactions");
+const Storefront = require("./Storefront")
 //Storefront
- const NameLogo = require( "./storefront/myStore/general/name");
- const BasicSettings = require( "./storefront/myStore/general/basic-settings");
- const Cookies = require( "./storefront/myStore/general/cookies");
- const SocialLink = require( "./storefront/myStore/general/socialinks");
- const ContactUs = require( "./storefront/myStore/general/contact-us");
- const StoreFees = require( "./storefront/myStore/general/store-fees");
- const Advance = require( "./storefront/myStore/advance/advance");
- const Analytics = require( "./storefront/myStore/analytics/analytics-integration");
- const Appearance = require( "./storefront/myStore/appearance/appearance");
- const Posts = require( "./storefront/myStore/blog/post");
- const Categories = require( "./storefront/myStore/blog/categories");
- const Seo = require( "./storefront/myStore/seo/seo");
- const Team =require( "./storefront/myStore/team/team");
+ const NameLogo = require( "./settings/myStore/general/name");
+ const BasicSettings = require( "./settings/myStore/general/basic-settings");
+ const Cookies = require( "./settings/myStore/general/cookies");
+ const SocialLink = require( "./settings/myStore/general/socialinks");
+ const ContactUs = require( "./settings/myStore/general/contact-us");
+ const StoreFees = require( "./settings/myStore/general/store-fees");
+ const Advance = require( "./settings/myStore/advance/advance");
+ const Analytics = require( "./settings/myStore/analytics/analytics-integration");
+ const Appearance = require( "./settings/myStore/appearance/appearance");
+ const Posts = require( "./settings/myStore/blog/post");
+ const Categories = require( "./settings/myStore/blog/categories");
+ const Seo = require( "./settings/myStore/seo/seo");
+ const Team =require( "./settings/myStore/team/team");
 
 module.exports = {
   Auction,
@@ -28,6 +29,7 @@ module.exports = {
   Token,
   User,
   WalletTransactions,
+  Storefront,
   NameLogo,
   BasicSettings,
   Cookies,
