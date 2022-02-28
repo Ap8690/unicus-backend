@@ -2,12 +2,13 @@ const { StatusCodes } =require("http-status-codes");
 
 const {Storefront, NameLogo} = require("../models");
 const CustomError = require("../errors");
+const { convertToLowercase } = require("../utils/stringUtil");
 
 const createStore = async (req, res) => {
   try {
     const owner = req.user.userId;
     const { storeName, logoUrl } = req.body;
-    const domain = storeName.replace(/\s+/g, "-").toLowerCase();
+    const domain = convertToLowercase(storeName)
 
     const alreadyCreated = await Storefront.findOne({domain})
     console.log("alr", alreadyCreated);

@@ -1,10 +1,12 @@
 const { getBasicSettings, getContactUs, getCookies, getNameLogo, getSocialLinks, getStoreFees, updateBasicSettings, updateContactUs, updateCookies, updateNameLogo, updateSocialLinks, updateStoreFees } =require( "./../../../controllers/settings/myStore/general.controller");
 const { authenticateUser } = require("../../../middleware/authentication");
+const { domainParser } = require("../../../middleware/domain-parser");
+
 
 const express = require("express");
 const router = express.Router();
 
-router.route("/nameLogo").get(authenticateUser, getNameLogo )
+router.route("/nameLogo").get(authenticateUser, domainParser, getNameLogo )
 router.route("/basicSettings").get(authenticateUser, getBasicSettings)
 router.route("/cookies").get(authenticateUser, getCookies);
 router.route("/socialLinks").get(authenticateUser, getSocialLinks);
