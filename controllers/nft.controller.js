@@ -12,6 +12,7 @@ const create = async (req, res) => {
   const { jsonIpfs, name, nftType, description, chain, tokenId, mintedBy, collectionName, category, royalty, cloudinaryUrl,owner, uploadedBy, userInfo, tags, mintedInfo } =
     req.body;
   const userId = req.user.userId;
+  const storefront = req.storefront.id
 
   if (!jsonIpfs) {
     throw new CustomError.BadRequestError("Please provide the json IPFS");
@@ -37,7 +38,8 @@ const create = async (req, res) => {
     tags,
     cloudinaryUrl,
     royalty, 
-    owner
+    owner,
+    storefront
   };
 
   const data = await Nft.create(createObj);
@@ -55,9 +57,11 @@ const create = async (req, res) => {
 
 const getNFTByNftId = async (req, res) => {
   const nftId = req.params.nftId;
+  const storefront = req.storefront.id;
   console.log(nftId)
   const nft = await Nft.findOne({
-    _id: nftId
+    _id: nftId,
+    storefront
   });
   console.log(nft)
   res.status(StatusCodes.OK).json({ nft });
@@ -80,28 +84,32 @@ const getNftBids = async (req, res) => {
 };
 
 const getAll = async (req, res) => {
-  const totalNfts = await Auction.find();
+  const storefront = req.storefront.id;
+
+  const totalNfts = await Auction.find({storefront});
   console.log(totalNfts.length)
   if(totalNfts.length < skip + 5) {
     const limit = Math.max(0, totalNfts.length - skip)
     console.log(skip)
-    const nfts = await Auction.find().limit(limit).skip(skip);
+    const nfts = await Auction.find({ storefront }).limit(limit).skip(skip);
     res.status(StatusCodes.OK).json({ data: nfts, totalNfts: totalNfts.length });
   } else {
     const skip = Math.max(0, req.params.skip)
     console.log(skip)
-    const nfts = await Auction.find().limit(5).skip(skip);
+    const nfts = await Auction.find({ storefront }).limit(5).skip(skip);
     res.status(StatusCodes.OK).json({ data: nfts, totalNfts: totalNfts.length });
   }
 };
 
 const getAllNFTS = async (req, res) => {
-  const totalNfts = await Nft.find();
+  const totalNfts = await Nft.find({ storefront });
+  const storefront = req.storefront.id;
+
   console.log(totalNfts.length)
   if(totalNfts.length < skip + 5) {
     const limit = Math.max(0, totalNfts.length - skip)
     console.log(skip)
-    const nfts = await Nft.find().limit(limit).skip(skip);
+    const nfts = await Nft.find({ storefront }).limit(limit).skip(skip);
     res.status(StatusCodes.OK).json({ data: nfts, totalNfts: totalNfts.length });
   } else {
     const skip = Math.max(0, req.params.skip)
@@ -113,26 +121,29 @@ const getAllNFTS = async (req, res) => {
 
 const getNFTByUserId = async (req, res) => {
   const userId = req.params.userId;
-  const nfts = await Nft.find({ owner: userId, nftStatus: 1 });
+  const storefront = req.storefront.id;
+
+  const nfts = await Nft.find({ owner: userId, nftStatus: 1, storefront });
   const auctions = await Auction.find({ sellerId: userId, auctionStatus: 2 })
   res.status(StatusCodes.OK).json({nfts, auctions});
 };
 
 const getNFTByUserName = async (req, res) => {
   const { username } = req.body;
+  const storefront = req.storefront.id;
   var user, nftsOwned, nftsMinted;
   var regex = new RegExp(`^${username.trim()}$`, "ig");
   var auctions
   if(username.length < 15) {
-    user = await User.findOne({ username: { $regex : regex } });
-    nftsOwned = await Nft.find({ owner: user._id });
-    auctions = await Auction.find({ sellerId: user._id, auctionStatus: 2 })
-    nftsMinted = await Nft.find({ mintedBy: ObjectId(user._id) });
+    user = await User.findOne({ username: { $regex : regex }, storefront });
+    nftsOwned = await Nft.find({ owner: user._id , storefront});
+    auctions = await Auction.find({ sellerId: user._id, auctionStatus: 2, storefront })
+    nftsMinted = await Nft.find({ mintedBy: ObjectId(user._id), storefront });
   } else {
-    user = await User.findOne({ wallets: { $regex : regex } });
-    nftsOwned = await Nft.find({ owner: user._id });
-    auctions = await Auction.find({ sellerId: user._id, auctionStatus: 2 })
-    nftsMinted = await Nft.find({ mintedBy: ObjectId(user._id) });
+    user = await User.findOne({ wallets: { $regex : regex }, storefront });
+    nftsOwned = await Nft.find({ owner: user._id , storefront});
+    auctions = await Auction.find({ sellerId: user._id, auctionStatus: 2, storefront })
+    nftsMinted = await Nft.find({ mintedBy: ObjectId(user._id), storefront });
   }
   res.status(StatusCodes.OK).json({nftsOwned, nftsMinted, user, auctions});
 };

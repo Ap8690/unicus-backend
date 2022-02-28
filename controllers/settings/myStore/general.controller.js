@@ -7,7 +7,7 @@ const getNameLogo = async(req, res)=>{
   const userId = req.user.userId
   const storefront = req.storefront
   console.log("front", storefront);
-  const result = await NameLogo.findOne({user: userId })
+  const result = await NameLogo.findOne({user: userId, storefront})
   res.status(StatusCodes.OK).json({result})
   }catch(err){
     console.log("err", err);

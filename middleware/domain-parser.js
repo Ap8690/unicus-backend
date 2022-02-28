@@ -5,12 +5,12 @@ const domainParser = async (req, res, next) => {
   try{
   const url = req.header("Origin")
   const { subdomain, domain } = parse(url);
-  if(domain != "unicus.one" && domain!= "herokuapp.com"){
-    throw new CustomError.BadRequestError("Invalid Website");
-  }
-  if(!subdomain){
-    throw new CustomError.BadRequestError("Invalid domain");
-  }
+  // if(domain != "unicus.one" && domain!= "herokuapp.com"){
+  //   throw new CustomError.BadRequestError("Invalid Website");
+  // }
+  // if(!subdomain){
+  //   throw new CustomError.BadRequestError("Invalid domain");
+  // }
   const storefront = await Storefront.find({domain: subdomain})
   req.storefront = storefront
   return next()

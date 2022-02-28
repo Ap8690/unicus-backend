@@ -11,6 +11,7 @@ const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 
 const create = async (req, res) => {
+  const storefront = req.storefront.id;
   try {
     const {
       nftId,
@@ -66,9 +67,10 @@ const create = async (req, res) => {
         sellerWallet,
         sellerId,
         sellerInfo,
-        cloudinaryUrl
+        cloudinaryUrl,
+        storefront
       };
-      const nftOne = await Nft.findOne({ _id: nftId });
+      const nftOne = await Nft.findOne({ _id: nftId, storefront });
       console.log(nftOne)
       const auction = await Auction.create(createObj)
       const nft = await Nft.updateOne(
@@ -89,6 +91,7 @@ const create = async (req, res) => {
 };
 
 const sell = async (req, res) => {
+  const storefront = req.storefront.id;
   try {
     const {
       nftId,
@@ -134,7 +137,9 @@ const sell = async (req, res) => {
         sellerWallet,
         sellerId,
         sellerInfo,
-        cloudinaryUrl
+        cloudinaryUrl,
+        storefront
+
       };
 
       const auction = await Auction.create(createObj)
