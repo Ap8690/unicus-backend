@@ -1,3 +1,4 @@
+
 require("dotenv").config();
 require("express-async-errors");
 const bodyParser = require("body-parser");
@@ -29,7 +30,7 @@ const storefrontRouter = require("./routes/storefrontRoutes");
 // middleware
 const notFoundMiddleware = require("./middleware/not-found");
 const errorHandlerMiddleware = require("./middleware/error-handler");
-const { domainParser } = require("./middleware/domain-parser");
+const domainParser = require("./middleware/domain-parser")
 
 app.set("trust proxy", 1);
 app.use(
@@ -52,8 +53,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
-app.use(domainParser)
-
+app.use(domainParser);
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
 app.use("/nft", nftRouter);

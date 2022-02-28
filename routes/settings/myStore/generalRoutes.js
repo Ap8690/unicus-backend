@@ -1,7 +1,5 @@
 const { getBasicSettings, getContactUs, getCookies, getNameLogo, getSocialLinks, getStoreFees, updateBasicSettings, updateContactUs, updateCookies, updateNameLogo, updateSocialLinks, updateStoreFees } =require( "./../../../controllers/settings/myStore/general.controller");
 const { authenticateUser } = require("../../../middleware/authentication");
-const { domainParser } = require("../../../middleware/domain-parser");
-
 
 const express = require("express");
 const router = express.Router();
