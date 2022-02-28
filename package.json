@@ -5,11 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "mongodb": "/Users/viper/mongodb/bin/mongod.exe --dbpath=/Users/viper/mongodb-data",
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Vikas Nagar",
+  "author": "Nayan Amin",
   "license": "ISC",
   "dependencies": {
     "@pinata/sdk": "^1.1.23",
