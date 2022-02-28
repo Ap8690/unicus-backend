@@ -1,5 +1,6 @@
 const { Storefront } = require("../models");
 const { parse } = require("tldts");
+const CustomError = require("./../errors");
 const domainParser = async (req, res, next) => {
   try{
   const url = req.header("Origin")

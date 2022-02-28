@@ -5,9 +5,9 @@ const CustomError = require("./../../../errors");
 const getNameLogo = async(req, res)=>{
   try{
   const userId = req.user.userId
-  const storeFront = req.storeFront
-  console.log("front", storeFront);
-  const result = await NameLogo.findOne({user: userId})
+  const storefront = req.storeFront
+  console.log("front", storefront);
+  const result = await NameLogo.findOne({user: userId })
   res.status(StatusCodes.OK).json({result})
   }catch(err){
     console.log("err", err);
