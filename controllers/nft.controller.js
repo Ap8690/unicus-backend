@@ -87,18 +87,20 @@ const getAll = async (req, res) => {
   const storefront = req.storefront.id;
 
   const totalNfts = await Nft.find({});
+      res
+        .status(StatusCodes.OK)
+        .json({ data: totalNfts, totalNfts: totalNfts.length });
   console.log(totalNfts.length)
-  if(totalNfts.length < skip + 5) {
-    const limit = Math.max(0, totalNfts.length - skip)
-    console.log(skip)
-    const nfts = await Nft.find({  }).limit(limit).skip(skip);
-    res.status(StatusCodes.OK).json({ data: nfts, totalNfts: totalNfts.length });
-  } else {
-    const skip = Math.max(0, req.params.skip)
-    console.log(skip)
-    const nfts = await Nft.find({ }).limit(5).skip(skip);
-    res.status(StatusCodes.OK).json({ data: nfts, totalNfts: totalNfts.length });
-  }
+  // if(totalNfts.length < skip + 5) {
+  //   const limit = Math.max(0, totalNfts.length - skip)
+  //   console.log(skip)
+  //   const nfts = await Nft.find({  }).limit(limit).skip(skip);
+  //   res.status(StatusCodes.OK).json({ data: nfts, totalNfts: totalNfts.length });
+  // } else {
+  //   const skip = Math.max(0, req.params.skip)
+  //   console.log(skip)
+  //   const nfts = await Nft.find({ }).limit(5).skip(skip);
+  // }
 };
 
 const getAllNFTS = async (req, res) => {
