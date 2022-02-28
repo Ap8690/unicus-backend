@@ -23,12 +23,13 @@ const userRouter = require("./routes/userRoutes");
 const nftRouter = require("./routes/nftRoutes");
 const auctionRouter = require("./routes/auctionRoute");
 const adminRouter = require("./routes/adminRoutes");
-const generalRouter = require("./routes/settings/myStore/generalRoutes")
+const generalRouter = require("./routes/settings/myStore/generalRoutes");
 const storefrontRouter = require("./routes/storefrontRoutes");
 
 // middleware
 const notFoundMiddleware = require("./middleware/not-found");
 const errorHandlerMiddleware = require("./middleware/error-handler");
+const { domainParser } = require("./middleware/domain-parser");
 
 app.set("trust proxy", 1);
 app.use(
@@ -39,11 +40,11 @@ app.use(
 );
 app.use(morgan("dev"));
 app.use(helmet());
-const corsOptions ={
-  origin:'https://marketplace.unicus.one/', 
-  credentials:true,            //access-control-allow-credentials:true
-  optionSuccessStatus:200
-}
+const corsOptions = {
+  origin: "https://marketplace.unicus.one/",
+  credentials: true, //access-control-allow-credentials:true
+  optionSuccessStatus: 200,
+};
 app.use(cors());
 app.use(xss());
 app.use(mongoSanitize());
@@ -51,23 +52,23 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
-
-app.use(express.static("./public"));
+app.use(domainParser)
 
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
 app.use("/nft", nftRouter);
 app.use("/auction", auctionRouter);
 app.use("/admin", adminRouter);
-app.use("/create-store", storefrontRouter)
+app.use("/create-store", storefrontRouter);
 //Storefront
-app.use("/general", generalRouter)
+app.use("/general", generalRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
 const PORT = process.env.PORT || 4000;
-const DB_URL = process.env.MONGO_URL || "mongodb://127.0.0.1:27017/task-manager-api";
+const DB_URL =
+  process.env.MONGO_URL || "mongodb://127.0.0.1:27017/task-manager-api";
 const start = async () => {
   try {
     await connectDB(DB_URL);

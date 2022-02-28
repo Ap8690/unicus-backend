@@ -6,7 +6,7 @@ const { domainParser } = require("../../../middleware/domain-parser");
 const express = require("express");
 const router = express.Router();
 
-router.route("/nameLogo").get(authenticateUser, domainParser, getNameLogo )
+router.route("/nameLogo").get(authenticateUser, getNameLogo )
 router.route("/basicSettings").get(authenticateUser, getBasicSettings)
 router.route("/cookies").get(authenticateUser, getCookies);
 router.route("/socialLinks").get(authenticateUser, getSocialLinks);
