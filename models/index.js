@@ -7,19 +7,19 @@ const User = require("./User");
 const WalletTransactions = require("./Wallet-Transactions");
 const Storefront = require("./Storefront")
 //Storefront
- const NameLogo = require( "./settings/myStore/general/name");
- const BasicSettings = require( "./settings/myStore/general/basic-settings");
- const Cookies = require( "./settings/myStore/general/cookies");
- const SocialLink = require( "./settings/myStore/general/socialinks");
- const ContactUs = require( "./settings/myStore/general/contact-us");
- const StoreFees = require( "./settings/myStore/general/store-fees");
- const Advance = require( "./settings/myStore/advance/advance");
- const Analytics = require( "./settings/myStore/analytics/analytics-integration");
- const Appearance = require( "./settings/myStore/appearance/appearance");
- const Posts = require( "./settings/myStore/blog/post");
- const Categories = require( "./settings/myStore/blog/categories");
- const Seo = require( "./settings/myStore/seo/seo");
- const Team =require( "./settings/myStore/team/team");
+ const NameLogo = require( "./Settings/myStore/general/name");
+ const BasicSettings = require( "./Settings/myStore/general/basic-settings");
+ const Cookies = require( "./Settings/myStore/general/cookies");
+ const SocialLink = require( "./Settings/myStore/general/socialinks");
+ const ContactUs = require( "./Settings/myStore/general/contact-us");
+ const StoreFees = require( "./Settings/myStore/general/store-fees");
+ const Advance = require( "./Settings/myStore/advance/advance");
+ const Analytics = require( "./Settings/myStore/analytics/analytics-integration");
+ const Appearance = require( "./Settings/myStore/appearance/appearance");
+ const Posts = require( "./Settings/myStore/blog/post");
+ const Categories = require( "./Settings/myStore/blog/categories");
+ const Seo = require( "./Settings/myStore/seo/seo");
+ const Team =require( "./Settings/myStore/team/team");
 
 module.exports = {
   Auction,
