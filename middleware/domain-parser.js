@@ -6,7 +6,7 @@ const domainParser = async (req, res, next) => {
   const url = req.header("Origin")
   const { subdomain, domain } = parse(url);
   console.log("dom", subdomain, domain);
-  if(domain != "unicus.one" || domain!= "herokuapp.com"){
+  if(domain != "unicus.one" && domain!= "herokuapp.com"){
     throw new CustomError.BadRequestError("Invalid Website");
   }
   if(!subdomain){
