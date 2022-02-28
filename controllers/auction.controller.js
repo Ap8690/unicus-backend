@@ -138,8 +138,6 @@ const sell = async (req, res) => {
         sellerId,
         sellerInfo,
         cloudinaryUrl,
-        storefront
-
       };
 
       const auction = await Auction.create(createObj)
