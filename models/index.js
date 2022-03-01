@@ -7,12 +7,8 @@ const User = require("./User");
 const WalletTransactions = require("./Wallet-Transactions");
 const Storefront = require("./Storefront")
 //Storefront
- const NameLogo = require( "./Settings/myStore/general/name");
- const BasicSettings = require( "./Settings/myStore/general/basic-settings");
- const Cookies = require( "./Settings/myStore/general/cookies");
+ const General = require("./Settings/myStore/general/general")
  const SocialLink = require( "./Settings/myStore/general/socialinks");
- const ContactUs = require( "./Settings/myStore/general/contact-us");
- const StoreFees = require( "./Settings/myStore/general/store-fees");
  const Advance = require( "./Settings/myStore/advance/advance");
  const Analytics = require( "./Settings/myStore/analytics/analytics-integration");
  const Appearance = require( "./Settings/myStore/appearance/appearance");
@@ -30,12 +26,8 @@ module.exports = {
   User,
   WalletTransactions,
   Storefront,
-  NameLogo,
-  BasicSettings,
-  Cookies,
+  General,
   SocialLink,
-  ContactUs,
-  StoreFees,
   Advance,
   Analytics,
   Appearance,

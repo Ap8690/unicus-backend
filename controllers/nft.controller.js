@@ -86,6 +86,7 @@ const getNftBids = async (req, res) => {
 const getAll = async (req, res) => {
   const storefront = req.storefront.id;
   const skip = req.params.skip;
+  const chain = req.params.chain;
 
   const totalNfts = await Nft.find({});
       
@@ -105,29 +106,18 @@ const getAll = async (req, res) => {
   }
 };
 
-const getAllNFTS = async (req, res) => {
-  const totalNfts = await Nft.find({ storefront });
+const getRecentlyCreatedNFTS = async (req, res) => {
+  const totalNfts = await Nft.find({});
   const storefront = req.storefront.id;
-
-  console.log(totalNfts.length)
-  if(totalNfts.length < skip + 5) {
-    const limit = Math.max(0, totalNfts.length - skip)
-    console.log(skip)
-    const nfts = await Nft.find({ storefront }).limit(limit).skip(skip);
-    res.status(StatusCodes.OK).json({ data: nfts, totalNfts: totalNfts.length });
-  } else {
-    const skip = Math.max(0, req.params.skip)
-    console.log(skip)
-    const nfts = await Nft.find().limit(5).skip(skip);
-    res.status(StatusCodes.OK).json({ data: nfts, totalNfts: totalNfts.length });
-  }
+  const nfts = await Nft.find().limit(20).sort({'createdAt': -1});
+  res.status(StatusCodes.OK).json({ data: nfts, totalNfts: totalNfts.length });
 };
 
 const getNFTByUserId = async (req, res) => {
   const userId = req.params.userId;
   const storefront = req.storefront.id;
 
-  const nfts = await Nft.find({ owner: userId, nftStatus: 1, storefront });
+  const nfts = await Nft.find({ owner: userId, nftStatus: 1});
   const auctions = await Auction.find({ sellerId: userId, auctionStatus: 2 })
   res.status(StatusCodes.OK).json({nfts, auctions});
 };
@@ -206,4 +196,4 @@ const approveNFT = async (req, res) => {
   }
 };
 
-module.exports = { create, getNFTByNftId, getAll, mintNFT, approveNFT, getNFTByUserId, getNftStates, getNFTByUserName, getNftBids };
+module.exports = { create, getNFTByNftId, getAll,getRecentlyCreatedNFTS, mintNFT, approveNFT, getNFTByUserId, getNftStates, getNFTByUserName, getNftBids };

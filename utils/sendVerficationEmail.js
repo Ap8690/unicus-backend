@@ -6,8 +6,9 @@ const sendVerificationEmail = async ({
   verificationToken,
   origin,
 }) => {
-  const verifyEmail = `https://marketplace.unicus.one/login/${verificationToken}/${email}`;
+  const verifyEmail = `${origin}/login/${verificationToken}/${email}`;
 
+  console.log("veri", verifyEmail);
   const message = `<p>Please confirm your email by clicking on the following link : 
   <a href="${verifyEmail}">Verify Email</a> </p>`;
 

@@ -2,7 +2,7 @@ const CustomError = require("../errors");
 const pinataSDK = require("@pinata/sdk");
 const fs = require("fs");
 
-const uploadToPinata = async (req, res, next) => {
+const uploadToPinata = async (req, res) => {
   console.log("pinata")
 
   const pinata = pinataSDK(
@@ -67,7 +67,6 @@ const uploadToPinata = async (req, res, next) => {
     }
     data.jsonIpfs = unicusUrl + jsonResult.IpfsHash;
     // req.body.jsonIpfs = unicusUrl + jsonResult.IpfsHash;
-    next();
   } catch (err) {
     console.log(err);
     throw new CustomError.BadRequestError(err);

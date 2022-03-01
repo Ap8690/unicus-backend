@@ -26,22 +26,22 @@ const register = async (req, res) => {
     }
 
     var regex = new RegExp(`^${email.trim()}$`, "ig");
-    const emailAlreadyExists = await User.findOne({ email: { $regex : regex }});
+    const emailAlreadyExists = await User.findOne({ email: { $regex: regex } });
     if (emailAlreadyExists) {
       throw new CustomError.BadRequestError("Email already exists");
     }
 
-    if(userType2 === "true") {
+    if (userType2 === "true") {
       var regex = new RegExp(`^${walletAddress.trim()}$`, "ig");
-      const user = await User.findOne({ wallets: { $regex : regex } });
+      const user = await User.findOne({ wallets: { $regex: regex } });
       const verificationToken = crypto.randomBytes(40).toString("hex");
 
       user.email = email;
       user.password = password;
-      user.verificationToken = verificationToken
+      user.verificationToken = verificationToken;
       await user.save();
-
-      const origin = "https://marketplace.unicus.one/";
+      const origin = req.header("Origin");
+      console.log("origin", origin);
       await sendVerificationEmail({
         name: user.username,
         email: user.email,
@@ -53,15 +53,17 @@ const register = async (req, res) => {
         msg: "Success! Please check your email to verify account",
       });
 
-      return null
+      return null;
     }
 
     if (!username) {
       throw new CustomError.BadRequestError("Please provide the Display Name");
-    } 
+    }
 
     var regex = new RegExp(`^${username.trim()}$`, "ig");
-    const usernameAlreadyExists = await User.findOne({ username: { $regex : regex }});
+    const usernameAlreadyExists = await User.findOne({
+      username: { $regex: regex },
+    });
     if (usernameAlreadyExists) {
       throw new CustomError.BadRequestError("Display Name already exists");
     }
@@ -71,7 +73,9 @@ const register = async (req, res) => {
 
     if (walletAddress) {
       var regex = new RegExp(`^${walletAddress.trim()}$`, "ig");
-      const walletAlreadyExists = await User.findOne({ wallets: { $regex : regex }});
+      const walletAlreadyExists = await User.findOne({
+        wallets: { $regex: regex },
+      });
       if (walletAlreadyExists && !!walletAddress) {
         throw new CustomError.BadRequestError(
           "User already exists with this wallet"
@@ -89,12 +93,12 @@ const register = async (req, res) => {
       userType,
       verificationToken,
       wallets,
-      profileUrl: '',
-      backgroundUrl: ''
+      profileUrl: "",
+      backgroundUrl: "",
     };
 
     const user = await User.create(createObj);
-    const origin = "https://marketplace.unicus.one/";
+    const origin = req.header("Origin");
 
     await sendVerificationEmail({
       name: user.username,
@@ -107,14 +111,14 @@ const register = async (req, res) => {
       msg: "Success! Please check your email to verify account",
     });
   } catch (e) {
-    throw new CustomError.BadRequestError(e.message);
+    console.log("err", e.message);
   }
 };
 
 const verifyEmail = async (req, res) => {
   try {
     const email = req.query.email;
-    const verificationToken = req.query.token
+    const verificationToken = req.query.token;
     const user = await User.findOne({ email });
     if (!user) {
       throw new CustomError.UnauthenticatedError("Invalid Email");
@@ -137,8 +141,10 @@ const verifyEmail = async (req, res) => {
   } catch (e) {
     throw new CustomError.BadRequestError(e.message);
   }
+  
+  const origin = `${req.header("Origin")}/`;
 
-  return res.redirect("https://marketplace.unicus.one/")
+  return res.redirect(origin);
 };
 
 const login = async (req, res) => {
@@ -147,32 +153,34 @@ const login = async (req, res) => {
 
     if (walletAddress) {
       var regex = new RegExp(`^${walletAddress.trim()}$`, "ig");
-        const user = await User.findOne({ wallets: { $regex : regex }});
-        
-        if (user) {
-          if(user.userType === 2 || user.isVerified) {
-            const tokenUser = createWalletAddressPayload(user, walletAddress);
-            // check for existing token
-            const existingToken = await Token.findOne({ user: user._id });
-  
-            if (existingToken) {
-              await Token.findOneAndDelete({ user: user._id });
-            }
-  
-            const token = createJWT({ payload: tokenUser });
-            const userAgent = req.headers["user-agent"];
-            const ip = req.ip;
-            const userToken = { token, ip, userAgent, user: user._id };
-  
-            await Token.create(userToken);
-  
-            res.status(StatusCodes.OK).json({ accessToken: token, user: user });
-          } else {
-            throw new CustomError.BadRequestError(`Please verify your Email Address ${user.email}`);
+      const user = await User.findOne({ wallets: { $regex: regex } });
+
+      if (user) {
+        if (user.userType === 2 || user.isVerified) {
+          const tokenUser = createWalletAddressPayload(user, walletAddress);
+          // check for existing token
+          const existingToken = await Token.findOne({ user: user._id });
+
+          if (existingToken) {
+            await Token.findOneAndDelete({ user: user._id });
           }
+
+          const token = createJWT({ payload: tokenUser });
+          const userAgent = req.headers["user-agent"];
+          const ip = req.ip;
+          const userToken = { token, ip, userAgent, user: user._id };
+
+          await Token.create(userToken);
+
+          res.status(StatusCodes.OK).json({ accessToken: token, user: user });
         } else {
-          throw new CustomError.BadRequestError("Wallet Address Not Registered");
+          throw new CustomError.BadRequestError(
+            `Please verify your Email Address ${user.email}`
+          );
         }
+      } else {
+        throw new CustomError.BadRequestError("Wallet Address Not Registered");
+      }
     } else {
       if (!email) {
         throw new CustomError.BadRequestError("Please provide an email.");
@@ -181,7 +189,7 @@ const login = async (req, res) => {
       }
 
       var regex = new RegExp(`^${email.trim()}$`, "ig");
-      const user = await User.findOne({ email: { $regex : regex }});
+      const user = await User.findOne({ email: { $regex: regex } });
 
       if (!user) {
         throw new CustomError.UnauthenticatedError("Invalid Credentials");
@@ -237,12 +245,12 @@ const forgotPassword = async (req, res) => {
     }
 
     var regex = new RegExp(`^${email.trim()}$`, "ig");
-    const user = await User.findOne({ email: { $regex : regex }});
+    const user = await User.findOne({ email: { $regex: regex } });
 
     if (user) {
       const passwordToken = crypto.randomBytes(70).toString("hex");
       // send email
-      const origin = "https://marketplace.unicus.one/";
+      const origin = req.header("Origin");
       await sendResetPasswordEmail({
         name: user.username,
         email: user.email,
@@ -280,7 +288,7 @@ const resetPassword = async (req, res) => {
     }
 
     var regex = new RegExp(`^${email.trim()}$`, "ig");
-    const user = await User.findOne({ email: { $regex : regex }});
+    const user = await User.findOne({ email: { $regex: regex } });
 
     if (user) {
       const currentDate = new Date();
