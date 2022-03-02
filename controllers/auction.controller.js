@@ -296,7 +296,7 @@ const placeBid = async (req, res) => {
 
     const auctionData = await Auction.findOne({
       _id: _id,
-      status: 2
+      auctionStatus: 2
     });
 
     let bidNumber = 1;
@@ -345,7 +345,7 @@ const placeBid = async (req, res) => {
         "Please provide the bid transaction Object"
       );
     } else {
-      const auction = await Auction.findOne({ _id: _id, status: 2 });
+      const auction = await Auction.findOne({ _id: _id, auctionStatus: 2 });
       console.log(auction)
       if (auction.auctionStatus === 1)
         throw new CustomError.BadRequestError("Auction not started yet");
