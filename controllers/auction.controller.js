@@ -282,7 +282,6 @@ const startAuction = async (req, res) => {
 const placeBid = async (req, res) => {
   try {
     const {
-      _id,
       auctionId,
       nftId,
       bidValue,
@@ -293,12 +292,10 @@ const placeBid = async (req, res) => {
       bidSuccess,
       bidObject,
     } = req.body;
-
     const auctionData = await Auction.findOne({
-      _id: _id,
+      _id: auctionId,
       auctionStatus: 2
     });
-
     let bidNumber = 1;
     console.log(auctionData?.bidsPlaced)
     if (auctionData?.bidsPlaced) {
@@ -345,7 +342,7 @@ const placeBid = async (req, res) => {
         "Please provide the bid transaction Object"
       );
     } else {
-      const auction = await Auction.findOne({ _id: _id, auctionStatus: 2 });
+      const auction = await Auction.findOne({ _id: auctionId, auctionStatus: 2 });
       console.log(auction)
       if (auction.auctionStatus === 1)
         throw new CustomError.BadRequestError("Auction not started yet");
@@ -356,7 +353,7 @@ const placeBid = async (req, res) => {
 
       const bidder = req.user.userId;
       let createObj = {
-        auctionId: _id,
+        auctionId: auctionId,
         nftId: nftId,
         bidValue,
         bidder,
@@ -371,7 +368,7 @@ const placeBid = async (req, res) => {
       var bid = await Bids.create(createObj);
       console.log(bid)
       await Auction.updateOne(
-        { _id },
+        { _id: auctionId },
         { bidsPlaced: bidNumber, lastBidId: bid._id, lastBid: bidValue, highestBidder: bidder }
       );
 
