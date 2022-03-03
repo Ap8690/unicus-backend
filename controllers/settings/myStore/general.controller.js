@@ -10,7 +10,7 @@ const getGeneral = async(req, res)=>{
   const userId = req.user.userId
   const storefront = req.storefront
   console.log("front", storefront);
-  const result = await General.findOne({user: userId, storefront})
+  const result = await General.findOne({user: userId})
   res.status(StatusCodes.OK).json({result})
   }catch(err){
     console.log("err", err);
@@ -43,7 +43,7 @@ const updateGeneral = async(req, res)=>{
       timeFormat,
       showCookieConsent,
       cookieConsentText,
-      infoLink,
+      cookieInfoLink,
       showNewsLetter,
       showContactUs,
       phone,
@@ -54,9 +54,12 @@ const updateGeneral = async(req, res)=>{
       storeWallet,
     } = req.body;
     const userId = req.user.userId
-
+    console.log("loog", req.body);
     if(!storeName){
       throw new CustomError.BadRequestError("Store Name is required.");
+    }
+    if (showContactUs && (!phone || phone === "")) {
+      throw new CustomError.BadRequestError("Phone is required.");
     }
     // if (!locale) {
     //   throw new CustomError.BadRequestError("Locale is required.");
@@ -98,9 +101,6 @@ const updateGeneral = async(req, res)=>{
     //     "Show NewsLetter should be a boolean."
     //   );
     // }
-    // if (showContactUs && (!phone || phone === "")) {
-    //   throw new CustomError.BadRequestError("Phone is required.");
-    // }
     // if (showContactUs && (!email || email === "")) {
     //   throw new CustomError.BadRequestError("Email is required.");
     // }
@@ -118,7 +118,7 @@ const updateGeneral = async(req, res)=>{
       timeFormat,
       showCookieConsent,
       cookieConsentText,
-      infoLink,
+      cookieInfoLink,
       showNewsLetter, 
       showContactUs, 
       phone, 

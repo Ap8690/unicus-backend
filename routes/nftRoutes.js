@@ -1,3 +1,5 @@
+const { uploadToPinata } =require("../controllers/pinata-upload");
+
 const express = require("express");
 const {
   getAll,
@@ -15,7 +17,6 @@ const {
 const router = express.Router();
 const { authenticateUser } = require("../middleware/authentication");
 const imageUpload = require("../middleware/image-upload");
-const { uploadToPinata } = require("../middleware/upload-pinata");
 
 // router.route("/nfts").get(getAllNFTS)
 router.route("/getRecentlyCreated").get()
@@ -29,5 +30,8 @@ router.route("/mint").post(authenticateUser, mintNFT);
 
 router.route("/getNftBids/:id").get(getNftBids);
 router.route("/approve").post(authenticateUser, approveNFT);
+router
+  .route("/upload-pinata")
+  .post(imageUpload.single("image"), uploadToPinata);
 
 module.exports = router;

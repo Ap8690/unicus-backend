@@ -1,6 +1,6 @@
 const { StatusCodes } =require("http-status-codes");
 
-const {Storefront, NameLogo} = require("../models");
+const {Storefront, General} = require("../models");
 const CustomError = require("../errors");
 const { convertToLowercase } = require("../utils/stringUtil");
 
@@ -27,22 +27,19 @@ const createStore = async (req, res) => {
     
     if(createStore) {
       const obj = {
-        domain,
+        storeName,
         logoUrl,
         user: owner,
         storefront: createStore.id
       }
-      const result = await NameLogo.findOneAndUpdate(
-            { user: owner },
-            obj,
-            { upsert: true }
-          );
+      const result = await General.create(obj);
           console.log("res", result);
           if(result){
             res.status(StatusCodes.OK).json({createStore})
           }
     }
   } catch (err) {
+    console.log("err", err);
     res.status(err.statusCode).json({ err: err.message });
   }
 };

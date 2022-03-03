@@ -11,38 +11,49 @@ const GeneralSchema = new mongoose.Schema(
         validator: validator.isEmail,
         message: "Please provide valid email",
       },
+      required: false,
     },
-    country: { type: String, required: false },
-    logoUrl: { type: String, required: false },
+    country: { type: String, required: false, default: "" },
+    logoUrl: { type: String, required: false, default: "" },
     showInSuperMarket: {
       type: Boolean,
+      default: false,
     },
     marketPlaceAsHome: {
       type: Boolean,
+      default: false,
     },
     showLanguage: {
       type: Boolean,
+      default: false,
     },
     locale: {
       type: String,
+      default: "",
     },
     timeZone: {
       type: String,
+      default: "",
     },
     dateFormat: {
       type: String,
+      default: "",
     },
     timeFormat: {
       type: String,
+      default: "",
     },
     showNewsLetter: {
       type: Boolean,
+      default: false,
     },
     showContactUs: {
       type: Boolean,
+      default: false,
     },
     phone: {
       type: String,
+      default: "",
     },
     contactEmail: {
       type: String,
@@ -51,27 +62,35 @@ const GeneralSchema = new mongoose.Schema(
         validator: validator.isEmail,
         message: "Please provide valid email",
       },
+      required: false,
     },
     address: {
       type: String,
+      default: "",
     },
     showCookieConsent: {
       type: Boolean,
+      default: false,
     },
     cookieConsentText: {
       type: String,
+      default: "",
     },
-    infoLink: {
+    cookieInfoLink: {
       type: String,
+      default: "",
     },
     storeFees: {
       type: String,
+      default: "",
     },
     secondaryStoreFees: {
       type: String,
+      default: "",
     },
     storeWallet: {
       type: String,
+      default: "",
     },
     socialLinks: {
       type: mongoose.Types.ObjectId,
