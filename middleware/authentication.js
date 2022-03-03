@@ -6,6 +6,7 @@ const { StatusCodes } = require("http-status-codes");
 const authenticateUser = async (req, res, next) => {
   try {
     req.user = { userId: "41224d776a326fb40f000001" };
+    
     return next();
      
     const accessToken = req.headers["authorization"];
