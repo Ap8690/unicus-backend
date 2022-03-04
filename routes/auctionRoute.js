@@ -9,6 +9,7 @@ const {
   startAuction,
   placeBid,
   getAuctionByNftId,
+  getRecentPurchased,
   buy,
   endAuction,
   getAllExplore,
@@ -24,6 +25,7 @@ router.route("/getAuctionByNftId/:NftId").get(getAuctionByNftId);
 
 router.route("/getAllSale/:skip/:chain").get(getAllSale);
 router.route("/getAllAuction/:skip/:chain").get(getAllAuction);
+router.route("/getRecentPurchased/:chain").get(getRecentPurchased)
 router.route("/getAllExplore/:skip/:chain").get(getAllExplore);
 router.route("/create").post(authenticateUser, create);
 router.route("/start").post(authenticateUser, startAuction);

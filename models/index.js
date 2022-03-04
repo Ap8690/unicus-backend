@@ -17,6 +17,8 @@ const Storefront = require("./Storefront")
  const Seo = require( "./Settings/myStore/seo/seo");
  const Team =require( "./Settings/myStore/team/team");
 
+ const NotificationSettings = require("./Settings/MyAccount/NotificationSettings")
+
 module.exports = {
   Auction,
   Bids,
@@ -35,4 +37,5 @@ module.exports = {
   Categories,
   Seo,
   Team,
+  NotificationSettings,
 };

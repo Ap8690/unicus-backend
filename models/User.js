@@ -28,6 +28,9 @@ const UserSchema = new mongoose.Schema(
         message: "Please provide valid email",
       },
     },
+    contactNumber: {
+      type: String,
+    },
     profileUrl: {
       type: String,
     },

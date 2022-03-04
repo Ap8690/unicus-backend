@@ -25,7 +25,13 @@ const nftRouter = require("./routes/nftRoutes");
 const auctionRouter = require("./routes/auctionRoute");
 const adminRouter = require("./routes/adminRoutes");
 const generalRouter = require("./routes/settings/myStore/generalRoutes");
+const advanceRouter = require("./routes/settings/myStore/advanceRoutes");
+const analyticsRouter = require("./routes/settings/myStore/analyticsRoutes");
+const appearanceRouter = require("./routes/settings/myStore/appearanceRoutes");
+const seoRouter = require("./routes/settings/myStore/seoRoutes");
+
 const storefrontRouter = require("./routes/storefrontRoutes");
+const myAccountRouter = require("./routes/settings/myAccount/myAccountRoutes")
 
 // middleware
 const notFoundMiddleware = require("./middleware/not-found");
@@ -33,12 +39,12 @@ const errorHandlerMiddleware = require("./middleware/error-handler");
 const domainParser = require("./middleware/domain-parser")
 
 app.set("trust proxy", 1);
-app.use(
-  rateLimiter({
-    windowMs: 15 * 60 * 1000,
-    max: 60,
-  })
-);
+// app.use(
+//   rateLimiter({
+//     windowMs: 15000 * 60 * 1000,
+//     max: 60,
+//   })
+// );
 app.use(morgan("dev"));
 app.use(helmet());
 const corsOptions = {
@@ -47,6 +53,8 @@ const corsOptions = {
   optionSuccessStatus: 200,
 };
 app.use(cors());
+app.options("*", cors());
+
 app.use(xss());
 app.use(mongoSanitize());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -62,6 +70,13 @@ app.use("/admin", adminRouter);
 app.use("/create-store", storefrontRouter);
 //Storefront
 app.use("/general", generalRouter);
+app.use("/advance", advanceRouter);
+app.use("/analytics", analyticsRouter);
+app.use("/appearance", appearanceRouter);
+app.use("/seo", seoRouter);
+app.use("/my-account", myAccountRouter);
+
+
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);

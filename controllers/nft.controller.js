@@ -107,10 +107,10 @@ const getAll = async (req, res) => {
 };
 
 const getRecentlyCreatedNFTS = async (req, res) => {
-  const totalNfts = await Nft.find({});
   const storefront = req.storefront.id;
-  const nfts = await Nft.find().limit(20).sort({'createdAt': -1});
-  res.status(StatusCodes.OK).json({ data: nfts, totalNfts: totalNfts.length });
+  const chain = req.params.chain
+  const nfts = await Nft.find({chain}).limit(20).sort({'createdAt': -1});
+  res.status(StatusCodes.OK).json({nfts});
 };
 
 const getNFTByUserId = async (req, res) => {

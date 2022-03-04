@@ -198,6 +198,30 @@ const buy = async (req, res) => {
     throw new CustomError.BadRequestError(e);
   }
 };
+const getRecentPurchased = async(req, res) =>{
+  try{
+    const chain = req.params.chain
+    const data = await Auction.find({
+      auctionStatus: 3,
+      chain: chain,
+    })
+      .limit(20)
+      .sort([["createdAt", -1]]);
+
+      if(data){
+        res.status(StatusCodes.OK).json({data});
+      }
+      else{
+        throw new CustomError.BadRequestError(
+                "Data not found"
+              );
+      }
+
+  }
+  catch(err){
+    res.json({err:err.message})
+  }
+}
 
 const getAllSale = async (req, res) => {
   const skip = Math.max(0, req.params.skip)
@@ -569,6 +593,7 @@ module.exports = {
   startAuction,
   placeBid,
   endAuction,
+  getRecentPurchased,
   getAuctionById,
   cancelAuction,
   getAllExplore,
