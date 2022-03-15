@@ -81,19 +81,19 @@ const create = async (req, res) => {
 }
 
 const getNFTByNftId = async (req, res) => {
-    const nftId = req.params.nftId
+    const tokenId = req.params.tokenId
     const nft = await Nft.findOne({
-        _id: nftId,
+        tokenId,
     })  
     const userId = req.params.userId;
-    var totalViews = await Views.find({ nftId })
+    var totalViews = await Views.find({ nftId: nft._id })
     if(totalViews.length == 0) {
       await Views.create({
-        nftId: ObjectId(nftId),
+        nftId: ObjectId(nft._id),
         views: [],
         heart: []
       })
-      totalViews = await Views.find({ nftId: nftId })
+      totalViews = await Views.find({ nftId: nft._id })
     }
   
     var user
@@ -117,13 +117,13 @@ const getNFTByNftId = async (req, res) => {
             bio: user[0].bio,
         }
         await Views.updateOne(
-            { nftId: nftId },
+            { nftId: nft._id },
             { $push: { views: data } },
             { new: true, upsert: true }
         )
-        await Nft.updateOne({ _id: nftId }, { views: nft.views + 1 })
+        await Nft.updateOne({ _id: nft._id }, { views: nft.views + 1 })
         await Auction.updateOne(
-            { nftId, auctionStatus: 2 },
+            { nftId: nft._id, auctionStatus: 2 },
             { views: nft.views + 1 }
         )
     }

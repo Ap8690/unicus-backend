@@ -24,7 +24,7 @@ router.route('/getAllExplore/:skip').get(getAll)
 router.route('/').post(authenticateUser, create)
 router.route("/getNFTViews/:nftId").get(getNFTViews);
 router.route('/getNFTByUserId/:userId').get(getNFTByUserId)
-router.route("/getNftById/:nftId/:userId").get(getNFTByNftId);
+router.route("/getNftById/:tokenId/:userId").get(getNFTByNftId);
 router.route('/getNFTByUserName').post(getNFTByUserName)
 router.route('/mint').post(authenticateUser, mintNFT)
 
