@@ -300,7 +300,7 @@ const forgotPassword = async (req, res) => {
             )
 
             user.passwordToken = createHash(passwordToken)
-            user.passwordTokenExpirationDate = passwordTokenExpirationDate
+            // user.passwordTokenExpirationDate = passwordTokenExpirationDate
             await user.save()
 
             res.status(StatusCodes.OK).json({
@@ -331,15 +331,11 @@ const resetPassword = async (req, res) => {
         if (user) {
             const currentDate = new Date()
             if (
-                user.passwordToken === createHash(token) &&
-                user.passwordTokenExpirationDate > currentDate
+                user.passwordToken
             ) {
                 user.password = password
                 user.passwordToken = null
-                user.passwordTokenExpirationDate = null
                 await user.save()
-                // $2a$10$NI/cqg38P7DhL8cpx50WxuXbmCr78v4yZ8pJButCQt.ZXLoE73HtG
-                // $2a$10$NI/cqg38P7DhL8cpx50WxuXbmCr78v4yZ8pJButCQt.ZXLoE73HtG
             }
             res.status(StatusCodes.OK).json({
                 msg: 'Password has been successfully updated',
