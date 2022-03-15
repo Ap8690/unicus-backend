@@ -246,8 +246,8 @@ const getAllExplore = async (req, res) => {
 };
 
 const getAuctionById = async (req, res) => {
-  const id = req.params.id
-  const auction = await Auction.find({ _id: id });
+  const tokenId = req.params.tokenId
+  const auction = await Auction.find({ tokenId });
   res.status(StatusCodes.OK).json(auction);
 };
 
