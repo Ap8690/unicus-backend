@@ -13,8 +13,8 @@ const domainParser = async (req, res, next) => {
   //   throw new CustomError.BadRequestError("Invalid domain");
   // }
   const storefront = await Storefront.findOne({domain: subdomain})
-  req.storefront = { id: "623189d5a02f599bc43d5309" };
-    // req.storefront = storefront;
+  // req.storefront = { id: "623189d5a02f599bc43d5309" };
+    req.storefront = storefront;
   return next()
 }
 catch(err){
