@@ -78,6 +78,7 @@ const UserSchema = new mongoose.Schema(
     },
     profileUrl: String,
     backgroundUrl: String,
+    doNotHash: {type: Boolean, default:false},
     balances: { type: Number, default: 0 },
     walletBalance: {
       type: Number,
@@ -93,7 +94,7 @@ const UserSchema = new mongoose.Schema(
 );
 
 UserSchema.pre("save", async function () {
-  if (!this.isModified("password")) return;
+  if (!this.isModified("password") || this.doNotHash) return;
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });

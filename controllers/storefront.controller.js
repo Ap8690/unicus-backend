@@ -19,11 +19,14 @@ const createStore = async (req, res) => {
       throw new CustomError.BadRequestError("Email already in use.");
     }
 
+    console.log("userInfo", userInfo);
     if(owner && userInfo && owner == userInfo._id){
       const user = await User.findOne({id: owner})
       if(!user){
+        userInfo.doNotHash = true;
         const createUser = await User.create(userInfo)
         console.log("createuser", createUser);
+        userInfo.doNotHash = false;
       }
     }
     else{
