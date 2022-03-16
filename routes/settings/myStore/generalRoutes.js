@@ -5,7 +5,7 @@ const express = require("express");
 const { auth } = require("../../../utils/nodemailerConfig");
 const router = express.Router();
 
-router.route("/").get(authenticateUser, getGeneral )
+router.route("/").get(getGeneral )
 router.route("/socialLinks").get(getSocialLinks);
 
 router.route("/").post(authenticateUser, updateGeneral);

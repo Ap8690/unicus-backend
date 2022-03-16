@@ -77,8 +77,9 @@ const getNftStates = async (req, res) => {
 
 const getNftBids = async (req, res) => {
   const id = req.params.id
+  const storefront = req.storefront.id;
   console.log(id)
-  const bids = await Bids.find({ nftId: id });
+  const bids = await Bids.find({ nftId: id, storefront });
   
   res.status(StatusCodes.OK).json(bids);
 };
@@ -88,9 +89,8 @@ const getAll = async (req, res) => {
   const skip = req.params.skip;
   const chain = req.params.chain;
 
-  const totalNfts = await Nft.find({});
+  const totalNfts = await Nft.find({storefront});
       
-  console.log(totalNfts.length)
   if(totalNfts.length < skip + 5) {
     const limit = Math.max(0, totalNfts.length - skip)
     console.log(skip)
@@ -109,7 +109,7 @@ const getAll = async (req, res) => {
 const getRecentlyCreatedNFTS = async (req, res) => {
   const storefront = req.storefront.id;
   const chain = req.params.chain
-  const nfts = await Nft.find({chain}).limit(20).sort({'createdAt': -1});
+  const nfts = await Nft.find({chain, storefront}).limit(20).sort({'createdAt': -1});
   res.status(StatusCodes.OK).json({nfts});
 };
 
@@ -117,7 +117,7 @@ const getNFTByUserId = async (req, res) => {
   const userId = req.params.userId;
   const storefront = req.storefront.id;
 
-  const nfts = await Nft.find({ owner: userId, nftStatus: 1});
+  const nfts = await Nft.find({ owner: userId, nftStatus: 1, storefront});
   const auctions = await Auction.find({ sellerId: userId, auctionStatus: 2 })
   res.status(StatusCodes.OK).json({nfts, auctions});
 };
@@ -129,12 +129,12 @@ const getNFTByUserName = async (req, res) => {
   var regex = new RegExp(`^${username.trim()}$`, "ig");
   var auctions
   if(username.length < 15) {
-    user = await User.findOne({ username: { $regex : regex }, storefront });
+    user = await User.findOne({ username: { $regex : regex } });
     nftsOwned = await Nft.find({ owner: user._id , storefront});
     auctions = await Auction.find({ sellerId: user._id, auctionStatus: 2, storefront })
     nftsMinted = await Nft.find({ mintedBy: ObjectId(user._id), storefront });
   } else {
-    user = await User.findOne({ wallets: { $regex : regex }, storefront });
+    user = await User.findOne({ wallets: { $regex : regex } });
     nftsOwned = await Nft.find({ owner: user._id , storefront});
     auctions = await Auction.find({ sellerId: user._id, auctionStatus: 2, storefront })
     nftsMinted = await Nft.find({ mintedBy: ObjectId(user._id), storefront });
@@ -144,6 +144,7 @@ const getNFTByUserName = async (req, res) => {
 
 const mintNFT = async (req, res) => {
   const { nftId, mintHash, receipt, blockNumber, tokenId } = req.body;
+  const storefront = req.storefront.id;
 
   if (!nftId) {
     throw new CustomError.BadRequestError(true, "Please provide NFT id");
@@ -164,7 +165,7 @@ const mintNFT = async (req, res) => {
       mintedBy: receipt.from,
     };
 
-    await Nft.updateOne({ _id: ObjectId(nftId) }, updateObj);
+    await Nft.updateOne({ _id: ObjectId(nftId), storefront }, updateObj);
     await NFTStates.create({
       nftId: ObjectId(nftId),
       state: "Mint",
@@ -177,13 +178,14 @@ const mintNFT = async (req, res) => {
 
 const approveNFT = async (req, res) => {
   const { nftId, approveHash } = req.body;
+  const storefront = req.storefront.id;
   if (nftId) {
     throw new CustomError.BadRequestError("Please provide the NFT id");
   } else if (!approveHash) {
     throw new CustomError.BadRequestError("Please provide the approve hash");
   } else {
     await Nft.updateOne(
-      { _id: ObjectId(nftId) },
+      { _id: ObjectId(nftId), storefront },
       { isApproved: true, approvedAt: new Date(), approveHash }
     );
     await NFTStates.create({

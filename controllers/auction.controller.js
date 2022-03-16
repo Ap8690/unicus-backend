@@ -75,7 +75,8 @@ const create = async (req, res) => {
       const auction = await Auction.create(createObj)
       const nft = await Nft.updateOne(
         {
-          _id: nftId
+          _id: nftId,
+          storefront
         },
         {
           owner: "61e559cb515235e5d16373fe",
@@ -138,12 +139,14 @@ const sell = async (req, res) => {
         sellerId,
         sellerInfo,
         cloudinaryUrl,
+        storefront
       };
 
       const auction = await Auction.create(createObj)
       const nft = await Nft.updateOne(
         {
-          _id: nftId
+          _id: nftId,
+          storefront
         },
         {
           owner: "61e559cb515235e5d16373fe",
@@ -161,9 +164,10 @@ const sell = async (req, res) => {
 const buy = async (req, res) => {
   try {
       const { auctionId, nftId, owner, endAuctionHash, userInfo, name } = req.body
+      const storefront = req.storefront.id;
       const userId = req.user.userId
       await Auction.updateOne(
-        { _id: auctionId },
+        { _id: auctionId, storefront },
         {
           auctionStatus: 3,
           auctionEndedOn: new Date(),
@@ -174,7 +178,8 @@ const buy = async (req, res) => {
       );
       const nft = await Nft.updateOne(
         {
-          _id: nftId
+          _id: nftId,
+          storefront
         },
         {
           owner,
@@ -183,7 +188,7 @@ const buy = async (req, res) => {
         }
       );
       console.log(nft, owner)
-      const auction = await Auction.findOne({ _id: auctionId })
+      const auction = await Auction.findOne({ _id: auctionId, storefront })
       await NFTStates.create({
         nftId: ObjectId(nftId),
         state: "Sale",
@@ -201,7 +206,9 @@ const buy = async (req, res) => {
 const getRecentPurchased = async(req, res) =>{
   try{
     const chain = req.params.chain
+    const storefront = req.storefront.id;
     const data = await Auction.find({
+      storefront,
       auctionStatus: 3,
       chain: chain,
     })
@@ -226,14 +233,15 @@ const getRecentPurchased = async(req, res) =>{
 const getAllSale = async (req, res) => {
   const skip = Math.max(0, req.params.skip)
   const chain = req.params.chain
+  const storefront = req.storefront.id;
   console.log(chain)
-  const auctions = await Auction.find({ auctionType: "Sale", auctionStatus: 2, chain: chain })
+  const auctions = await Auction.find({ auctionType: "Sale", auctionStatus: 2, chain: chain, storefront })
   if(auctions.length < skip + 30) {
     const limit = Math.max(0, auctions.length - skip)
-    const data = await Auction.find({ auctionType: "Sale", auctionStatus: 2, chain: chain }).limit(limit).skip(skip).sort([['tokenId', -1]]);
+    const data = await Auction.find({ auctionType: "Sale", auctionStatus: 2, chain: chain, storefront }).limit(limit).skip(skip).sort([['tokenId', -1]]);
     res.status(StatusCodes.OK).json({ data: data, totalAuctions: auctions.length, msg: "Done" });
   } else {
-    const data = await Auction.find({ auctionType: "Sale", auctionStatus: 2, chain: chain }).limit(30).skip(skip).sort([['tokenId', -1]]);
+    const data = await Auction.find({ auctionType: "Sale", auctionStatus: 2, chain: chain , storefront}).limit(30).skip(skip).sort([['tokenId', -1]]);
     res.status(StatusCodes.OK).json({ data: data, totalAuctions: auctions.length });
   }
 };
@@ -241,13 +249,14 @@ const getAllSale = async (req, res) => {
 const getAllAuction = async (req, res) => {
   const skip = Math.max(0, req.params.skip)
   const chain = req.params.chain
-  const auctions = await Auction.find({ auctionType: "Auction", auctionStatus: 2, chain: chain })
+  const storefront = req.storefront.id;
+  const auctions = await Auction.find({ auctionType: "Auction", auctionStatus: 2, chain: chain, storefront })
   if(auctions.length < skip + 30) {
     const limit = Math.max(0, auctions.length - skip)
-    const data = await Auction.find({ auctionType: "Auction", auctionStatus: 2, chain: chain }).limit(limit).skip(skip).sort([['tokenId', -1]]);
+    const data = await Auction.find({ auctionType: "Auction", auctionStatus: 2, chain: chain, storefront }).limit(limit).skip(skip).sort([['tokenId', -1]]);
     res.status(StatusCodes.OK).json({ data: data, totalAuctions: auctions.length, msg: "Done" });
   } else {
-    const data = await Auction.find({ auctionType: "Auction", auctionStatus: 2, chain: chain }).limit(30).skip(skip).sort([['tokenId', -1]]);
+    const data = await Auction.find({ auctionType: "Auction", auctionStatus: 2, chain: chain, storefront }).limit(30).skip(skip).sort([['tokenId', -1]]);
     res.status(StatusCodes.OK).json({ data: data, totalAuctions: auctions.length });
   }
 };
@@ -255,39 +264,44 @@ const getAllAuction = async (req, res) => {
 const getAllExplore = async (req, res) => {
   const skip = Math.max(0, req.params.skip)
   const chain = req.params.chain
-  const auctions = await Auction.find({ auctionStatus: 2, chain: chain })
+  const storefront = req.storefront.id;
+  const auctions = await Auction.find({ auctionStatus: 2, chain: chain, storefront })
   if(auctions.length < skip + 30) {
     const limit = Math.max(0, auctions.length - skip)
-    const data = await Auction.find({ auctionStatus: 2, chain: chain }).limit(limit).skip(skip).sort([['tokenId', -1]]);
+    const data = await Auction.find({ auctionStatus: 2, chain: chain, storefront}).limit(limit).skip(skip).sort([['tokenId', -1]]);
     res.status(StatusCodes.OK).json({ data: data, totalAuctions: auctions.length, msg: "Done" });
   } else {
-    const data = await Auction.find({ auctionStatus: 2, chain: chain }).limit(30).skip(skip).sort([['tokenId', -1]]);
+    const data = await Auction.find({ auctionStatus: 2, chain: chain, storefront }).limit(30).skip(skip).sort([['tokenId', -1]]);
     res.status(StatusCodes.OK).json({ data: data, totalAuctions: auctions.length });
   }
 };
 
 const getAuctionById = async (req, res) => {
   const id = req.params.id
-  const auction = await Auction.find({ _id: id });
+  const storefront = req.storefront.id;
+  const auction = await Auction.find({ _id: id, storefront });
   res.status(StatusCodes.OK).json(auction);
 };
 
 const getAuctionByNftId = async (req, res) => {
   const NftId = req.params.NftId
-  const auction = await Auction.findOne({ nftId: NftId, auctionStatus: 2 });
+  const storefront = req.storefront.id;
+  const auction = await Auction.findOne({ nftId: NftId, auctionStatus: 2, storefront });
   res.status(StatusCodes.OK).json(auction);
 };
 
 const startAuction = async (req, res) => {
   try {
     const { auctionId, nftId, auctionHash } = req.body;
+    const storefront = req.storefront.id;
     const auctionData = await Auction.findOne({
       auctionId,
       nftId: ObjectId(nftId),
+      storefront
     });
     console.log(auctionData)
     const auction = await Auction.updateOne(
-      { auctionId, nftId: ObjectId(nftId) },
+      { auctionId, nftId: ObjectId(nftId), storefront },
       {
         auctionStatus: 2,
         auctionStartOn: new Date(),
@@ -314,10 +328,12 @@ const placeBid = async (req, res) => {
       bidSuccess,
       bidObject,
     } = req.body;
+  const storefront = req.storefront.id;
 
     const auctionData = await Auction.findOne({
       _id: _id,
-      status: 2
+      status: 2,
+      storefront
     });
 
     let bidNumber = 1;
@@ -392,7 +408,7 @@ const placeBid = async (req, res) => {
       var bid = await Bids.create(createObj);
       console.log(bid)
       await Auction.updateOne(
-        { _id },
+        { _id , storefront},
         { bidsPlaced: bidNumber, lastBidId: bid._id, lastBid: bidValue, highestBidder: bidder }
       );
 
@@ -427,6 +443,7 @@ const getAuctionBids = async (auctionId, nftId, bidsLimit) => {
 const endAuction = async (req, res) => {
   try {
     const userId = req.user.userId;
+    const storefront = req.storefront.id;
     console.log("--------->UserID")
     const { nftId, auctionId, endAuctionHash, userInfo, name } = req.body;
     console.log(nftId)
@@ -439,7 +456,7 @@ const endAuction = async (req, res) => {
         "Please provide the transaction hash"
       );
     } else {
-      const auction = await Auction.findOne({ _id: auctionId });
+      const auction = await Auction.findOne({ _id: auctionId, storefront });
       if (auction.auctionStatus === 3)
         throw new CustomError.BadRequestError("Auction already ended");
       if (auction.auctionStatus === 4)
@@ -448,7 +465,7 @@ const endAuction = async (req, res) => {
       // const auctionBids = await getAuctionBids(auctionId, nftId, 0);
       const lastBidId = auction.lastBidId
       console.log(lastBidId, auction.bidsPlaced)
-      const nft = await Nft.findOne({ _id: nftId });
+      const nft = await Nft.findOne({ _id: nftId, storefront });
       if (auction.bidsPlaced) {
         const bid = await Bids.findOne({
           _id: ObjectId(lastBidId)
@@ -484,7 +501,8 @@ const endAuction = async (req, res) => {
 
         await Nft.updateOne(
           {
-            _id: nftId
+            _id: nftId,
+            storefront
           },
           {
             owner: auctionWinner,
@@ -496,7 +514,7 @@ const endAuction = async (req, res) => {
         console.log("--------->Update")
 
         await Auction.updateOne(
-          { _id: auctionId },
+          { _id: auctionId, storefront },
           {
             auctionStatus: 3,
             auctionEndedOn: new Date(),
@@ -506,7 +524,7 @@ const endAuction = async (req, res) => {
 
         await Nft.updateOne(
           {
-            _id: nftId
+            _id: nftId, storefront
           },
           {
             owner: userId,
@@ -526,9 +544,10 @@ const endAuction = async (req, res) => {
 const cancelAuction = async (req, res) => {
   try {
     const userId = req.user.userId;
+    const storefront = req.storefront.id;
     const { auctionId, nftId, transactionHash } = req.body;
     const auctionDetails = await Auction.findOne({
-      _id: auctionId
+      _id: auctionId, storefront
     });
     console.log(auctionDetails._id);
     if (auctionDetails.auctionStatus === 4)
@@ -542,7 +561,8 @@ const cancelAuction = async (req, res) => {
 
     const auction = await Auction.updateOne(
       {
-        _id: auctionId
+        _id: auctionId,
+        storefront
       },
       {
         auctionCancelledOn: new Date(),
@@ -553,7 +573,8 @@ const cancelAuction = async (req, res) => {
 
     const nft = await Nft.updateOne(
       {
-        _id: nftId
+        _id: nftId,
+        storefront
       },
       {
         owner: userId,
@@ -570,14 +591,15 @@ const cancelAuction = async (req, res) => {
 const addViews = async (req, res) => {
   try {
     const { auctionId, nftId } = req.body;
+    const storefront = req.storefront.id;
     if (!auctionId)
       throw new CustomError.BadRequestError("Please provide the auction id");
     if (!nftId)
       throw new CustomError.BadRequestError("please provide the nft id");
 
-    const d = await Auction.fineOne({ auctionId, nftId: ObjectId(nftId) });
+    const d = await Auction.fineOne({ auctionId, nftId: ObjectId(nftId), storefront });
     const views = d.views + 1;
-    await Auction.updateOne({ auctionId, nftId: ObjectId(nftId) }, { views });
+    await Auction.updateOne({ auctionId, nftId: ObjectId(nftId),storefront }, { views });
     res.status(StatusCodes.OK).json("Updated");
   } catch (e) {
     throw new CustomError.BadRequestError(e);

@@ -23,6 +23,7 @@ const createStore = async (req, res) => {
       const user = await User.findOne({id: owner})
       if(!user){
         const createUser = await User.create(userInfo)
+        console.log("createuser", createUser);
       }
     }
     else{
