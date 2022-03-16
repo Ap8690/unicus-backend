@@ -11,7 +11,7 @@ const GeneralSchema = new mongoose.Schema(
         validator: validator.isEmail,
         message: "Please provide valid email",
       },
-      required: false,
+      required: true,
     },
     country: { type: String, required: false, default: "" },
     logoUrl: { type: String, required: false, default: "" },
@@ -99,10 +99,12 @@ const GeneralSchema = new mongoose.Schema(
     user: {
       type: mongoose.Types.ObjectId,
       ref: "User",
+      required: true,
     },
     storefront: {
       type: mongoose.Types.ObjectId,
       ref: "Storefront",
+      required: true,
     },
   },
   { timestamps: true }

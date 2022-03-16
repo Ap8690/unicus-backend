@@ -1,8 +1,13 @@
 const { authenticateUser } = require("../middleware/authentication");
-const { createStore } = require("../controllers/storefront.controller");
+const {
+  createStore,
+  getStoreByUser,
+  getStoreDetails,
+} = require("../controllers/storefront.controller");
 const express = require("express");
 const router = express.Router();
 
-router.route("/").post(authenticateUser, createStore);
-
+router.route("/create").post(authenticateUser, createStore);
+router.route("/getStoreByUser").get(authenticateUser, getStoreByUser)
+router.route("/").get(getStoreDetails)
 module.exports = router;

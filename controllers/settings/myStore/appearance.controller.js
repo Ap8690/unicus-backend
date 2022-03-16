@@ -12,6 +12,18 @@ const getAppearance = async (req, res) => {
   }
 };
 
+const getStoreLoader = async (req, res) => {
+  try{
+    const storefront = req.storefront.id;
+    const result = await Appearance.findOne({ storefront});
+    const storeLoader = result.storeLoader
+    res.status(StatusCodes.OK).json({storeLoader})
+  }
+  catch(err){
+    res.status(err.statusCode).json({ err: err.message });
+  }
+};
+
 const updateAppearance = async (req, res) => {
   try {
     const {
@@ -49,7 +61,10 @@ const updateAppearance = async (req, res) => {
     res.status(err.statusCode).json({ err: err.message });
   }
 };
+
+
 module.exports={
   getAppearance,
+  getStoreLoader,
   updateAppearance
 }

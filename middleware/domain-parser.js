@@ -1,6 +1,7 @@
 const { Storefront } = require("../models");
 const { parse } = require("tldts");
 const CustomError = require("./../errors");
+const { StatusCodes } = require("http-status-codes");
 const domainParser = async (req, res, next) => {
   try{
   const url = req.header("Origin")
@@ -11,13 +12,14 @@ const domainParser = async (req, res, next) => {
   // if(!subdomain){
   //   throw new CustomError.BadRequestError("Invalid domain");
   // }
-  const storefront = await Storefront.find({domain: subdomain})
-  req.storefront = storefront
+  const storefront = await Storefront.findOne({domain: subdomain})
+  // req.storefront = { id: "6229db59d056f03a2007b334" };
+    req.storefront = storefront;
   return next()
 }
 catch(err){
   console.log("err", err);
-  res.status(err.statusCode).json({err: err.message})
+  res.status(StatusCodes.BAD_REQUEST).json(err.message)
 }
 }
 

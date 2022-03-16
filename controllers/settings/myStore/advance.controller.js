@@ -20,8 +20,8 @@ const updateAdvance = async (req, res) => {
       showPoly,
       showBinance,
       showCronos,
-      showSeller,
-      showBuyer,
+      showSellerKyc,
+      showBuyerKyc,
       nftCategories,
       siteUrls,
       privacyPolicy,
@@ -35,8 +35,8 @@ const updateAdvance = async (req, res) => {
       showPoly,
       showBinance,
       showCronos,
-      showSeller,
-      showBuyer,
+      showSellerKyc,
+      showBuyerKyc,
       nftCategories,
       siteUrls,
       privacyPolicy,
@@ -52,6 +52,15 @@ const updateAdvance = async (req, res) => {
     res.status(err.statusCode).json({ err: err.message });
   }
 };
+
+const addCategory = async(req, res) =>{
+  try{
+
+  }
+  catch(err){
+    res.status(err.statusCode).json({ err: err.message });
+  }
+}
 
 module.exports={
   getAdvance,

@@ -3,17 +3,20 @@ const mongoose = require("mongoose");
 const AppearanceSchema = new mongoose.Schema(
   {
     colorPalette: {
-      value: String,
-      label: String,
+      type: String,
+      default:"blue"
     },
     enableDarkMode: {
       type: Boolean,
+      default:"true"
     },
     heading: {
       type: String,
+      default:""
     },
     headerDescription: {
       type: String,
+      default:""
     },
     headerButton: [
       {
@@ -32,9 +35,11 @@ const AppearanceSchema = new mongoose.Schema(
     ],
     showFooter: {
       type: Boolean,
+      default: true
     },
     showGettingStarted: {
       type: Boolean,
+      default: true
     },
     storeLoader: {
       type: String,

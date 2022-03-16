@@ -53,8 +53,6 @@ const corsOptions = {
   optionSuccessStatus: 200,
 };
 app.use(cors());
-app.options("*", cors());
-
 app.use(xss());
 app.use(mongoSanitize());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -67,7 +65,7 @@ app.use("/users", userRouter);
 app.use("/nft", nftRouter);
 app.use("/auction", auctionRouter);
 app.use("/admin", adminRouter);
-app.use("/create-store", storefrontRouter);
+app.use("/store", storefrontRouter);
 //Storefront
 app.use("/general", generalRouter);
 app.use("/advance", advanceRouter);
@@ -82,8 +80,7 @@ app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
 const PORT = process.env.PORT || 4000;
-const DB_URL =
-  process.env.MONGO_URL || "mongodb://127.0.0.1:27017/task-manager-api";
+const DB_URL = process.env.MONGO_URL || "mongodb://127.0.0.1:27017/unicus-storefront";
 const start = async () => {
   try {
     await connectDB(DB_URL);

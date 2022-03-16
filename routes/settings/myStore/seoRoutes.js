@@ -8,7 +8,7 @@ const { authenticateUser } = require("../../../middleware/authentication");
 const express = require("express");
 const router = express.Router();
 
-router.route("/").get(authenticateUser, getSeo);
+router.route("/").get(getSeo);
 
 router.route("/").post(authenticateUser, updateSeo);
 

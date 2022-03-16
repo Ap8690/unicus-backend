@@ -5,7 +5,7 @@ const { authenticateUser } = require("../../../middleware/authentication");
 const express = require("express");
 const router = express.Router();
 
-router.route("/").get(authenticateUser, getAdvance);
+router.route("/").get(getAdvance);
 
 router.route("/").post(authenticateUser, updateAdvance);
 

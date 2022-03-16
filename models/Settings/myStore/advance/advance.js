@@ -3,30 +3,65 @@ const mongoose = require("mongoose");
 const AdvanceSchema = new mongoose.Schema(
   {
     showEth: {
-      type: Boolean,
+      enabled: {
+        type: Boolean,
+        default: true,
+      },
+      assetsMinted: {
+        type: Boolean,
+        default: false,
+      },
     },
     showPoly: {
-      type: Boolean,
+      enabled: {
+        type: Boolean,
+        default: true,
+      },
+      assetsMinted: {
+        type: Boolean,
+        default: false,
+      },
     },
     showBinance: {
-      type: Boolean,
+      enabled: {
+        type: Boolean,
+        default: true,
+      },
+      assetsMinted: {
+        type: Boolean,
+        default: false,
+      },
     },
     showCronos: {
-      type: Boolean,
+      type: {
+        type: Boolean,
+        default: false,
+      },
     },
-    showSeller: {
+    showSellerKyc: {
       type: Boolean,
+      default: false,
     },
-    showBuyer: {
+    showBuyerKyc: {
       type: Boolean,
+      default: false,
     },
-    nftCategories: [{ category: String, enabled: Boolean }],
+    
+    nftCategories: [
+      {
+        id: mongoose.Schema.Types.ObjectId,
+        category: String,
+        enabled: Boolean,
+      },
+    ],
     siteUrls: [{ url: String, isPrimary: Boolean }],
     privacyPolicy: {
       type: String,
+      default: "",
     },
     terms: {
       type: String,
+      default: "",
     },
     user: {
       type: mongoose.Types.ObjectId,

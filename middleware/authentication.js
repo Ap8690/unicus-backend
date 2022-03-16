@@ -5,21 +5,18 @@ const { StatusCodes } = require("http-status-codes");
 
 const authenticateUser = async (req, res, next) => {
   try {
-    req.user = { userId: "41224d776a326fb40f000001" };
+    // req.user = { userId: "41224d776a326fb40f000001" };
     
-    return next();
-     
+    // return next();
     const accessToken = req.headers["authorization"];
-    console.log("auth", accessToken);
     const bearerToken = accessToken.split(" ")[1];
     if (accessToken) {
       const payload = isTokenValid(bearerToken);
       if (!payload) {
-        return res.status(StatusCodes.OK).json({ msg: "Invalid Token" });
+        return res.status(StatusCodes.UNAUTHORIZED).json({ msg: "Invalid Token" });
       }
 
       req.user = payload;
-
       return next();
     } else {
       

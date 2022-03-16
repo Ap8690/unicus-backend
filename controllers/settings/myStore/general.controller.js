@@ -7,10 +7,9 @@ const CustomError = require("./../../../errors");
 
 const getGeneral = async(req, res)=>{
   try{
-  const userId = req.user.userId
-  const storefront = req.storefront
+  const storefront = req.storefront.id
   console.log("front", storefront);
-  const result = await General.findOne({user: userId})
+  const result = await General.findOne({storefront})
   res.status(StatusCodes.OK).json({result})
   }catch(err){
     console.log("err", err);
