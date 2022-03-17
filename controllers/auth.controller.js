@@ -162,7 +162,7 @@ const mintingWidget = async (req, res) => {
             try {
                 const nft = await Nft.updateOne(
                   {
-                    _id: nftId
+                    tokenId: nftId
                   },
                   {
                     owner: user._id,
@@ -173,8 +173,6 @@ const mintingWidget = async (req, res) => {
                 console.log("++++++++===========")
 
                 res.status(StatusCodes.OK).json({
-                    accessToken: token,
-                    user: user,
                     nft
                 })
 
@@ -226,7 +224,7 @@ const mintingWidget = async (req, res) => {
             try {
                 const nft = await Nft.updateOne(
                   {
-                    _id: nftId
+                    tokenId: nftId
                   },
                   {
                     owner: user._id,
@@ -237,8 +235,6 @@ const mintingWidget = async (req, res) => {
                 console.log("++++++++===========")
 
                 res.status(StatusCodes.OK).json({
-                    accessToken: token,
-                    user: user,
                     nft
                 })
                 
