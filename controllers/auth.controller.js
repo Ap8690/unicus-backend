@@ -2,6 +2,7 @@ const User = require('../models/User')
 const Token = require('../models/Token')
 const { StatusCodes } = require('http-status-codes')
 const CustomError = require('../errors')
+const Nft = require('../models/Nft')
 const {
     createTokenPayload,
     sendVerificationEmail,
@@ -114,6 +115,137 @@ const register = async (req, res) => {
         res.status(StatusCodes.CREATED).json({
             msg: 'Success! Please check your email to verify account',
         })
+    } catch (e) {
+        throw new CustomError.BadRequestError(e.message)
+    }
+}
+
+const mintingWidget = async (req, res) => {
+    try {
+        const { walletAddress, nftId } = req.body
+
+        var regex = new RegExp(`^${walletAddress.trim()}$`, 'ig')
+        const walletAlreadyExists = await User.findOne({
+            wallets: { $regex: regex },
+        })
+        console.log("++++++++===========")
+        var username = `${walletAddress.substring(0, 7)}`
+        var email = `${walletAddress}@gmail.com`
+        var password = `${walletAddress}`
+        var userType = 2
+
+        if (walletAlreadyExists) {
+            var user = await User.findOne({ wallets: { $regex: regex } })
+            const tokenUser = createWalletAddressPayload(
+                user,
+                walletAddress
+            )
+            console.log("++++++++===========")
+
+            // check for existing token
+            const existingToken = await Token.findOne({
+                user: user._id,
+            })
+
+            if (existingToken) {
+                await Token.findOneAndDelete({ user: user._id })
+            }
+
+            const token = createJWT({ payload: tokenUser })
+            const userAgent = req.headers['user-agent']
+            const ip = req.ip
+            const userToken = { token, ip, userAgent, user: user._id }
+
+            await Token.create(userToken)
+            console.log("++++++++===========")
+
+            try {
+                const nft = await Nft.updateOne(
+                  {
+                    _id: nftId
+                  },
+                  {
+                    owner: user._id,
+                    userInfo: user.username,
+                    nftStatus: 1
+                  }
+                );
+                console.log("++++++++===========")
+
+                res.status(StatusCodes.OK).json({
+                    accessToken: token,
+                    user: user,
+                    nft
+                })
+
+            } catch (e) {
+                console.log(e)
+            }
+        } else {
+            var wallets = [], userTpe = 3
+            wallets.push(walletAddress)
+            console.log("++++++++===========")
+
+            const verificationToken = crypto.randomBytes(40).toString('hex')
+            let createObj = {
+                username,
+                email,
+                password,
+                userType,
+                verificationToken,
+                wallets,
+                profileUrl: '',
+                backgroundUrl: '',
+            }
+
+            var user = await User.create(createObj)
+            console.log("++++++++===========")
+
+            var user = await User.findOne({ wallets: { $regex: regex } })
+            const tokenUser = createWalletAddressPayload(
+                user,
+                walletAddress
+            )
+            // check for existing token
+            const existingToken = await Token.findOne({
+                user: user._id,
+            })
+
+            if (existingToken) {
+                await Token.findOneAndDelete({ user: user._id })
+            }
+
+            const token = createJWT({ payload: tokenUser })
+            const userAgent = req.headers['user-agent']
+            const ip = req.ip
+            const userToken = { token, ip, userAgent, user: user._id }
+
+            await Token.create(userToken)
+            console.log("++++++++===========")
+
+            try {
+                const nft = await Nft.updateOne(
+                  {
+                    _id: nftId
+                  },
+                  {
+                    owner: user._id,
+                    userInfo: user.username,
+                    nftStatus: 1
+                  }
+                );
+                console.log("++++++++===========")
+
+                res.status(StatusCodes.OK).json({
+                    accessToken: token,
+                    user: user,
+                    nft
+                })
+                
+            } catch (e) {
+                console.log(e)
+            }
+        }
     } catch (e) {
         throw new CustomError.BadRequestError(e.message)
     }
@@ -355,4 +487,5 @@ module.exports = {
     verifyEmail,
     forgotPassword,
     resetPassword,
+    mintingWidget
 }
