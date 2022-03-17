@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const SocialLinksSchema = new mongoose.Schema(
   {
     facebook: {
+      
       type: String,
     },
     instagram: {

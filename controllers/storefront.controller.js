@@ -7,11 +7,13 @@ const { convertToLowercase } = require("../utils/stringUtil");
 const createStore = async (req, res) => {
   try {
     const { storeName, email, logoUrl } = req.body.store;
+    console.log("user", req.user);
     const owner = req.user.userId
     const domain = convertToLowercase(storeName)
     const userInfo = req.body.user;
     const alreadyCreated = await Storefront.findOne({domain})
     const emailTaken = await General.findOne({email})
+   
     if(alreadyCreated){
       throw new CustomError.BadRequestError("Name not available.");
     }
@@ -19,9 +21,10 @@ const createStore = async (req, res) => {
       throw new CustomError.BadRequestError("Email already in use.");
     }
 
-    console.log("userInfo", userInfo);
+    console.log("userInfo", userInfo, owner == userInfo._id);
     if(owner && userInfo && owner == userInfo._id){
-      const user = await User.findOne({id: owner})
+      const user = await User.findOne({_id: owner})
+      console.log("db user", user);
       if(!user){
         userInfo.doNotHash = true;
         const createUser = await User.create(userInfo)
