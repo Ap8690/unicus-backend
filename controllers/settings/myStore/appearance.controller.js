@@ -4,11 +4,11 @@ const CustomError = require("./../../../errors");
 
 const getAppearance = async (req, res) => {
   try {
-    const userId = req.user.userId;
-    const result = await Appearance.findOne({ user: userId });
+    const storefront = req.storefront.id
+    const result = await Appearance.findOne({ storefront });
     res.status(StatusCodes.OK).json({ result });
   } catch (err) {
-    res.status(err.statusCode).json({ err: err.message });
+    res.status(StatusCodes.BAD_REQUEST).json({ err: err.message });
   }
 };
 
@@ -20,7 +20,7 @@ const getStoreLoader = async (req, res) => {
     res.status(StatusCodes.OK).json({storeLoader})
   }
   catch(err){
-    res.status(err.statusCode).json({ err: err.message });
+    res.status(StatusCodes.BAD_REQUEST).json({ err: err.message });
   }
 };
 
@@ -38,6 +38,7 @@ const updateAppearance = async (req, res) => {
       storeLoader
     } = req.body;
     const userId = req.user.userId;
+    const storefront = req.storefront.id;
 
     const obj = {
        colorPalette,
@@ -51,14 +52,14 @@ const updateAppearance = async (req, res) => {
       storeLoader,
       user: userId,
     };
-    const result = await Appearance.findOneAndUpdate({ user: userId }, obj, {
+    const result = await Appearance.findOneAndUpdate({ user: userId, storefront }, obj, {
       upsert: true,
     });
     if (result) {
       res.status(StatusCodes.OK).json({ result });
     }
   } catch (err) {
-    res.status(err.statusCode).json({ err: err.message });
+    res.status(StatusCodes.BAD_REQUEST).json({ err: err.message });
   }
 };
 
