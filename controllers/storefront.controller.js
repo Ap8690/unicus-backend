@@ -2,11 +2,12 @@ const { StatusCodes } =require("http-status-codes");
 
 const {Storefront, General, Advance, Appearance, User, Analytics, Seo} = require("../models");
 const CustomError = require("../errors");
-const { convertToLowercase } = require("../utils/stringUtil");
+const { convertToLowercase, isReservedWord } = require("../utils/stringUtil");
+const validator = require("validator");
 
 const createStore = async (req, res) => {
   try {
-    const { storeName, email, logoUrl } = req.body.store;
+    const { storeName, email, logoUrl, country } = req.body.store;
     console.log("user", req.user);
     const owner = req.user.userId
     const domain = convertToLowercase(storeName)
@@ -14,7 +15,13 @@ const createStore = async (req, res) => {
     const alreadyCreated = await Storefront.findOne({domain})
     const emailTaken = await General.findOne({email})
    
-    if(alreadyCreated){
+    if(!storeName){
+      throw new CustomError.BadRequestError("Please enter store name.");
+    }
+    if (!validator.isEmail(email)) {
+      throw new CustomError.BadRequestError("Please enter valid email.");
+    }
+    if(alreadyCreated || isReservedWord(domain)){
       throw new CustomError.BadRequestError("Name not available.");
     }
     if(emailTaken){
@@ -49,6 +56,7 @@ const createStore = async (req, res) => {
         storeName,
         email,
         logoUrl,
+        country,
         contactEmail:email,
         user: owner,
         storefront: createStore.id
@@ -74,7 +82,7 @@ const createStore = async (req, res) => {
     }
   } catch (err) {
     console.log("err", err.message);
-    res.status(err.statusCode).json({ err: err.message });
+    res.status(StatusCodes.BAD_REQUEST).json({ err: err.message });
   }
 };
 

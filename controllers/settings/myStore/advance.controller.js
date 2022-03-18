@@ -4,12 +4,12 @@ const CustomError = require("./../../../errors");
 
 const getAdvance= async(req, res)=>{
   try{
-    const userId = req.user.userId;
-    const result = await Advance.findOne({ user: userId });
+    const storefront = req.storefront.id;
+    const result = await Advance.findOne({ storefront});
     res.status(StatusCodes.OK).json({ result });
   }
   catch(err){
-    res.status(err.statusCode).json({ err: err.message });
+    res.status(StatusCodes.BAD_REQUEST).json({ err: err.message });
   }
 }
 
@@ -49,7 +49,7 @@ const updateAdvance = async (req, res) => {
       res.status(StatusCodes.OK).json({ result });
     }
   } catch (err) {
-    res.status(err.statusCode).json({ err: err.message });
+    res.status(StatusCodes.BAD_REQUEST).json({ err: err.message });
   }
 };
 
@@ -58,7 +58,7 @@ const addCategory = async(req, res) =>{
 
   }
   catch(err){
-    res.status(err.statusCode).json({ err: err.message });
+    res.status(StatusCodes.BAD_REQUEST).json({ err: err.message });
   }
 }
 
