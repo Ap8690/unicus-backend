@@ -28,8 +28,7 @@ const createStore = async (req, res) => {
       if(!user){
         userInfo.doNotHash = true;
         const createUser = await User.create(userInfo)
-        console.log("createuser", createUser);
-        userInfo.doNotHash = false;
+        await User.updateOne({id:owner}, {doNotHash: false})
       }
     }
     else{
