@@ -18,11 +18,12 @@ const getGeneral = async(req, res)=>{
 
 const getSocialLinks = async (req, res) => {
    try {
-     const userId = req.user.userId;
-     const result = await SocialLink.findOne({ user: userId });
+     const storefront = req.storefront.id;
+     const result = await SocialLink.findOne({ storefront });
      res.status(StatusCodes.OK).json({ result });
    } catch (err) {
      console.log("err", err);
+    res.status(StatusCodes.BAD_REQUEST).json({ err });
    }
 };
 

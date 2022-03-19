@@ -28,7 +28,7 @@ router.route("/mint").post(authenticateUser, mintNFT);
 
 router.route("/getNftBids/:id").get(getNftBids);
 router.route("/approve").post(authenticateUser, approveNFT);
-router.route("/:nftId").get(getNFTByNftId);
+router.route("/getNftById/:nftId").get(getNFTByNftId);
 
 router
   .route("/upload-pinata")
