@@ -1,37 +1,33 @@
-const { uploadToPinata } =require("../controllers/pinata-upload");
-
-const express = require("express");
+const express = require('express')
 const {
-  getAll,
-  getRecentlyCreatedNFTS,
-  getNFTByNftId,
-  getNFTByUserId,
-  create,
-  getNftStates,
-  getNFTByUserName,
-  getNftBids,
-  // getAllNFTS,
-  mintNFT,
-  approveNFT,
-} = require("../controllers/nft.controller");
-const router = express.Router();
-const { authenticateUser } = require("../middleware/authentication");
-const imageUpload = require("../middleware/image-upload");
+    getAll,
+    getNFTByNftId,
+    getNFTByUserId,
+    create,
+    getNFTByUserName,
+    // getAllNFTS,
+    mintNFT,
+    approveNFT,
+    getNFTViews,
+    banNFT,
+    unbanNFT,
+} = require('../controllers/nft.controller')
+const router = express.Router()
+const { authenticateUser } = require('../middleware/authentication')
+const imageUpload = require('../middleware/image-upload')
+const { uploadToPinata } = require('../middleware/upload-pinata')
 
-// router.route("/nfts").get(getAllNFTS)
-router.route("/getAllExplore/:skip/:chain").get(getAll)
-router.route("/create").post(authenticateUser, create);  
-router.route("/getRecent/:chain").get(getRecentlyCreatedNFTS);
-router.route("/getNFTByUserId/:userId").get(authenticateUser, getNFTByUserId);
-router.route("/getNFTByUserName").get(authenticateUser,getNFTByUserName);
-router.route("/mint").post(authenticateUser, mintNFT);
+// router.route("/nfts").get(getAllNFTS
+router.route('/banNFT').post(banNFT)
+router.route('/unbanNFT').post(unbanNFT)
+router.route('/getAllExplore/:skip').get(getAll)
+router.route('/').post(authenticateUser, create)
+router.route("/getNFTViews/:nftId").get(getNFTViews);
+router.route('/getNFTByUserId/:userId').get(getNFTByUserId)
+router.route("/getNftById/:tokenId/:userId").get(getNFTByNftId);
+router.route('/getNFTByUserName').post(getNFTByUserName)
+router.route('/mint').post(authenticateUser, mintNFT)
 
-router.route("/getNftBids/:id").get(getNftBids);
-router.route("/approve").post(authenticateUser, approveNFT);
-router.route("/:nftId").get(getNFTByNftId);
+router.route('/approve').post(authenticateUser, approveNFT)
 
-router
-  .route("/upload-pinata")
-  .post(imageUpload.single("image"), uploadToPinata);
-
-module.exports = router;
+module.exports = router

@@ -20,13 +20,11 @@ const {
 
 router.route("/sell").post(authenticateUser, sell);
 router.route("/buy").post(authenticateUser, buy);
-router.route("/getAuctionById/:id").get(getAuctionById);
+router.route("/getAuctionById/:tokenId").get(getAuctionById);
 router.route("/getAuctionByNftId/:NftId").get(getAuctionByNftId);
-
 router.route("/getAllSale/:skip/:chain").get(getAllSale);
-router.route("/getAllAuction/:skip/:chain").get(getAllAuction);
-router.route("/getRecentPurchased/:chain").get(getRecentPurchased)
-router.route("/getAllExplore/:skip/:chain").get(getAllExplore);
+router.route("/getAllAuction/:skip/:chain/:sort").get(getAllAuction);
+router.route("/getAllExplore/:skip/:chain/:sort").get(getAllExplore);
 router.route("/create").post(authenticateUser, create);
 router.route("/start").post(authenticateUser, startAuction);
 router.route("/placeBid").post(authenticateUser, placeBid);

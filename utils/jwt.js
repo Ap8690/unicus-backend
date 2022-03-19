@@ -14,13 +14,11 @@ const createLimitedTimeToken = ({ payload, expiresIn }) => {
   return token;
 };
 
-const isTokenValid = (token) =>{
-try{
-  const decoded = jwt.verify(token, process.env.JWT_SECRET)
-  return decoded;
-}catch(err){
-  return false;
-}};
+const isTokenValid = (token) =>
+  jwt.verify(token, process.env.JWT_SECRET, (err, data) => {
+    if (err) return false;
+    return data;
+  });
 
 module.exports = {
   createJWT,

@@ -1,38 +1,48 @@
-const express = require("express");
-const router = express.Router();
-const { authenticateUser } = require("../middleware/authentication");
+const express = require('express')
+const router = express.Router()
+const { authenticateUser } = require('../middleware/authentication')
 const {
-  getAllUsers,
-  getSingleUser,
-  showCurrentUser,
-  removeWallet,
-  updateBackgroundPicture,
-  addWallet,
-  updateUser,
-  getUserById,
-  getGlobalSearch,
-  updateProfilePicture,
-  getUserNonceByAddress,
-} = require("../controllers/user.controller");
+    getAllUsers,
+    getSingleUser,
+    showCurrentUser,
+    removeWallet,
+    updateBackgroundPicture,
+    addWallet,
+    updateUser,
+    getUserById,
+    getGlobalSearch,
+    updateProfilePicture,
+    getUserNonceByAddress,
+    unbanUser,
+    banUser,
+} = require('../controllers/user.controller')
 
-router.route("/:skip").get(getAllUsers);
+router.route('/banUser').post(banUser)
 
-router.route("/update/updateUser").post(authenticateUser, updateUser);
+router.route('/unbanUser').post(unbanUser)
 
-router.route("getSingleUser/:token").get(authenticateUser, getSingleUser);
+router.route('/:skip').get(getAllUsers)
 
-router.route("/update/profilePicture").post(authenticateUser, updateProfilePicture);
+router.route('/update/updateUser').post(authenticateUser, updateUser)
 
-router.route("/update/backgroundPicture").post(authenticateUser, updateBackgroundPicture);
+router.route('getSingleUser/:token').get(authenticateUser, getSingleUser)
 
-router.route("/getUserById/:id").get(getUserById); // No Auth
+router
+    .route('/update/profilePicture')
+    .post(authenticateUser, updateProfilePicture)
 
-router.route("/addWallet/:walletAddress").get(authenticateUser, addWallet);
+router
+    .route('/update/backgroundPicture')
+    .post(authenticateUser, updateBackgroundPicture)
 
-router.route("/removeWallet/:walletAddress").get(authenticateUser, removeWallet);
+router.route('/getUserById/:id').get(getUserById) // No Auth
 
-router.route("/nonce/:publicAddress").get(getUserNonceByAddress);
+router.route('/addWallet/:walletAddress').get(authenticateUser, addWallet)
 
-router.route("/globalSearch/:search").get(getGlobalSearch);
+router.route('/removeWallet/:walletAddress').get(authenticateUser, removeWallet)
 
-module.exports = router;
+router.route('/nonce/:publicAddress').get(getUserNonceByAddress)
+
+router.route('/globalSearch/:search').get(getGlobalSearch)
+
+module.exports = router

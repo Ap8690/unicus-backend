@@ -1,4 +1,3 @@
-
 require("dotenv").config();
 require("express-async-errors");
 const bodyParser = require("body-parser");
