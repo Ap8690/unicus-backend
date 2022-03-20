@@ -17,7 +17,14 @@ var web3 = new Web3();
 
 const register = async (req, res) => {
   try {
-    const { email, username, password, walletAddress, userType2 } = req.body;
+    const {
+      email,
+      username,
+      password,
+      walletAddress,
+      userType2,
+      storeRegistration,
+    } = req.body;
 
     if (!email) {
       throw new CustomError.BadRequestError("Please provide an email");
@@ -26,7 +33,9 @@ const register = async (req, res) => {
     }
 
     var regex = new RegExp(`^${email.trim()}$`, "ig");
-    const emailAlreadyExists = await User.findOne({ email: { $regex: regex } });
+    const emailAlreadyExists = await User.findOne({
+      email: { $regex: regex },
+    });
     if (emailAlreadyExists) {
       throw new CustomError.BadRequestError("Email already exists");
     }
@@ -40,12 +49,14 @@ const register = async (req, res) => {
       user.password = password;
       user.verificationToken = verificationToken;
       await user.save();
+
+      // const origin = 'https://marketplace.unicus.one/'
       const origin = req.header("Origin");
-      console.log("origin", origin);
       await sendVerificationEmail({
         name: user.username,
         email: user.email,
         verificationToken: user.verificationToken,
+        storeRegistration,
         origin,
       });
 
@@ -98,6 +109,7 @@ const register = async (req, res) => {
     };
 
     const user = await User.create(createObj);
+    // const origin = 'https://marketplace.unicus.one/'
     const origin = req.header("Origin");
 
     await sendVerificationEmail({
@@ -105,18 +117,20 @@ const register = async (req, res) => {
       email: user.email,
       verificationToken: user.verificationToken,
       origin,
+      storeRegistration,
     });
 
     res.status(StatusCodes.CREATED).json({
       msg: "Success! Please check your email to verify account",
     });
   } catch (e) {
-    console.log("err", e.message);
+    throw new CustomError.BadRequestError(e.message);
   }
 };
 
 const verifyEmail = async (req, res) => {
   try {
+    console.log("query", req.query);
     const email = req.query.email;
     const verificationToken = req.query.token;
     const user = await User.findOne({ email });
@@ -136,15 +150,30 @@ const verifyEmail = async (req, res) => {
     user.verificationToken = "";
 
     await user.save();
+    console.log("user", user);
 
-    res.status(StatusCodes.OK).json({ msg: "Email Successfully Verified" });
+    const tokenUser = createTokenPayload(user);
+
+    // check for existing token
+    const existingToken = await Token.findOne({ user: user._id });
+
+    if (existingToken) {
+      await Token.findOneAndDelete({ user: user._id });
+    }
+
+    const token = createJWT({ payload: tokenUser });
+    const userAgent = req.headers["user-agent"];
+    const ip = req.ip;
+    const userToken = { token, ip, userAgent, user: user._id };
+
+    await Token.create(userToken);
+
+    res.status(StatusCodes.OK).json({ accessToken: token, user: user });
   } catch (e) {
     throw new CustomError.BadRequestError(e.message);
   }
-  
-  const origin = `${req.header("Origin")}/`;
 
-  return res.redirect(origin);
+  return res.redirect("https://marketplace.unicus.one/");
 };
 
 const login = async (req, res) => {
