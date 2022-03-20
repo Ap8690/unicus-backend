@@ -260,7 +260,7 @@ const updateUser = async (req, res) => {
     user.bio = bio
 
     await user.save()
-    res.status(StatusCodes.OK).json({ msg: user, nfts })
+    res.status(StatusCodes.OK).json({ msg: user })
 }
 
 const banUser = async (req, res) => {

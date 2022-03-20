@@ -37,6 +37,15 @@ const create = async (req, res) => {
     } else if (!nftType) {
         throw new CustomError.BadRequestError('Please provide the nft type')
     }
+    
+    var contractAddress
+    if (chain == "56") {
+        contractAddress = "0x2f376c69feEC2a4cbb17a001EdB862573898E95a"
+    } else if (chain == "1") {
+        contractAddress = "0x424bb7731c056a52b45CBD613Ef08c69c628735f"
+    } else if (chain == "137") {
+        contractAddress = "0x1549EabD2a47762413ee1A11e667E67A5825ff44"
+    }
 
     const createObj = {
         userInfo,
@@ -55,6 +64,7 @@ const create = async (req, res) => {
         cloudinaryUrl,
         royalty,
         owner,
+        contractAddress
     }
 
     const data = await Nft.create(createObj)
@@ -71,19 +81,19 @@ const create = async (req, res) => {
 }
 
 const getNFTByNftId = async (req, res) => {
-    const nftId = req.params.nftId
+    const tokenId = req.params.tokenId
     const nft = await Nft.findOne({
-        _id: nftId,
+        tokenId,
     })  
     const userId = req.params.userId;
-    var totalViews = await Views.find({ nftId })
+    var totalViews = await Views.find({ nftId: nft._id })
     if(totalViews.length == 0) {
       await Views.create({
-        nftId: ObjectId(nftId),
+        nftId: ObjectId(nft._id),
         views: [],
         heart: []
       })
-      totalViews = await Views.find({ nftId: nftId })
+      totalViews = await Views.find({ nftId: nft._id })
     }
   
     var user
@@ -107,13 +117,13 @@ const getNFTByNftId = async (req, res) => {
             bio: user[0].bio,
         }
         await Views.updateOne(
-            { nftId: nftId },
+            { nftId: nft._id },
             { $push: { views: data } },
             { new: true, upsert: true }
         )
-        await Nft.updateOne({ _id: nftId }, { views: nft.views + 1 })
+        await Nft.updateOne({ _id: nft._id }, { views: nft.views + 1 })
         await Auction.updateOne(
-            { nftId, auctionStatus: 2 },
+            { nftId: nft._id, auctionStatus: 2 },
             { views: nft.views + 1 }
         )
     }
