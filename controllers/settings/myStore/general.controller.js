@@ -157,6 +157,7 @@ const updateSocialLinks = async (req, res) => {
       stackoverflow
     } = req.body;
     const userId = req.user.userId;
+    const storefront = req.storefront.id;
 
     const obj = {
       facebook,
@@ -175,14 +176,18 @@ const updateSocialLinks = async (req, res) => {
       user: userId,
     };
 
-    const result = await SocialLink.findOneAndUpdate({ user: userId }, obj, {
+    const result = await SocialLink.findOneAndUpdate({ storefront }, obj, {
       upsert: true,
     });
     if (result) {
       res.status(StatusCodes.OK).json({ result });
     }
+    else{
+      res.status(StatusCodes.BAD_REQUEST).json("Request failed");
+    }
   } catch (err) {
     console.log("err", err);
+    res.status(StatusCodes.BAD_REQUEST).json({err:err.message});
   }
 };
 
