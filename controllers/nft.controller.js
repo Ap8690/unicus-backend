@@ -180,7 +180,7 @@ const getNFTByNftId = async (req, res) => {
     if (userId !== "none") {
         user = await User.find({ _id: userId })
         filter = totalViews[0].views.filter((obj) => {
-            return obj.username == user[0].username
+            return obj.userId.toString() == user[0]._id.toString()
         })
     }
 
@@ -194,6 +194,7 @@ const getNFTByNftId = async (req, res) => {
             profileUrl: user[0].profileUrl,
             username: user[0].username,
             bio: user[0].bio,
+            userId: user[0]._id
         }
         await Views.updateOne(
             { nftId: nft._id },

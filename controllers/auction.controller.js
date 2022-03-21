@@ -267,7 +267,7 @@ const startAuction = async (req, res) => {
     });
     console.log(auctionData)
     const auction = await Auction.updateOne(
-      { auctionId, nftId: ObjectId(nftId) },
+      { auctionId, nftId: ObjectId(nftId), auctionStatus: 1 },
       {
         auctionStatus: 2,
         auctionStartOn: new Date(),

@@ -293,7 +293,7 @@ const verifyEmail = async (req, res) => {
 
         await Token.create(userToken);
 
-        res.status(StatusCodes.OK).json({ accessToken: token, user: user });
+        res.status(StatusCodes.OK).json({ accessToken: token, user: user, msg: "Email Successfully Verified" });
 
     } catch (e) {
         throw new CustomError.BadRequestError(e.message)
