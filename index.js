@@ -62,7 +62,8 @@ app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
 const PORT = process.env.PORT || 4000;
-const DB_URL = process.env.MONGO_URL || "mongodb://127.0.0.1:27017/task-manager-api";
+const DB_URL = process.env.MONGO_URL;
+
 const start = async () => {
   try {
     await connectDB(DB_URL);

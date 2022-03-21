@@ -247,7 +247,8 @@ const getAllExplore = async (req, res) => {
 
 const getAuctionById = async (req, res) => {
   const tokenId = req.params.tokenId
-  const auction = await Auction.find({ tokenId });
+  const chain = Math.max(0, req.params.chain)
+  const auction = await Auction.find({ tokenId, chain, auctionStatus: 2 });
   res.status(StatusCodes.OK).json(auction);
 };
 
