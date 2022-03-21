@@ -63,6 +63,14 @@ const AdvanceSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    aboutUs:{
+      type: String,
+      default: "",
+    },
+    creators:{
+      type: String,
+      default: "",
+    },
     user: {
       type: mongoose.Types.ObjectId,
       ref: "User",
