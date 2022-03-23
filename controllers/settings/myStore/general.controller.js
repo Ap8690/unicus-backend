@@ -18,11 +18,12 @@ const getGeneral = async(req, res)=>{
 
 const getSocialLinks = async (req, res) => {
    try {
-     const userId = req.user.userId;
-     const result = await SocialLink.findOne({ user: userId });
+     const storefront = req.storefront.id;
+     const result = await SocialLink.findOne({ storefront });
      res.status(StatusCodes.OK).json({ result });
    } catch (err) {
      console.log("err", err);
+    res.status(StatusCodes.BAD_REQUEST).json({ err });
    }
 };
 
@@ -156,6 +157,7 @@ const updateSocialLinks = async (req, res) => {
       stackoverflow
     } = req.body;
     const userId = req.user.userId;
+    const storefront = req.storefront.id;
 
     const obj = {
       facebook,
@@ -174,14 +176,18 @@ const updateSocialLinks = async (req, res) => {
       user: userId,
     };
 
-    const result = await SocialLink.findOneAndUpdate({ user: userId }, obj, {
+    const result = await SocialLink.findOneAndUpdate({ storefront }, obj, {
       upsert: true,
     });
     if (result) {
       res.status(StatusCodes.OK).json({ result });
     }
+    else{
+      res.status(StatusCodes.BAD_REQUEST).json("Request failed");
+    }
   } catch (err) {
     console.log("err", err);
+    res.status(StatusCodes.BAD_REQUEST).json({err:err.message});
   }
 };
 

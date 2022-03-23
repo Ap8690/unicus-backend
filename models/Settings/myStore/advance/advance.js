@@ -9,7 +9,7 @@ const AdvanceSchema = new mongoose.Schema(
       },
       assetsMinted: {
         type: Boolean,
-        default: false,
+        default: true,
       },
     },
     showPoly: {
@@ -19,7 +19,7 @@ const AdvanceSchema = new mongoose.Schema(
       },
       assetsMinted: {
         type: Boolean,
-        default: false,
+        default: true,
       },
     },
     showBinance: {
@@ -29,7 +29,7 @@ const AdvanceSchema = new mongoose.Schema(
       },
       assetsMinted: {
         type: Boolean,
-        default: false,
+        default: true,
       },
     },
     showCronos: {
@@ -60,6 +60,14 @@ const AdvanceSchema = new mongoose.Schema(
       default: "",
     },
     terms: {
+      type: String,
+      default: "",
+    },
+    aboutUs:{
+      type: String,
+      default: "",
+    },
+    creators:{
       type: String,
       default: "",
     },

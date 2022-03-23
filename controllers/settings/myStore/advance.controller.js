@@ -25,9 +25,12 @@ const updateAdvance = async (req, res) => {
       nftCategories,
       siteUrls,
       privacyPolicy,
-      terms
+      terms,
+      aboutUs,
+      creators
     } = req.body;
     const userId = req.user.userId;
+    const storefront = req.storefront.id
 
     
     const obj = { 
@@ -41,8 +44,10 @@ const updateAdvance = async (req, res) => {
       siteUrls,
       privacyPolicy,
       terms,
+      aboutUs,
+      creators,
       user: userId };
-    const result = await Advance.findOneAndUpdate({ user: userId }, obj, {
+    const result = await Advance.findOneAndUpdate({ user: userId, storefront }, obj, {
       upsert: true,
     });
     if (result) {
