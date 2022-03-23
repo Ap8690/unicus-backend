@@ -11,6 +11,10 @@ const WalletTransactionSchema = new mongoose.Schema(
     type: { type: String, default: "" }, //credit, debit
     reason: { type: String, default: "" }, //wallet recharged, Placed Bid, Bid reversed
     transactionObj: {},
+    storefront: {
+      type: mongoose.Types.ObjectId,
+      ref: "Storefront",
+    },
   },
   { timestamps: true }
 );
