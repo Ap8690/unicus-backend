@@ -8,6 +8,7 @@ const { Bids, Auction } = require('../models')
 const ObjectId = mongoose.Types.ObjectId
 // import { v4 as uuidv4 } from 'uuid';
 const Views = require("../models/Views");
+const Collection = require('../models/Collection')
 
 const create = async (req, res) => {
     const {
@@ -30,79 +31,157 @@ const create = async (req, res) => {
     } = req.body
     const userId = req.user.userId
 
-    if (!jsonIpfs) {
-        throw new CustomError.BadRequestError('Please provide the json IPFS')
-    } else if (!name) {
-        throw new CustomError.BadRequestError('Please provide the nft name')
-    } else if (!nftType) {
-        throw new CustomError.BadRequestError('Please provide the nft type')
+    var nftCollection
+    if(collectionName) {
+        var regex = new RegExp(`^${collectionName.trim()}$`, 'ig')
+        nftCollection = await Collection.findOne({
+            collectionName: { $regex: regex },
+        })
     }
-    
-    var contractAddress
-    if (chain == "56") {
-        contractAddress = "0x2f376c69feEC2a4cbb17a001EdB862573898E95a"
-    } else if (chain == "1") {
-        contractAddress = "0x424bb7731c056a52b45CBD613Ef08c69c628735f"
-    } else if (chain == "137") {
-        contractAddress = "0x1549EabD2a47762413ee1A11e667E67A5825ff44"
-    }
+    console.log(nftCollection)
+    if (nftCollection) {
+        if (mintedInfo == nftCollection.mintedInfo) {
 
-    const createObj = {
-        userInfo,
-        jsonHash: jsonIpfs,
-        name,
-        description,
-        nftType,
-        uploadedBy,
-        mintedInfo,
-        chain,
-        tokenId,
-        mintedBy,
-        collectionName,
-        category,
-        tags,
-        cloudinaryUrl,
-        royalty,
-        owner,
-        contractAddress
-    }
+            console.log(req.body)
+            if (!jsonIpfs) {
+                throw new CustomError.BadRequestError('Please provide the json IPFS')
+            } else if (!name) {
+                throw new CustomError.BadRequestError('Please provide the nft name')
+            } else if (!nftType) {
+                throw new CustomError.BadRequestError('Please provide the nft type')
+            }
 
-    const data = await Nft.create(createObj)
-    console.log(data._id)
-    await NFTStates.create({
-        nftId: ObjectId(data._id),
-        name,
-        state: 'Minted',
-        from: 'Null Address',
-        to: userInfo,
-        date: new Date(),
-    })
-    res.status(StatusCodes.CREATED).json({ data })
+            var contractAddress
+            if (chain == "56") {
+                contractAddress = "0x2f376c69feEC2a4cbb17a001EdB862573898E95a"
+            } else if (chain == "1") {
+                contractAddress = "0x424bb7731c056a52b45CBD613Ef08c69c628735f"
+            } else if (chain == "137") {
+                contractAddress = "0x1549EabD2a47762413ee1A11e667E67A5825ff44"
+            }
+
+            const createObj = {
+                userInfo,
+                jsonHash: jsonIpfs,
+                name,
+                description,
+                nftType,
+                uploadedBy,
+                mintedInfo,
+                chain,
+                tokenId,
+                mintedBy,
+                collectionName,
+                category,
+                tags,
+                cloudinaryUrl,
+                royalty,
+                owner,
+                contractAddress
+            }
+
+            const data = await Nft.create(createObj)
+            await Collection.updateOne({ collectionName: { $regex: regex }}, { total: nftCollection.total + 1 })
+            console.log(data._id)
+            await NFTStates.create({
+                nftId: ObjectId(data._id),
+                name,
+                state: 'Minted',
+                from: 'Null Address',
+                to: userInfo,
+                date: new Date(),
+            })
+            res.status(StatusCodes.CREATED).json({ data })
+        } else {
+            throw new CustomError.BadRequestError('Collection name already exists')
+        }
+    } else {
+        console.log(req.body)
+        if (!jsonIpfs) {
+            throw new CustomError.BadRequestError('Please provide the json IPFS')
+        } else if (!name) {
+            throw new CustomError.BadRequestError('Please provide the nft name')
+        } else if (!nftType) {
+            throw new CustomError.BadRequestError('Please provide the nft type')
+        }
+
+        var contractAddress
+        if (chain == "56") {
+            contractAddress = "0x2f376c69feEC2a4cbb17a001EdB862573898E95a"
+        } else if (chain == "1") {
+            contractAddress = "0x424bb7731c056a52b45CBD613Ef08c69c628735f"
+        } else if (chain == "137") {
+            contractAddress = "0x1549EabD2a47762413ee1A11e667E67A5825ff44"
+        }
+
+        const createObj = {
+            userInfo,
+            jsonHash: jsonIpfs,
+            name,
+            description,
+            nftType,
+            uploadedBy,
+            mintedInfo,
+            chain,
+            tokenId,
+            mintedBy,
+            collectionName,
+            category,
+            tags,
+            cloudinaryUrl,
+            royalty,
+            owner,
+            contractAddress
+        }
+
+        const data = await Nft.create(createObj)
+        if(collectionName) {
+            const collectionObj = {
+                ownerName: mintedInfo,
+                ownerId: mintedBy,
+                collectionName
+            }
+            await Collection.create(collectionObj)
+        }
+        console.log(data._id)
+        await NFTStates.create({
+            nftId: ObjectId(data._id),
+            name,
+            state: 'Minted',
+            from: 'Null Address',
+            to: userInfo,
+            date: new Date(),
+        })
+        res.status(StatusCodes.CREATED).json({ data })
+    }
 }
 
 const getNFTByNftId = async (req, res) => {
     const tokenId = req.params.tokenId
+    const chain = Math.max(0, req.params.chain)
+    console.log(chain)
     const nft = await Nft.findOne({
         tokenId,
-    })  
+        chain
+    })
     const userId = req.params.userId;
     var totalViews = await Views.find({ nftId: nft._id })
-    if(totalViews.length == 0) {
-      await Views.create({
-        nftId: ObjectId(nft._id),
-        views: [],
-        heart: []
-      })
-      totalViews = await Views.find({ nftId: nft._id })
+    if (totalViews.length == 0) {
+        await Views.create({
+            nftId: ObjectId(nft._id),
+            views: [],
+            heart: []
+        })
+        totalViews = await Views.find({ nftId: nft._id })
     }
-  
+
     var user
     var filter = []
-    if(userId !== "none") {
-      user = await User.find({ _id: userId })
-      filter = totalViews[0].views.filter((obj) => {
-        return obj.username == user[0].username
-      })
+    if (userId !== "none") {
+        user = await User.find({ _id: userId })
+        filter = totalViews[0].views.filter((obj) => {
+            return obj.userId.toString() == user[0]._id.toString()
+        })
     }
 
     const nftStates = await NFTStates.find({ nftId: nft._id })
@@ -115,6 +194,7 @@ const getNFTByNftId = async (req, res) => {
             profileUrl: user[0].profileUrl,
             username: user[0].username,
             bio: user[0].bio,
+            userId: user[0]._id
         }
         await Views.updateOne(
             { nftId: nft._id },
@@ -158,25 +238,19 @@ const getAll = async (req, res) => {
     }
 }
 
-const getAllNFTS = async (req, res) => {
-    const totalNfts = await Nft.find()
-    console.log(totalNfts.length)
-    if (totalNfts.length < skip + 5) {
-        const limit = Math.max(0, totalNfts.length - skip)
-        console.log(skip)
-        const nfts = await Nft.find().limit(limit).skip(skip)
-        res.status(StatusCodes.OK).json({
-            data: nfts,
-            totalNfts: totalNfts.length,
-        })
+const getallCollections = async (req, res) => {
+    // const sort = req.params.sort
+    // console.log("---------->", sort)
+    // console.log("+++++++++++", JSON.parse(sort))
+    const skip = Math.max(0, req.params.skip)
+    const collections = await Collection.find({ active: true })
+    if(collections.length < skip + 30) {
+        const limit = Math.max(0, collections.length - skip)
+        const data = await Collection.find({ active: true }).limit(limit).skip(skip);
+        res.status(StatusCodes.OK).json({ data: data, totalCollections: collections.length, msg: "Done" });
     } else {
-        const skip = Math.max(0, req.params.skip)
-        console.log(skip)
-        const nfts = await Nft.find().limit(5).skip(skip)
-        res.status(StatusCodes.OK).json({
-            data: nfts,
-            totalNfts: totalNfts.length,
-        })
+        const data = await Collection.find({ active: true }).limit(30).skip(skip);
+        res.status(StatusCodes.OK).json({ data: data, totalCollections: collections.length });
     }
 }
 
@@ -288,7 +362,7 @@ const banNFT = async (req, res) => {
                 },
             }
         )
-        if(user2) {
+        if (user2) {
             const data2 = await Auction.updateOne(
                 { nftId: userId },
                 {
@@ -328,7 +402,7 @@ const unbanNFT = async (req, res) => {
                 },
             }
         )
-        if(user2) {
+        if (user2) {
             const data2 = await Auction.updateOne(
                 { nftId: userId },
                 {
@@ -365,4 +439,5 @@ module.exports = {
     getNFTViews,
     unbanNFT,
     banNFT,
+    getallCollections
 }

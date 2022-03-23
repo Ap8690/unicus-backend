@@ -75,6 +75,9 @@ app.use("/my-account", myAccountRouter);
 
 
 
+//Storefront
+app.use("/general", generalRouter)
+
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 

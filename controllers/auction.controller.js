@@ -283,7 +283,8 @@ const getAllExplore = async (req, res) => {
 
 const getAuctionById = async (req, res) => {
   const tokenId = req.params.tokenId
-  const auction = await Auction.find({ tokenId });
+  const chain = Math.max(0, req.params.chain)
+  const auction = await Auction.find({ tokenId, chain, auctionStatus: 2 });
   res.status(StatusCodes.OK).json(auction);
 };
 
@@ -305,7 +306,7 @@ const startAuction = async (req, res) => {
     });
     console.log(auctionData)
     const auction = await Auction.updateOne(
-      { auctionId, nftId: ObjectId(nftId), storefront },
+      { auctionId, nftId: ObjectId(nftId), auctionStatus: 1 },
       {
         auctionStatus: 2,
         auctionStartOn: new Date(),
