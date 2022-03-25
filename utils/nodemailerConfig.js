@@ -1,10 +1,10 @@
 require('dotenv').config();
 
 module.exports = {
-  service: 'gmail',
+  service: "gmail",
   // host: process.env.MAIL_HOST,
   auth: {
-    user: "vipersharma.88@gmail.com",
-    pass: "ounvtgftnkymuzae",
+    user: "one.unicus@gmail.com",
+    pass: "Unicusone@1",
   },
 };

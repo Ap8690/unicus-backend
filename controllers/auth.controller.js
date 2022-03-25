@@ -18,7 +18,7 @@ var web3 = new Web3()
 
 const register = async (req, res) => {
     try {
-        const { email, username, password, walletAddress, userType2, storeRegistration } = req.body
+        const { email, username, password, walletAddress, userType2 } = req.body
 
         if (!email) {
             throw new CustomError.BadRequestError('Please provide an email')
@@ -50,7 +50,6 @@ const register = async (req, res) => {
                 name: user.username,
                 email: user.email,
                 verificationToken: user.verificationToken,
-                storeRegistration,
                 origin,
             })
 
@@ -113,7 +112,6 @@ const register = async (req, res) => {
             email: user.email,
             verificationToken: user.verificationToken,
             origin,
-            storeRegistration,
         })
 
         res.status(StatusCodes.CREATED).json({
@@ -437,7 +435,9 @@ const forgotPassword = async (req, res) => {
         if (user) {
             const passwordToken = crypto.randomBytes(70).toString('hex')
             // send email
-            const origin = 'https://marketplace.unicus.one/'
+            // const origin = 'https://marketplace.unicus.one/'
+            
+            const origin = req.header("Origin");
             await sendResetPasswordEmail({
                 name: user.username,
                 email: user.email,

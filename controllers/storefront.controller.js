@@ -14,9 +14,12 @@ const createStore = async (req, res) => {
     const userInfo = req.body.user;
     const alreadyCreated = await Storefront.findOne({domain})
     const emailTaken = await General.findOne({email})
-   
-    if(!storeName){
-      throw new CustomError.BadRequestError("Please enter store name.");
+    const regex = new RegExp(/^[a-z][a-z0-9-\s]*$/i);
+
+    if(!storeName || !regex.test(storeName)){
+      throw new CustomError.BadRequestError(
+        "Please enter store name. Only letters, numbers and - is allowed."
+      );
     }
     if (!validator.isEmail(email)) {
       throw new CustomError.BadRequestError("Please enter valid email.");
