@@ -4,7 +4,7 @@ const createJWT = ({ payload }) => {
   const token = jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: "24h",
   });
-  console.log("valid", token, process.env.JWT_SECRET);
+  console.log("create", token, process.env.JWT_SECRET);
   return token;
 };
 
@@ -17,8 +17,8 @@ const createLimitedTimeToken = ({ payload, expiresIn }) => {
 
 const isTokenValid = (token) => {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     console.log("valid", token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     return decoded;
   } catch (err) {
     return false;

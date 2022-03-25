@@ -10,7 +10,7 @@ const authenticateUser = async (req, res, next) => {
     const accessToken = req.headers["authorization"];
     const bearerToken = accessToken.split(" ")[1];
     if (accessToken) {
-      const payload = isTokenValid(bearerToken);
+      const payload = isTokenValid(bearerToken.trim());
       console.log("pa", payload);
       if (!payload) {
         return res.status(StatusCodes.UNAUTHORIZED).json({ msg: "Invalid Token" });
