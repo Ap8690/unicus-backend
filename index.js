@@ -81,10 +81,17 @@ app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
 const PORT = process.env.PORT || 4000;
-const DB_URL = process.env.MONGO_URL_DEV || "mongodb://127.0.0.1:27017/unicus-storefront";
+let DB_URL=""
+if(process.env.NODE_ENV === "prod"){
+  DB_URL = process.env.MONGO_URL
+}else{
+  DB_URL = process.env.MONGO_URL_DEV;
+}
+
 const start = async () => {
   try {
     await connectDB(DB_URL);
+    console.log(DB_URL);
     app.listen(PORT, (err) => {
       if (err) throw err;
       console.log(`Server is up and running on ${PORT}`);
