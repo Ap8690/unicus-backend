@@ -91,7 +91,6 @@ if(process.env.NODE_ENV === "prod"){
 const start = async () => {
   try {
     await connectDB(DB_URL);
-    console.log(DB_URL);
     app.listen(PORT, (err) => {
       if (err) throw err;
       console.log(`Server is up and running on ${PORT}`);
