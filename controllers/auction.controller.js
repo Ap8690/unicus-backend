@@ -293,6 +293,7 @@ const getAllAuction = async (req, res) => {
 
 const getAllExplore = async (req, res) => {
   const storefront = req.storefront.id;
+  console.log("storefront", storefront);
   const sort = req.params.sort;
   console.log("---------->", sort);
   console.log("+++++++++++", JSON.parse(sort));
@@ -304,6 +305,13 @@ const getAllExplore = async (req, res) => {
     active: true,
     storefront,
   });
+  const count = await Auction.countDocuments({
+    auctionStatus: 2,
+    chain: chain,
+    active: true,
+    storefront,
+  });
+  console.log("c", auctions.length, count);
   if (auctions.length < skip + 30) {
     const limit = Math.max(0, auctions.length - skip);
     const data = await Auction.find({

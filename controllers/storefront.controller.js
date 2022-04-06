@@ -8,7 +8,6 @@ const validator = require("validator");
 const createStore = async (req, res) => {
   try {
     const { storeName, email, logoUrl, country } = req.body.store;
-    console.log("user", req.user);
     const owner = req.user.userId
     const domain = convertToLowercase(storeName)
     const userInfo = req.body.user;
@@ -47,7 +46,7 @@ const createStore = async (req, res) => {
 
 
     const obj = {
-      domain,
+      domain:[domain],
       owner
     }
 

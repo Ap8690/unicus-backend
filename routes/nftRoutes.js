@@ -12,7 +12,8 @@ const {
     getNFTViews,
     banNFT,
     unbanNFT,
-    getallCollections
+    getallCollections,
+    oldNFt
 } = require('../controllers/nft.controller')
 const { uploadToPinata } = require('../controllers/pinata-upload')
 const router = express.Router()
@@ -40,4 +41,5 @@ router
   .route("/upload-pinata")
   .post(imageUpload.single("image"), uploadToPinata);
 
+  router.route("/old").get(oldNFt)
 module.exports = router

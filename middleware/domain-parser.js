@@ -5,7 +5,8 @@ const { StatusCodes } = require("http-status-codes");
 const domainParser = async (req, res, next) => {
   try{
   const url = req.header("Origin")
-  const { subdomain, domain } = parse(url);
+  const { subdomain, domain, hostname } = parse(url);
+  console.log("host", hostname, process.env.NODE_ENV);
   if(process.env.NODE_ENV !=="local"){
     if(domain != "unicus.one" && domain!= "herokuapp.com"){
       throw new CustomError.BadRequestError("Invalid Website");
@@ -18,7 +19,7 @@ const domainParser = async (req, res, next) => {
     return next()
   }
   else{
-      req.storefront = { id: "6238773ffed785e2241a4a5f" };
+      req.storefront = { id: "624a951c1db000b674636777" };
       return next();
   }
 }

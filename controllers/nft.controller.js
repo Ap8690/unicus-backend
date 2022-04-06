@@ -164,12 +164,13 @@ const getNFTByNftId = async (req, res) => {
     const tokenId = req.params.tokenId
     const chain = Math.max(0, req.params.chain)
     const storefront = req.storefront.id
-    console.log(chain)
+    console.log(chain, tokenId, storefront)
     const nft = await Nft.findOne({
         tokenId,
         chain,
         storefront
     })
+    console.log("nft", nft);
     const userId = req.params.userId;
     var totalViews = await Views.find({ nftId: nft._id })
     if (totalViews.length == 0) {
@@ -494,7 +495,15 @@ const unbanNFT = async (req, res) => {
     }
 }
 
+const oldNFt = async(req, res) =>{
+    // const toal = await Auction.updateMany(
+    //   { storefront: { $exists: false } },
+    //   { storefront: "624a951c1db000b674636777" }
+    // );
+    // console.log("oldNft", toal.length);
+}
 module.exports = {
+    oldNFt,
     create,
     getNFTByNftId,
     getAll,
