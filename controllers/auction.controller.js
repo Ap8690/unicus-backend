@@ -71,6 +71,7 @@ const create = async (req, res) => {
         cloudinaryUrl,
         storefront,
         views: nftOne.views,
+        category:nftOne.category
       };
       const auction = await Auction.create(createObj);
       const nft = await Nft.updateOne(
@@ -142,6 +143,7 @@ const sell = async (req, res) => {
         cloudinaryUrl,
         storefront,
         views: nftOne.views,
+        category:nftOne.category
       };
 
       const auction = await Auction.create(createObj);
