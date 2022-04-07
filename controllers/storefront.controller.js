@@ -24,7 +24,7 @@ const createStore = async (req, res) => {
     } else {
       domain = `${subdomain}.test.unicus.one`;
     }
-    
+
     const alreadyCreated = await Storefront.findOne({ domain });
 
     if(!domain || domain === ""){
@@ -40,7 +40,7 @@ const createStore = async (req, res) => {
     if (!validator.isEmail(email)) {
       throw new CustomError.BadRequestError("Please enter valid email.");
     }
-    if(alreadyCreated || isReservedWord(domain)){
+    if(alreadyCreated || isReservedWord(subdomain)){
       throw new CustomError.BadRequestError("Name not available.");
     }
     if(emailTaken){
