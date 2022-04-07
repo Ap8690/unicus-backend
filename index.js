@@ -84,8 +84,11 @@ const PORT = process.env.PORT || 4000;
 let DB_URL=""
 if(process.env.NODE_ENV === "prod"){
   DB_URL = process.env.MONGO_URL
-}else{
-  DB_URL = process.env.MONGO_URL_DEV;
+}else if(process.env.NODE_ENV === "staging"){
+  DB_URL = process.env.MONGO_URL_QA;
+}
+else{
+    DB_URL = process.env.MONGO_URL_DEV;
 }
 
 const start = async () => {
