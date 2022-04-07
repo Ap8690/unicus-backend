@@ -135,7 +135,7 @@ const getStoreDetails = async (req, res) =>{
     res.status(StatusCodes.OK).json({ store });
   }
   catch(err){
-    console.log("err", err.message);
+    console.log("err", err);
     res.status(StatusCodes.BAD_REQUEST).json({ err: err.message });
   }
 }
