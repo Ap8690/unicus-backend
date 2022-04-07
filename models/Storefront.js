@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const StorefrontSchema = new mongoose.Schema(
   {
     domain: {
-      type: [String],
+      type: [],
       required: true,
     },
     owner: {

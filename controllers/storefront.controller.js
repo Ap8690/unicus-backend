@@ -9,12 +9,29 @@ const createStore = async (req, res) => {
   try {
     const { storeName, email, logoUrl, country } = req.body.store;
     const owner = req.user.userId
-    const domain = convertToLowercase(storeName)
+    const subdomain = convertToLowercase(storeName)
+    
     const userInfo = req.body.user;
-    const alreadyCreated = await Storefront.findOne({domain})
     const emailTaken = await General.findOne({email})
     const regex = new RegExp(/^[a-z][a-z0-9-\s]*$/i);
+    let domain = "";
+    if (process.env.NODE_ENV === "prod") {
+      domain = `${subdomain}.unicus.one`;
+    } else if (process.env.NODE_ENV === "staging") {
+      domain = `${subdomain}.qa.unicus.one`;
+    } else if (process.env.NODE_ENV === "demo") {
+      domain = `${subdomain}.demo.unicus.one`;
+    } else {
+      domain = `${subdomain}.test.unicus.one`;
+    }
 
+    const alreadyCreated = await Storefront.findOne({ domain });
+
+    if(!domain || domain === ""){
+      throw new CustomError.BadRequestError(
+        "Domain name missing"
+      );
+    }
     if(!storeName || !regex.test(storeName)){
       throw new CustomError.BadRequestError(
         "Please enter store name. Only letters, numbers and - is allowed."
@@ -23,7 +40,7 @@ const createStore = async (req, res) => {
     if (!validator.isEmail(email)) {
       throw new CustomError.BadRequestError("Please enter valid email.");
     }
-    if(alreadyCreated || isReservedWord(domain)){
+    if(alreadyCreated || isReservedWord(subdomain)){
       throw new CustomError.BadRequestError("Name not available.");
     }
     if(emailTaken){
@@ -83,7 +100,7 @@ const createStore = async (req, res) => {
           
     }
   } catch (err) {
-    console.log("err", err.message);
+    console.log("err-store", err.message);
     res.status(StatusCodes.BAD_REQUEST).json({ err: err.message });
   }
 };

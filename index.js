@@ -84,12 +84,19 @@ const PORT = process.env.PORT || 4000;
 let DB_URL=""
 if(process.env.NODE_ENV === "prod"){
   DB_URL = process.env.MONGO_URL
-}else{
-  DB_URL = process.env.MONGO_URL_DEV;
+}else if(process.env.NODE_ENV === "staging"){
+  DB_URL = process.env.MONGO_URL_QA;
+}
+else if(process.env.NODE_ENV === "demo"){
+  DB_URL = process.env.MONGO_URL_DEMO;
+}
+else{
+    DB_URL = process.env.MONGO_URL_DEV;
 }
 
 const start = async () => {
   try {
+    console.log(DB_URL, process.env.NODE_ENV);
     await connectDB(DB_URL);
     app.listen(PORT, (err) => {
       if (err) throw err;
