@@ -14,7 +14,7 @@ const domainParser = async (req, res, next) => {
     if(!subdomain){
       throw new CustomError.BadRequestError("Invalid domain");
     }
-    const storefront = await Storefront.findOne({domain: subdomain})
+    const storefront = await Storefront.findOne({domain: hostname})
     req.storefront = storefront;
     return next()
   }
