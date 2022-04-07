@@ -24,7 +24,7 @@ const domainParser = async (req, res, next) => {
   }
 }
 catch(err){
-  console.log("err", err);
+  console.log("err-parser", err);
   res.status(StatusCodes.BAD_REQUEST).json(err.message)
 }
 }

@@ -12,7 +12,6 @@ const createStore = async (req, res) => {
     const subdomain = convertToLowercase(storeName)
     
     const userInfo = req.body.user;
-    const alreadyCreated = await Storefront.findOne({domain})
     const emailTaken = await General.findOne({email})
     const regex = new RegExp(/^[a-z][a-z0-9-\s]*$/i);
     let domain = "";
@@ -25,6 +24,9 @@ const createStore = async (req, res) => {
     } else {
       domain = `${subdomain}.test.unicus.one`;
     }
+    
+    const alreadyCreated = await Storefront.findOne({ domain });
+
     if(!domain || domain === ""){
       throw new CustomError.BadRequestError(
         "Domain name missing"
@@ -98,7 +100,7 @@ const createStore = async (req, res) => {
           
     }
   } catch (err) {
-    console.log("err", err.message);
+    console.log("err-store", err.message);
     res.status(StatusCodes.BAD_REQUEST).json({ err: err.message });
   }
 };
