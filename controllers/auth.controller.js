@@ -310,7 +310,7 @@ const login = async (req, res) => {
 
             if(!user) {
                 throw new CustomError.BadRequestError(
-                    'Please Register or add your wallet to your account first.'
+                    'Please Register or Login then add your wallet to your account first to use metamask login.'
                 )
             }
             if (!user.active) {
