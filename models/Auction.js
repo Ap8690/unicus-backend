@@ -71,6 +71,9 @@ const AuctionSchema = new mongoose.Schema(
     cloudinaryUrl: {
       type: String,
     },
+    category: {
+      type: String,
+  },
     active: {
       type: Boolean,
       default: true,
