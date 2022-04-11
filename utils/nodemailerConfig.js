@@ -5,7 +5,7 @@ module.exports = {
   port: 587,
   secure: false,
   auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
+    user: "one.unicus@gmail.com",
+    pass: "ylurxizumgbattnd",
   },
 };
