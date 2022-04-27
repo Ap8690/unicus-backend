@@ -91,7 +91,7 @@ else if(process.env.NODE_ENV === "demo"){
   DB_URL = process.env.MONGO_URL_DEMO;
 }
 else{
-    DB_URL = process.env.MONGO_URL_DEV;
+    DB_URL = process.env.MONGO_URL_QA;
 }
 
 const start = async () => {
