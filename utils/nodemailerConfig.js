@@ -4,7 +4,7 @@ module.exports = {
   service: "gmail",
   // host: process.env.MAIL_HOST,
   auth: {
-    user: "one.unicus@gmail.com",
-    pass: "Unicusone@1",
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS,
   },
 };
