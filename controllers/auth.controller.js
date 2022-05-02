@@ -308,7 +308,12 @@ const login = async (req, res) => {
             var regex = new RegExp(`^${walletAddress.trim()}$`, 'ig')
             const user = await User.findOne({ wallets: { $regex: regex } })
 
-            if (user && !user.active) {
+            if(!user) {
+                throw new CustomError.BadRequestError(
+                    'Please Register or Login then add your wallet to your account first to use metamask login.'
+                )
+            }
+            if (!user.active) {
               throw new CustomError.BadRequestError(
                   'You are not allowed to login! Contact for Support.'
               )
