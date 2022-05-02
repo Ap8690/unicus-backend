@@ -308,7 +308,7 @@ const login = async (req, res) => {
             var regex = new RegExp(`^${walletAddress.trim()}$`, 'ig')
             const user = await User.findOne({ wallets: { $regex: regex } })
 
-            if (!user.active) {
+            if (user && !user.active) {
               throw new CustomError.BadRequestError(
                   'You are not allowed to login! Contact for Support.'
               )
