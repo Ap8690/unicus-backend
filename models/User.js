@@ -74,7 +74,6 @@ const UserSchema = new mongoose.Schema(
         wallets: {
             type: [],
         },
-        profileUrl: String,
         backgroundUrl: String,
         balances: { type: Number, default: 0 },
         walletBalance: {

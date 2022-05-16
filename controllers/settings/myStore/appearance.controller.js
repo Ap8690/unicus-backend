@@ -31,6 +31,8 @@ const updateAppearance = async (req, res) => {
       enableDarkMode,
       heading,
       headerDescription,
+      headerBg,
+      headerPic,
       headerButton,
       featuredAssets,
       showFooter,
@@ -41,10 +43,12 @@ const updateAppearance = async (req, res) => {
     const storefront = req.storefront.id;
 
     const obj = {
-       colorPalette,
+      colorPalette,
       enableDarkMode,
       heading,
       headerDescription,
+      headerBg,
+      headerPic,
       headerButton,
       featuredAssets,
       showFooter,

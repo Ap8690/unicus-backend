@@ -18,6 +18,12 @@ const AppearanceSchema = new mongoose.Schema(
       type: String,
       default:""
     },
+    headerBg:{
+      type: String,
+    },
+    headerPic:{
+      type:String
+    },
     headerButton: [
       {
         title: String,
