@@ -227,7 +227,8 @@ const getAll = async (req, res) => {
     const storefront = req.storefront.id;
 
     const totalNfts = await Auction.find({storefront})
-    
+    const skip = Math.max(0, req.params.skip);
+
     console.log(totalNfts.length)
     if (totalNfts.length < skip + 5) {
         const limit = Math.max(0, totalNfts.length - skip)
@@ -238,7 +239,6 @@ const getAll = async (req, res) => {
             totalNfts: totalNfts.length,
         })
     } else {
-        const skip = Math.max(0, req.params.skip)
         console.log(skip)
         const nfts = await Auction.find({storefront}).limit(5).skip(skip)
         res.status(StatusCodes.OK).json({
