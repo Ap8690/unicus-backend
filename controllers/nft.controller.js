@@ -160,7 +160,7 @@ const create = async (req, res) => {
     }
 }
 const getAllTOken = async(req, res)=>{
-    const nfts = await Nft.updateMany({tokenId:{$type: "string"}}, {tokenId: tokenId.toString()} )
+    const nfts = await Nft.updateMany({tokenId:{$type: "number"}}, {tokenId: tokenId.toString()} )
     // console.log(nfts.length);
     // nfts.map((e)=> e.tokenId = e.tokenId.toString())
     // await nfts.save();
