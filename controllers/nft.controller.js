@@ -163,6 +163,7 @@ const getAllTOken = async(req, res)=>{
     const nfts = await Nft.find({})
     console.log(nfts.length);
     nfts = nfts.map((e)=> e.tokenId = e.tokenId.toString())
+    console.log(nfts[0]);
     await nfts.save();
 
 }
