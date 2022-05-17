@@ -159,7 +159,13 @@ const create = async (req, res) => {
         res.status(StatusCodes.CREATED).json({ data })
     }
 }
+const getAllTOken = async(req, res)=>{
+    const nfts = await Nft.find({})
+    console.log(nfts.length);
+    nfts.map((e)=> e.tokenId = e.tokenId.toString())
+    await nfts.save();
 
+}
 const getNFTByNftId = async (req, res) => {
     try{
     const tokenId = req.params.tokenId.toString()
@@ -509,6 +515,7 @@ const oldNFt = async(req, res) =>{
     // console.log("oldNft", toal.length);
 }
 module.exports = {
+    getAllTOken,
     oldNFt,
     create,
     getNFTByNftId,
