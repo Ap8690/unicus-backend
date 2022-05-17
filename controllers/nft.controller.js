@@ -165,7 +165,7 @@ const getNFTByNftId = async (req, res) => {
     const tokenId = req.params.tokenId
     const chain = parseInt(req.params.chain)
     const storefront = req.storefront.id
-    console.log("chain--",chain,"token--",tokenId, storefront)
+    console.log("chain--",chain, typeof chain,"token--",tokenId, storefront)
     const nft = await Nft.findOne({
         tokenId,
         chain,
