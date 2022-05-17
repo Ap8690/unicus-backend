@@ -4,7 +4,6 @@ const {
     getNFTByNftId,
     getNFTByUserId,
     create,
-    getAllTOken,
     getNFTByUserName,
     // getAllNFTS,
     getRecentlyCreatedNFTS,
@@ -32,7 +31,6 @@ router.route('/getNFTByUserId/:userId').get(getNFTByUserId)
 router.route("/getNftById/:tokenId/:userId/:chain").get(getNFTByNftId);
 router.route('/getNFTByUserName').post(getNFTByUserName)
 router.route('/mint').post(authenticateUser, mintNFT)
-router.route("/fix").get(getAllTOken);
 // router.route("/getNftBids/:id").get(getNftBids);
 router.route("/approve").post(authenticateUser, approveNFT);
 
