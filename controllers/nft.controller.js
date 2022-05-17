@@ -509,7 +509,6 @@ const oldNFt = async(req, res) =>{
     // console.log("oldNft", toal.length);
 }
 module.exports = {
-    getAllTOken,
     oldNFt,
     create,
     getNFTByNftId,
