@@ -162,7 +162,7 @@ const create = async (req, res) => {
 
 const getNFTByNftId = async (req, res) => {
     try{
-    const tokenId = req.params.tokenId
+    const tokenId = req.params.tokenId.toString()
     const chain = parseInt(req.params.chain)
     const storefront = req.storefront.id
     console.log("chain--",chain, typeof chain,"token--",tokenId, storefront)
