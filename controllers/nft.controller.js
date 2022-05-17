@@ -160,10 +160,10 @@ const create = async (req, res) => {
     }
 }
 const getAllTOken = async(req, res)=>{
-    const nfts = await Nft.updateMany({tokenId:{$type: "number"}}, {tokenId: tokenId.toString()} )
-    // console.log(nfts.length);
-    // nfts.map((e)=> e.tokenId = e.tokenId.toString())
-    // await nfts.save();
+    const nfts = await Nft.find({})
+    console.log(nfts.length);
+    nfts = nfts.map((e)=> e.tokenId = e.tokenId.toString())
+    await nfts.save();
 
 }
 const getNFTByNftId = async (req, res) => {
