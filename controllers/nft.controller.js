@@ -161,8 +161,9 @@ const create = async (req, res) => {
 }
 
 const getNFTByNftId = async (req, res) => {
+    try{
     const tokenId = req.params.tokenId
-    const chain = Math.max(0, req.params.chain)
+    const chain = req.params.chain
     const storefront = req.storefront.id
     console.log(chain, tokenId, storefront)
     const nft = await Nft.findOne({
@@ -221,6 +222,11 @@ const getNFTByNftId = async (req, res) => {
         mintedUser,
         auction,
     })
+
+}catch(err){
+    console.log(err);
+    res.status(StatusCodes.BAD_REQUEST).json(err)
+}
 }
 
 const getAll = async (req, res) => {
