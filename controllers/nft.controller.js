@@ -10,7 +10,7 @@ const ObjectId = mongoose.Types.ObjectId
 const Views = require("../models/Views");
 const Collection = require('../models/Collection')
 
-const create = async (req, res) => {
+const  create = async (req, res) => {
     const {
         jsonIpfs,
         name,
@@ -22,6 +22,8 @@ const create = async (req, res) => {
         collectionName,
         category,
         royalty,
+        contractType,
+        contractAddress,
         cloudinaryUrl,
         owner,
         uploadedBy,
@@ -32,6 +34,18 @@ const create = async (req, res) => {
     const userId = req.user.userId
     const storefront = req.storefront.id
 
+    const nft = await Nft.findOne({
+      contractAddress,  
+      tokenId,
+      chain,
+      storefront,
+    });
+    if(nft){
+        throw new CustomError.BadRequestError(
+        "NFT already listed"
+        );
+
+    }
     var nftCollection
     if(collectionName) {
         var regex = new RegExp(`^${collectionName.trim()}$`, 'ig')
@@ -52,14 +66,14 @@ const create = async (req, res) => {
                 throw new CustomError.BadRequestError('Please provide the nft type')
             }
 
-            var contractAddress
-            if (chain == "56") {
-                contractAddress = "0x2f376c69feEC2a4cbb17a001EdB862573898E95a"
-            } else if (chain == "1") {
-                contractAddress = "0x424bb7731c056a52b45CBD613Ef08c69c628735f"
-            } else if (chain == "137") {
-                contractAddress = "0x1549EabD2a47762413ee1A11e667E67A5825ff44"
-            }
+            // var contractAddress
+            // if (chain == "56") {
+            //     contractAddress = "0x2f376c69feEC2a4cbb17a001EdB862573898E95a"
+            // } else if (chain == "1") {
+            //     contractAddress = "0x424bb7731c056a52b45CBD613Ef08c69c628735f"
+            // } else if (chain == "137") {
+            //     contractAddress = "0x1549EabD2a47762413ee1A11e667E67A5825ff44"
+            // }
 
             const createObj = {
                 userInfo,
@@ -78,6 +92,7 @@ const create = async (req, res) => {
                 cloudinaryUrl,
                 royalty,
                 owner,
+                contractType,
                 contractAddress,
                 storefront
             }
@@ -107,14 +122,14 @@ const create = async (req, res) => {
             throw new CustomError.BadRequestError('Please provide the nft type')
         }
 
-        var contractAddress
-        if (chain == "56") {
-            contractAddress = "0x2f376c69feEC2a4cbb17a001EdB862573898E95a"
-        } else if (chain == "1") {
-            contractAddress = "0x424bb7731c056a52b45CBD613Ef08c69c628735f"
-        } else if (chain == "137") {
-            contractAddress = "0x1549EabD2a47762413ee1A11e667E67A5825ff44"
-        }
+        // var contractAddress
+        // if (chain == "56") {
+        //     contractAddress = "0x2f376c69feEC2a4cbb17a001EdB862573898E95a"
+        // } else if (chain == "1") {
+        //     contractAddress = "0x424bb7731c056a52b45CBD613Ef08c69c628735f"
+        // } else if (chain == "137") {
+        //     contractAddress = "0x1549EabD2a47762413ee1A11e667E67A5825ff44"
+        // }
 
         const createObj = {
             userInfo,
@@ -133,6 +148,7 @@ const create = async (req, res) => {
             cloudinaryUrl,
             royalty,
             owner,
+            contractType,
             contractAddress,
             storefront
         }

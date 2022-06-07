@@ -33,12 +33,18 @@ const NftSchema = new mongoose.Schema(
     mintedBy: {
       type: mongoose.Types.ObjectId,
       ref: "User",
+      default:null
     },
     mintedInfo: {
       type: String,
     },
     userInfo: {
       type: String,
+    },
+    contractType: {
+      type: String,
+      enum: { values: ["721", "1155"], message: `{VALUE} is not a valid` }, // 721- 'ERC721', 1155- 'ERC1155'
+      default: "721",
     },
     contractAddress: {
       type: String,

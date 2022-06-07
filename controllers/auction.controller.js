@@ -228,7 +228,9 @@ const getAllSale = async (req, res) => {
     })
       .limit(limit)
       .skip(skip)
-      .sort([["tokenId", -1]]);
+      .sort([["tokenId", -1]])
+      .populate("nftId");
+
     res
       .status(StatusCodes.OK)
       .json({ data: data, totalAuctions: auctions.length, msg: "Done" });
@@ -241,7 +243,9 @@ const getAllSale = async (req, res) => {
     })
       .limit(30)
       .skip(skip)
-      .sort([["tokenId", -1]]);
+      .sort([["tokenId", -1]])
+      .populate("nftId");
+
     res
       .status(StatusCodes.OK)
       .json({ data: data, totalAuctions: auctions.length });
@@ -272,7 +276,9 @@ const getAllAuction = async (req, res) => {
     })
       .limit(limit)
       .skip(skip)
-      .sort(JSON.parse(sort));
+      .sort(JSON.parse(sort))
+      .populate("nftId");
+
     res
       .status(StatusCodes.OK)
       .json({ data: data, totalAuctions: auctions.length, msg: "Done" });
@@ -286,7 +292,9 @@ const getAllAuction = async (req, res) => {
     })
       .limit(30)
       .skip(skip)
-      .sort(JSON.parse(sort));
+      .sort(JSON.parse(sort))
+      .populate("nftId");
+
     res
       .status(StatusCodes.OK)
       .json({ data: data, totalAuctions: auctions.length });
@@ -324,7 +332,8 @@ const getAllExplore = async (req, res) => {
     })
       .limit(limit)
       .skip(skip)
-      .sort(JSON.parse(sort));
+      .sort(JSON.parse(sort))
+      .populate('nftId')
     res
       .status(StatusCodes.OK)
       .json({ data: data, totalAuctions: auctions.length, msg: "Done" });
@@ -337,7 +346,9 @@ const getAllExplore = async (req, res) => {
     })
       .limit(30)
       .skip(skip)
-      .sort(JSON.parse(sort));
+      .sort(JSON.parse(sort))
+      .populate("nftId");
+;
     res
       .status(StatusCodes.OK)
       .json({ data: data, totalAuctions: auctions.length });
@@ -354,7 +365,9 @@ const getRecentPurchased = async (req, res) => {
       chain: chain,
     })
       .limit(20)
-      .sort([["createdAt", -1]]);
+      .sort([["createdAt", -1]])
+      .populate("nftId");
+;
 
     if (data) {
       res.status(StatusCodes.OK).json({ data });
@@ -374,7 +387,8 @@ const getAuctionById = async (req, res) => {
     chain,
     auctionStatus: 2,
     storefront,
-  });
+  }).populate("nftId");
+
   res.status(StatusCodes.OK).json(auction);
 };
 
