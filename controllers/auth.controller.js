@@ -495,10 +495,10 @@ const resetPassword = async (req, res) => {
                 msg: "Password has been successfully updated",
               });
             } else {
-              res.status(StatusCodes.OK).json({ msg: "Invalid Token" });
+              res.status(StatusCodes.UNAUTHORIZED).json({ msg: "Invalid Token" });
             }
         } else {
-            res.status(StatusCodes.OK).json({ msg: 'Invalid User' })
+            res.status(StatusCodes.UNAUTHORIZED).json({ msg: 'Invalid User' })
         }
     } catch (e) {
         throw new CustomError.BadRequestError(e.message)
