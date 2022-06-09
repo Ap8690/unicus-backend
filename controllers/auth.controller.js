@@ -489,13 +489,16 @@ const resetPassword = async (req, res) => {
             if (
                 user.passwordToken == token
             ) {
-                user.password = password
-                user.passwordToken = null
-                await user.save()
-            }
-            res.status(StatusCodes.OK).json({
-                msg: 'Password has been successfully updated',
-            })
+              user.password = password;
+              user.passwordToken = null;
+              await user.save();
+
+              res.status(StatusCodes.OK).json({
+                msg: "Password has been successfully updated",
+              });
+            }else {
+            res.status(StatusCodes.OK).json({ msg: 'Invalid Token' })
+        }
         } else {
             res.status(StatusCodes.OK).json({ msg: 'Invalid User' })
         }
