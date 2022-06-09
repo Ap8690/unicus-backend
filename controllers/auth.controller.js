@@ -486,9 +486,7 @@ const resetPassword = async (req, res) => {
 
         if (user) {
             const currentDate = new Date()
-            if (
-                user.passwordToken == token
-            ) {
+            if (user.passwordToken == createHash(token)) {
               user.password = password;
               user.passwordToken = null;
               await user.save();
@@ -496,9 +494,9 @@ const resetPassword = async (req, res) => {
               res.status(StatusCodes.OK).json({
                 msg: "Password has been successfully updated",
               });
-            }else {
-            res.status(StatusCodes.OK).json({ msg: 'Invalid Token' })
-        }
+            } else {
+              res.status(StatusCodes.OK).json({ msg: "Invalid Token" });
+            }
         } else {
             res.status(StatusCodes.OK).json({ msg: 'Invalid User' })
         }
