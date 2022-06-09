@@ -487,7 +487,7 @@ const resetPassword = async (req, res) => {
         if (user) {
             const currentDate = new Date()
             if (
-                user.passwordToken
+                user.passwordToken == token
             ) {
                 user.password = password
                 user.passwordToken = null
