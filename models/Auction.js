@@ -9,7 +9,7 @@ const AuctionSchema = new mongoose.Schema(
     auctionId: {
       type: Number,
       required: true,
-    },
+    }, 
     auctionTimer: {
       type: Date,
       default: 0,

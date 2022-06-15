@@ -16,6 +16,7 @@ const {
   cancelAuction,
   getAuctionById,
   addViews,
+  getAuctions
 } = require("../controllers/auction.controller");
 
 router.route("/sell").post(authenticateUser, sell);
@@ -32,5 +33,6 @@ router.route("/placeBid").post(authenticateUser, placeBid);
 router.route("/end").post(authenticateUser, endAuction);
 router.route("/cancel").post(authenticateUser, cancelAuction);
 router.route("/addView").post(addViews);
+router.route("/getAuctions/:number/:auctionType").get(getAuctions);
 
 module.exports = router;
