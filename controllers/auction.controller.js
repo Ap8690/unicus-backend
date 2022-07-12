@@ -733,6 +733,39 @@ const addViews = async (req, res) => {
   }
 };
 
+const getAuctions = async (req,res) => {
+  try {
+    const {auctionType,number} = req.params;
+    let auctionStatus = 1;
+
+    if(auctionType.toLowerCase() == "live") {
+      auctionStatus = 2;
+    }
+    else if(auctionType.toLowerCase() == "upcoming") {
+      auctionStatus = 1;
+    }
+    else if (auctionType.toLowerCase() == "ended") {
+      auctionStatus = 3;
+    }
+    console.log("auctionStatus ",auctionStatus)
+    const allAuctions = await Auction.find({
+      auctionStatus:auctionStatus
+    }).limit(number)
+    .skip(0)
+    .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      nfts: allAuctions
+    });
+  }
+  catch(err) {
+    console.log(err)
+    res.status(500).json({
+      err:"INT_SERVER_ERR"
+    })
+  }
+}
+
 module.exports = {
   sell,
   buy,
@@ -748,4 +781,5 @@ module.exports = {
   getAllExplore,
   getAuctionByNftId,
   addViews,
+  getAuctions
 };

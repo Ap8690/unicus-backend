@@ -13,7 +13,9 @@ const {
     banNFT,
     unbanNFT,
     getallCollections,
-    oldNFt
+    oldNFt,
+    getFeaturedNfts,
+    getTrendingNfts
 } = require('../controllers/nft.controller')
 const { uploadToPinata } = require('../controllers/pinata-upload')
 const router = express.Router()
@@ -35,7 +37,9 @@ router.route('/mint').post(authenticateUser, mintNFT)
 router.route("/approve").post(authenticateUser, approveNFT);
 
 router.route("/getRecent/:chain").get(getRecentlyCreatedNFTS);
-router.route('/approve').post(authenticateUser, approveNFT)
+router.route('/approve').post(authenticateUser, approveNFT);
+router.route("/getFeaturedNfts/:number").get(getFeaturedNfts);
+router.route("/getTrendingNfts/:number/:category").get(getTrendingNfts);
 
 router
   .route("/upload-pinata")
