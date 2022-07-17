@@ -66,7 +66,7 @@ const NftSchema = new mongoose.Schema(
     collectionName: {
       type: String,
     },
-    cloudinaryUrl: {
+    image: {
       type: String,
     },
     owner: {

@@ -311,13 +311,11 @@ const getAllExplore = async (req, res) => {
   const chain = req.params.chain;
   const auctions = await Auction.find({
     auctionStatus: 2,
-    chain: chain,
     active: true,
     storefront,
   });
   const count = await Auction.countDocuments({
     auctionStatus: 2,
-    chain: chain,
     active: true,
     storefront,
   });
@@ -326,7 +324,6 @@ const getAllExplore = async (req, res) => {
     const limit = Math.max(0, auctions.length - skip);
     const data = await Auction.find({
       auctionStatus: 2,
-      chain: chain,
       active: true,
       storefront,
     })
@@ -340,7 +337,6 @@ const getAllExplore = async (req, res) => {
   } else {
     const data = await Auction.find({
       auctionStatus: 2,
-      chain: chain,
       active: true,
       storefront,
     })
