@@ -22,7 +22,7 @@ const NftSchema = new mongoose.Schema(
     blockNumber: Number,
     mintHash: String,
     mintReceipt: {},
-    tokenId: String,
+    tokenId: Number,
     auctionId: Number,
     views: { type: Number, default: 0 },
     uploadedBy: {

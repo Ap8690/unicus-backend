@@ -194,17 +194,20 @@ const  create = async (req, res) => {
 };
  
 const getNFTByNftId = async (req, res) => {
-    const tokenId = req.params.tokenId;
+    try{
+    const tokenId = parseInt(req.params.nftId);
     const chain = Math.max(0, req.params.chain);
+    const contractAddress = req.params.contractAddress
     const storefront = req.storefront.id;
-    console.log(chain, tokenId, storefront);
+    console.log(chain, tokenId, storefront, contractAddress);
+    
     const nft = await Nft.findOne({
         tokenId,
         chain,
-        storefront,
+        contractAddress,
+        storefront
     });
     console.log("nft", nft);
-    const userId = req.params.userId;
     var totalViews = await Views.find({ nftId: nft._id });
     if (totalViews.length == 0) {
         await Views.create({
@@ -217,28 +220,29 @@ const getNFTByNftId = async (req, res) => {
 
     var user;
     var filter = [];
-    if (userId !== "none") {
-        user = await User.find({ _id: userId });
-        filter = totalViews[0].views.filter((obj) => {
-            return obj.userId.toString() == user[0]._id.toString();
-        });
-    }
 
     const nftStates = await NFTStates.find({ nftId: nft._id });
     const bids = await Bids.find({ nftId: nft._id });
-    const mintedUser = await User.findOne({ _id: nft.mintedBy });
+    let mintedUser = await User.findOne({ _id: nft.mintedBy });
     const auction = await Auction.findOne({
         nftId: nft._id,
-        auctionStatus: 2,
-        storefront,
+        storefront
     });
 
+    user = {
+      profileUrl: mintedUser.profileUrl,
+      username: mintedUser.username,
+      email: mintedUser.email,
+      bio: mintedUser.bio,
+      id: mintedUser._id,
+    };
+    console.log("user", user);
     if (user && filter.length === 0) {
         const data = {
-            profileUrl: user[0].profileUrl,
-            username: user[0].username,
-            bio: user[0].bio,
-            userId: user[0]._id,
+            profileUrl: user.profileUrl,
+            username: user.username,
+            bio: user.bio,
+            userId: user._id,
         };
         await Views.updateOne(
             { nftId: nft._id },
@@ -250,7 +254,7 @@ const getNFTByNftId = async (req, res) => {
             { views: nft.views + 1 }
         );
         await Auction.updateOne(
-            { nftId: nft._id, auctionStatus: 2, storefront },
+            { nftId: nft._id, storefront },
             { views: nft.views + 1 }
         );
     }
@@ -258,9 +262,12 @@ const getNFTByNftId = async (req, res) => {
         nft,
         nftStates,
         bids,
-        mintedUser,
+        user,
         auction,
     })
+}catch(e){
+    console.log(e);
+}
 
 }
 
