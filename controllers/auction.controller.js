@@ -63,7 +63,8 @@ const create = async (req, res) => {
         tokenId,
         highestBidder: userId,
         chain,
-        auctionStatus: 1,
+        auctionStatus: 2,
+        auctionStartOn: new Date(),
         name,
         sellerWallet,
         sellerId,
@@ -71,7 +72,7 @@ const create = async (req, res) => {
         cloudinaryUrl,
         storefront,
         views: nftOne.views,
-        category:nftOne.category
+        category: nftOne.category,
       };
       const auction = await Auction.create(createObj);
       const nft = await Nft.updateOne(
@@ -257,7 +258,7 @@ const getAllAuction = async (req, res) => {
   const sort = req.params.sort;
   console.log(JSON.parse(sort));
   const skip = Math.max(0, req.params.skip);
-  const chain = req.params.chain;
+  const chain = Math.max(0,req.params.chain);
   const auctions = await Auction.find({
     auctionType: "Auction",
     auctionStatus: 2,
@@ -308,21 +309,43 @@ const getAllExplore = async (req, res) => {
   console.log("---------->", sort);
   console.log("+++++++++++", JSON.parse(sort));
   const skip = Math.max(0, req.params.skip);
-  const chain = req.params.chain;
-  const auctions = await Auction.find({
+  const chain = Math.max(0, req.params.chain);
+
+  let auctions;
+  let count;
+  if(chain!=0){
+  auctions = await Auction.find({
+    chain,
     auctionStatus: 2,
     active: true,
     storefront,
   });
-  const count = await Auction.countDocuments({
+  count = await Auction.countDocuments({
+    chain,
     auctionStatus: 2,
     active: true,
     storefront,
   });
+}else{
+auctions = await Auction.find({
+  auctionStatus: 2,
+  active: true,
+  storefront,
+});
+count = await Auction.countDocuments({
+  auctionStatus: 2,
+  active: true,
+  storefront,
+});
+}
+  
   console.log("c", auctions.length, count);
   if (auctions.length < skip + 30) {
     const limit = Math.max(0, auctions.length - skip);
-    const data = await Auction.find({
+    let data 
+    if(chain!=0){
+    data = await Auction.find({
+      chain,
       auctionStatus: 2,
       active: true,
       storefront,
@@ -331,6 +354,17 @@ const getAllExplore = async (req, res) => {
       .skip(skip)
       .sort(JSON.parse(sort))
       .populate('nftId')
+  }else{
+    data = await Auction.find({
+      auctionStatus: 2,
+      active: true,
+      storefront,
+    })
+      .limit(limit)
+      .skip(skip)
+      .sort(JSON.parse(sort))
+      .populate("nftId");
+  }
     res
       .status(StatusCodes.OK)
       .json({ data: data, totalAuctions: auctions.length, msg: "Done" });
@@ -461,7 +495,7 @@ const placeBid = async (req, res) => {
         });
       }
       bidNumber = auctionData.bidsPlaced + 1;
-    }
+    } 
 
     await sendBidEmail({ email, username, bidValue });
 

@@ -6,6 +6,8 @@ const Token = require("./Token");
 const User = require("./User");
 const WalletTransactions = require("./Wallet-Transactions");
 const Storefront = require("./Storefront")
+const Collection = require("./Collection");
+
 //Storefront
  const General = require("./Settings/myStore/general/general")
  const SocialLink = require( "./Settings/myStore/general/socialinks");
@@ -26,6 +28,7 @@ module.exports = {
   Nft,
   Token,
   User,
+  Collection,
   WalletTransactions,
   Storefront,
   General,

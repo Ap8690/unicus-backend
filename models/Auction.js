@@ -7,7 +7,7 @@ const AuctionSchema = new mongoose.Schema(
       required: true,
     },
     auctionId: {
-      type: Number,
+      type: String,
       required: true,
     }, 
     auctionTimer: {
@@ -22,10 +22,10 @@ const AuctionSchema = new mongoose.Schema(
     auctionStartOn: Date,
     auctionStartTxnHash: String,
     auctionEndedOn: Date,
-    auctionEndTxnHash: String,
+        auctionEndTxnHash: String,
     auctionCancelledOn: Date,
     auctionCancelTxnHash: String,
-    tokenId: Number,
+    tokenId: String,
     nftId: {
       type: mongoose.Types.ObjectId,
       ref: "Nft",

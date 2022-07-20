@@ -22,7 +22,7 @@ const NftSchema = new mongoose.Schema(
     blockNumber: Number,
     mintHash: String,
     mintReceipt: {},
-    tokenId: Number,
+    tokenId: String,
     auctionId: Number,
     views: { type: Number, default: 0 },
     uploadedBy: {
@@ -30,10 +30,13 @@ const NftSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "User",
     },
+    cloudinaryUrl:{
+      type:String
+    },
     mintedBy: {
       type: mongoose.Types.ObjectId,
       ref: "User",
-      default:null
+      default: null,
     },
     mintedInfo: {
       type: String,
@@ -65,6 +68,10 @@ const NftSchema = new mongoose.Schema(
     },
     collectionName: {
       type: String,
+    },
+    collectionId: {
+      type: mongoose.Types.ObjectId,
+      ref: "Collection",
     },
     image: {
       type: String,

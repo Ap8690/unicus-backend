@@ -13,6 +13,9 @@ const {
     banNFT,
     unbanNFT,
     getallCollections,
+    getNftByCollections,
+    getCollectionsByUser,
+    getTrendingCollections,
     oldNFt,
     getFeaturedNfts,
     getTrendingNfts
@@ -27,6 +30,13 @@ router.route('/banNFT').post(banNFT)
 router.route('/unbanNFT').post(unbanNFT)
 router.route('/getAllExplore/:skip').get(getAll)
 router.route('/getallCollections/:skip').get(getallCollections)
+router.route("/getNftByCollections/:collection").get(getNftByCollections);
+router.route("/getTrendingCollections").get(getTrendingCollections);
+
+router
+  .route("/getCollectionsByUser")
+  .post(authenticateUser,getCollectionsByUser);
+
 router.route("/create").post(authenticateUser, create);  
 router.route("/getNFTViews/:nftId").get(getNFTViews);
 router.route('/getNFTByUserId/:userId').get(getNFTByUserId)
