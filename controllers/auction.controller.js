@@ -168,9 +168,11 @@ const sell = async (req, res) => {
 
 const buy = async (req, res) => {
   try {
-    const { auctionId, nftId, owner, endAuctionHash, userInfo, name } =
+    const { auctionId, nftId, owner, endAuctionHash, name } =
       req.body;
     const userId = req.user.userId;
+    const user = await User.findOne({_id:userId})
+    const userInfo= user.username 
     const storefront = req.storefront.id;
     await Auction.updateOne(
       { _id: auctionId, storefront },
@@ -186,7 +188,7 @@ const buy = async (req, res) => {
         storefront,
       },
       {
-        owner,
+        owner:userId,
         userInfo,
         nftStatus: 1,
       }
