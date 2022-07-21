@@ -34,31 +34,7 @@ const register = async (req, res) => {
             throw new CustomError.BadRequestError('Email already exists')
         }
 
-        if (userType2 === 'true') {
-            var regex = new RegExp(`^${walletAddress.trim()}$`, 'ig')
-            const user = await User.findOne({ wallets: { $regex: regex } })
-            const verificationToken = crypto.randomBytes(40).toString('hex')
-
-            user.email = email
-            user.password = password
-            user.verificationToken = verificationToken
-            await user.save()
-
-            // const origin = 'https://marketplace.unicus.one/'
-            const origin = req.header("Origin");
-            await sendVerificationEmail({
-                name: user.username,
-                email: user.email,
-                verificationToken: user.verificationToken,
-                origin,
-            })
-
-            res.status(StatusCodes.CREATED).json({
-                msg: 'Success! Please check your email to verify account',
-            })
-
-            return null
-        }
+       
 
         if (!username) {
             throw new CustomError.BadRequestError(
@@ -90,6 +66,31 @@ const register = async (req, res) => {
             userType = 3
             wallets.push(walletAddress)
         }
+         if (userType2 === "true") {
+           var regex = new RegExp(`^${walletAddress.trim()}$`, "ig");
+           const user = await User.findOne({ wallets: { $regex: regex } });
+           const verificationToken = crypto.randomBytes(40).toString("hex");
+
+           user.email = email;
+           user.password = password;
+           user.verificationToken = verificationToken;
+           await user.save();
+
+           // const origin = 'https://marketplace.unicus.one/'
+           const origin = req.header("Origin");
+           await sendVerificationEmail({
+             name: user.username,
+             email: user.email,
+             verificationToken: user.verificationToken,
+             origin,
+           });
+
+           res.status(StatusCodes.CREATED).json({
+             msg: "Success! Please check your email to verify account",
+           });
+
+           return null;
+         }
 
         const verificationToken = crypto.randomBytes(40).toString('hex')
         let createObj = {
@@ -118,6 +119,7 @@ const register = async (req, res) => {
             msg: 'Success! Please check your email to verify account',
         })
     } catch (e) {
+        console.log(e);
         throw new CustomError.BadRequestError(e.message)
     }
 }
