@@ -29,6 +29,7 @@ const UserSchema = new mongoose.Schema(
       },
     },
     profileUrl: {
+      
       type: String,
     },
     bgUrl: {
