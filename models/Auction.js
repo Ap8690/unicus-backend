@@ -22,7 +22,7 @@ const AuctionSchema = new mongoose.Schema(
     auctionStartOn: Date,
     auctionStartTxnHash: String,
     auctionEndedOn: Date,
-        auctionEndTxnHash: String,
+    auctionEndTxnHash: String,
     auctionCancelledOn: Date,
     auctionCancelTxnHash: String,
     tokenId: String,

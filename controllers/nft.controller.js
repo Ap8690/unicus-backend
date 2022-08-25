@@ -471,9 +471,16 @@ const mintNFT = async (req, res) => {
 const getRecentlyCreatedNFTS = async (req, res) => {
   const storefront = req.storefront.id;
   const chain = req.params.chain;
-  const nfts = await Nft.find({ chain, nftStatus: 1, storefront })
+  let nfts = []
+  if(chain !=0){
+  nfts = await Nft.find({ chain, nftStatus: 1, storefront })
     .limit(20)
     .sort({ createdAt: -1 });
+  }else{
+    nfts = await Nft.find({ nftStatus: 1, storefront })
+      .limit(20)
+      .sort({ createdAt: -1 });
+  }
   res.status(StatusCodes.OK).json({ nfts });
 };
 const approveNFT = async (req, res) => {

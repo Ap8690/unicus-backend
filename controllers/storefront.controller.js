@@ -18,7 +18,7 @@ const createStore = async (req, res) => {
     if (process.env.NODE_ENV === "prod") {
       domain = `${subdomain}.unicus.one`;
     } else if (process.env.NODE_ENV === "staging") {
-      domain = `${subdomain}.qa.unicus.one`;
+      domain = `${subdomain}.demo.unicus.one`;
     } else if (process.env.NODE_ENV === "demo") {
       domain = `${subdomain}.demo.unicus.one`;
     } else {

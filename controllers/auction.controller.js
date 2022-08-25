@@ -391,7 +391,9 @@ const getRecentPurchased = async (req, res) => {
   try {
     const chain = req.params.chain;
     const storefront = req.storefront.id;
-    const data = await Auction.find({
+    let data = []
+    if(chain !=0){
+    data = await Auction.find({
       storefront,
       auctionStatus: 3,
       chain: chain,
@@ -399,7 +401,15 @@ const getRecentPurchased = async (req, res) => {
       .limit(20)
       .sort([["createdAt", -1]])
       .populate("nftId");
-;
+;}else{
+  data = await Auction.find({
+    storefront,
+    auctionStatus: 3,
+  })
+    .limit(20)
+    .sort([["createdAt", -1]])
+    .populate("nftId");
+}
 
     if (data) {
       res.status(StatusCodes.OK).json({ data });
