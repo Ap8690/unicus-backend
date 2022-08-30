@@ -30,6 +30,7 @@ const domainParser = async (req, res, next) => {
         req.storefront = { id: "624a951c1db000b674636777" };
       } else {
         const storefront = await Storefront.findOne({ domain: hostname });
+        console.log("else storefront: ", storefront);
         req.storefront = storefront;
       }
       return next();
