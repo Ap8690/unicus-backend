@@ -33,6 +33,6 @@ router.route("/placeBid").post(authenticateUser, placeBid);
 router.route("/end").post(authenticateUser, endAuction);
 router.route("/cancel").post(authenticateUser, cancelAuction);
 router.route("/addView").post(addViews);
-router.route("/getAuctions/:number/:auctionType").get(getAuctions);
+router.route("/getAuctions/:number/:auctionType/:chain").get(getAuctions);
 
 module.exports = router;

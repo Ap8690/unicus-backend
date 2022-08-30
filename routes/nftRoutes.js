@@ -48,8 +48,8 @@ router.route("/approve").post(authenticateUser, approveNFT);
 
 router.route("/getRecent/:chain").get(getRecentlyCreatedNFTS);
 router.route('/approve').post(authenticateUser, approveNFT);
-router.route("/getFeaturedNfts/:number").get(getFeaturedNfts);
-router.route("/getTrendingNfts/:number/:category").get(getTrendingNfts);
+router.route("/getFeaturedNfts/:number/:chain").get(getFeaturedNfts);
+router.route("/getTrendingNfts/:number/:category/:chain").get(getTrendingNfts);
 
 router
   .route("/upload-pinata")

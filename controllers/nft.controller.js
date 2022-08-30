@@ -600,9 +600,14 @@ const unbanNFT = async (req, res) => {
 //featured artworks
 const getFeaturedNfts = async (req, res) => {
   try {
-    const featuredNfts = await Nft.find({
-      nftStatus: 2,
-    })
+    const {chain} = req.params
+    let search = {
+        nftStatus: 2,
+    }
+    if(Number(chain) !== 0) {
+        search.chain = chain
+    }
+    const featuredNfts = await Nft.find(search)
       .limit(req.params.number)
       .skip(0)
       .sort({ views: -1 });
@@ -620,25 +625,21 @@ const getFeaturedNfts = async (req, res) => {
 //trending nfts
 const getTrendingNfts = async (req, res) => {
   try {
-    const { category, number } = req.params;
-    let trendingNfts;
-    if (category !== "all") {
-      trendingNfts = await Nft.find({
-        nftStatus: 2,
-        category: category,
-      })
-        .limit(number)
-        .skip(0)
-        .sort({ views: -1 });
-    } else {
-      trendingNfts = await Nft.find({
-        nftStatus: 2,
-      })
-        .limit(number)
-        .skip(0)
-        .sort({ views: -1 });
-    }
+    const { category, number, chain } = req.params;
 
+    let search = {
+        nftStatus: 2,
+    }
+    if (category !== "all") {
+        search.category = category
+    }
+    if(Number(chain)!==0) {
+        search.chain = chain
+    }
+    let trendingNfts = await Nft.find(search)
+        .limit(number)
+        .skip(0)
+        .sort({ views: -1 });
     res.status(200).json({
       nfts: trendingNfts,
     });

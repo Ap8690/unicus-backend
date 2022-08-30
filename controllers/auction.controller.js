@@ -800,9 +800,9 @@ const addViews = async (req, res) => {
 
 const getAuctions = async (req, res) => {
     try {
-        const { auctionType, number } = req.params;
+        const { auctionType, number, chain } = req.params;
         let auctionStatus = 1;
-
+        
         if (auctionType.toLowerCase() == "live") {
             auctionStatus = 2;
         } else if (auctionType.toLowerCase() == "upcoming") {
@@ -810,14 +810,16 @@ const getAuctions = async (req, res) => {
         } else if (auctionType.toLowerCase() == "ended") {
             auctionStatus = 3;
         }
-        console.log("auctionStatus ", auctionStatus);
-        const allAuctions = await Auction.find({
-            auctionStatus: auctionStatus,
-        })
-            .limit(number)
-            .skip(0)
-            .sort({ createdAt: -1 });
-
+        let search = {
+          auctionStatus: auctionStatus,
+      };
+        if (Number(chain) !== 0) {
+            search.chain = chain;
+          }
+        const allAuctions = await Auction.find(search)
+        .limit(number)
+        .skip(0)
+        .sort({ createdAt: -1 });
         res.status(200).json({
             nfts: allAuctions,
         });
