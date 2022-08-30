@@ -337,13 +337,10 @@ const getAllAuction = async (req, res) => {
 
 const getAllExplore = async (req, res) => {
     const { filter } = req.params;
-    console.log("filter: ", filter);
-
-    const storefront = req.storefront.id;
+    const storefront = req?.storefront.id;
     const sort = req.params.sort;
     const skip = Math.max(0, req.params.skip);
     let chain;
-    console.log("Chain: ", req.params.chain);
 
     let auction_search = {
         auctionStatus: 2,
@@ -351,7 +348,7 @@ const getAllExplore = async (req, res) => {
         storefront,
     };
     chain = Math.max(0, Number(req.params.chain)).toString();
-    if (filter == "All") {
+    if (filter == "all") {
         if (Number(req.params.chain) == 0) chain = 0;
         else auction_search.chain = chain;
     } else {
