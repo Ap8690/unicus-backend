@@ -8,7 +8,7 @@
     "dev": "SET NODE_ENV=staging&&nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Nayan Amin",
+  "author": "Unicus",
   "license": "ISC",
   "dependencies": {
     "@pinata/sdk": "^1.1.23",
