@@ -25,7 +25,7 @@ router.route("/getAuctionById/:tokenId/:chain").get(getAuctionById);
 router.route("/getAuctionByNftId/:NftId").get(getAuctionByNftId);
 router.route("/getAllSale/:skip/:chain").get(getAllSale);
 router.route("/getAllAuction/:skip/:chain/:sort").get(getAllAuction);
-router.route("/getAllExplore/:skip/:chain/:sort").get(getAllExplore);
+router.route("/getAllExplore/:skip/:chain/:sort/:filter").get(getAllExplore);
 router.route("/getRecentPurchased/:chain").get(getRecentPurchased);
 router.route("/create").post(authenticateUser, create);
 router.route("/start").post(authenticateUser, startAuction);
