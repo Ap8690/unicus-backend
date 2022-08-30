@@ -305,10 +305,10 @@ const getAllExplore = async (req, res) => {
   const storefront = req.storefront.id;
   console.log("storefront", storefront);
   const sort = req.params.sort;
-  console.log("---------->", sort);
   console.log("+++++++++++", JSON.parse(sort));
   const skip = Math.max(0, req.params.skip);
   const chain = req.params.chain;
+  console.log("---------->", chain);
   const auctions = await Auction.find({
     auctionStatus: 2,
     chain: chain,
@@ -732,7 +732,38 @@ const addViews = async (req, res) => {
     throw new CustomError.BadRequestError(e);
   }
 };
+const getAuctions = async (req,res) => {
+  try {
+    const {auctionType,number} = req.params;
+    let auctionStatus = 1;
 
+    if(auctionType.toLowerCase() == "live") {
+      auctionStatus = 2;
+    }
+    else if(auctionType.toLowerCase() == "upcoming") {
+      auctionStatus = 1;
+    }
+    else if (auctionType.toLowerCase() == "ended") {
+      auctionStatus = 3;
+    }
+    console.log("auctionStatus ",auctionStatus)
+    const allAuctions = await Auction.find({
+      auctionStatus:auctionStatus
+    }).limit(number)
+    .skip(0)
+    .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      nfts: allAuctions
+    });
+  }
+  catch(err) {
+    console.log(err)
+    res.status(500).json({
+      err:"INT_SERVER_ERR"
+    })
+  }
+}
 module.exports = {
   sell,
   buy,
@@ -747,5 +778,5 @@ module.exports = {
   cancelAuction,
   getAllExplore,
   getAuctionByNftId,
-  addViews,
+  addViews,getAuctions
 };

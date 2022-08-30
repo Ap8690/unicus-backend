@@ -179,16 +179,26 @@ const  create = async (req, res) => {
 const getNFTByNftId = async (req, res) => {
     try{
     const tokenId = req.params.tokenId.toString()
+    console.log("tokenId: ", tokenId);
     const chain = parseInt(req.params.chain)
+    console.log("chain: ", chain);
     const storefront = req.storefront.id
-    console.log("chain--",chain, typeof chain,"token--",tokenId, storefront)
+    console.log("storefront: ", storefront);
+    const contractAddress = req.params.contractAddress
+    console.log("contractAddress: ", contractAddress);
+
     const nft = await Nft.findOne({
-        tokenId,
+        tokenId:tokenId.toString(),
         chain,
         storefront
     })
     console.log("nft", nft);
-    const userId = req.params.userId;
+    if(!nft) {
+        return res.status(StatusCodes.NOT_FOUND).json({
+            err: "Not found!"
+        })
+    }
+    const userId = nft.mintedBy;
     var totalViews = await Views.find({ nftId: nft._id })
     if (totalViews.length == 0) {
         await Views.create({
@@ -197,14 +207,16 @@ const getNFTByNftId = async (req, res) => {
             heart: []
         })
         totalViews = await Views.find({ nftId: nft._id })
+        console.log("totalViews: ", totalViews);
     }
 
     var user
     var filter = []
     if (userId !== "none") {
-        user = await User.find({ _id: userId })
+        user = await User.findOne({ _id: userId })
         filter = totalViews[0].views.filter((obj) => {
-            return obj.userId.toString() == user[0]._id.toString()
+            if(obj?.userId !== null)
+                return obj?.userId.toString() == user?._id.toString()
         })
     }
 
@@ -215,10 +227,10 @@ const getNFTByNftId = async (req, res) => {
 
     if (user && filter.length === 0) {
         const data = {
-            profileUrl: user[0].profileUrl,
-            username: user[0].username,
-            bio: user[0].bio,
-            userId: user[0]._id
+            profileUrl: user.profileUrl,
+            username: user.username,
+            bio: user.bio,
+            userId: user._id
         }
         await Views.updateOne(
             { nftId: nft._id },
@@ -517,6 +529,61 @@ const unbanNFT = async (req, res) => {
     }
 }
 
+//featured artworks
+const getFeaturedNfts = async (req, res) => {
+    try {
+        const featuredNfts = await Nft.find({
+            nftStatus: 2,
+        })
+            .limit(req.params.number)
+            .skip(0)
+            .sort({ views: -1 });
+
+        res.status(200).json({
+            nfts: featuredNfts,
+        });
+    } catch (err) {
+        res.status(500).json({
+            err: "INT_SERVER_ERROR",
+        });
+    }
+};
+
+//trending nfts
+const getTrendingNfts = async (req, res) => {
+    try {
+        const { category, number } = req.params;
+        let trendingNfts;
+        if (category !== "all") {
+
+            trendingNfts = await Nft.find({
+                nftStatus: 2,
+                category: category,
+            })
+                .limit(number)
+                .skip(0)
+                .sort({ views: -1 });
+        }
+        else {
+
+            trendingNfts = await Nft.find({
+                nftStatus: 2
+            })
+                .limit(number)
+                .skip(0)
+                .sort({ views: -1 });
+        }
+
+        res.status(200).json({
+            nfts: trendingNfts,
+        });
+    } catch (err) {
+        res.status(500).json({
+            err: "INT_SERVER_ERROR",
+        });
+    }
+};
+
 const oldNFt = async(req, res) =>{
     // const toal = await Auction.updateMany(
     //   { storefront: { $exists: false } },
@@ -537,5 +604,7 @@ module.exports = {
     getNFTViews,
     unbanNFT,
     banNFT,
-    getallCollections
+    getallCollections,
+    getFeaturedNfts,
+    getTrendingNfts
 }
