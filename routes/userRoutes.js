@@ -15,6 +15,7 @@ const {
     getUserNonceByAddress,
     unbanUser,
     banUser,
+    getMyProfile
 } = require('../controllers/user.controller')
 
 router.route('/banUser').post(banUser)
@@ -25,7 +26,7 @@ router.route('/:skip').get(getAllUsers)
 
 router.route('/update/updateUser').post(authenticateUser, updateUser)
 
-router.route('getSingleUser/:token').get(authenticateUser, getSingleUser)
+router.route('/getSingleUser/:token').get(authenticateUser, getSingleUser)
 
 router
     .route('/update/profilePicture')
@@ -36,6 +37,8 @@ router
     .post(authenticateUser, updateBackgroundPicture)
 
 router.route('/getUserById/:id').get(getUserById) // No Auth
+router.route('/getUserProfile').get(authenticateUser,getMyProfile) 
+
 
 router.route('/addWallet/:walletAddress').get(authenticateUser, addWallet)
 
