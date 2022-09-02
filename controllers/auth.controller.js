@@ -371,6 +371,7 @@ const login = async (req, res) => {
 
             var regex = new RegExp(`^${email.trim()}$`, 'ig')
             const user = await User.findOne({ email: { $regex: regex } })
+            console.log("user: ", user);
 
             if (!user) {
                 throw new CustomError.UnauthenticatedError(

@@ -22,7 +22,7 @@ router.route('/banUser').post(banUser)
 
 router.route('/unbanUser').post(unbanUser)
 
-router.route('/:skip').get(getAllUsers)
+router.route('/getAllUsers/:skip').get(getAllUsers)
 
 router.route('/update/updateUser').post(authenticateUser, updateUser)
 

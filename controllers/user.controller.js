@@ -73,17 +73,13 @@ const getUserById = async (req, res) => {
 };
 
 const getMyProfile = async (req, res) => {
-    console.log("GET MY PROFILE--")
-    const userId = req.user.id;
-    console.log("UserId ",userId);
+    const userId = req.user.userId;
     const user = await User.findOne({ _id: userId });
     console.log("user: ", user);
     if (!user) {
-        throw new CustomError.NotFoundError(
-            `No user with id : ${userId}`
-        );
+        throw new CustomError.NotFoundError(`No user with id : ${userId}`);
     }
-    res.status(StatusCodes.OK).json({ data:user });
+    res.status(StatusCodes.OK).json({ user: user });
 };
 
 const addWallet = async (req, res) => {
@@ -239,10 +235,13 @@ const updateUser = async (req, res) => {
 
     const user = await User.findOne({ _id: req.user.userId });
 
-    var regex = new RegExp(`^${username.trim()}$`, "ig");
-    const usernameAlreadyExists = await User.findOne({
-        username: { $regex: regex },
-    });
+    let regex, usernameAlreadyExists;
+    if (username) {
+        regex = new RegExp(`^${username.trim()}$`, "ig");
+        usernameAlreadyExists = await User.findOne({
+            username: { $regex: regex },
+        });
+    }
     if (
         usernameAlreadyExists &&
         username.toLowerCase().trim() !== user.username.toLowerCase().trim()
@@ -267,7 +266,7 @@ const updateUser = async (req, res) => {
             { bidder: req.user.userId },
             { username: username.trim() }
         );
-        await NFTStates.updateMany(
+        await NFTStates.updateMany( 
             { from: user.username },
             { from: username.trim() }
         );
@@ -280,7 +279,6 @@ const updateUser = async (req, res) => {
     }
     // }
 
-    
     user.facebook = facebook;
     user.discord = discord;
     user.linkedIn = linkedIn;
@@ -353,5 +351,5 @@ module.exports = {
     getUserNonceByAddress,
     unbanUser,
     banUser,
-    getMyProfile
+    getMyProfile,
 };
