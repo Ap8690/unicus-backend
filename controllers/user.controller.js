@@ -83,7 +83,7 @@ const getMyProfile = async (req, res) => {
             `No user with id : ${userId}`
         );
     }
-    res.status(StatusCodes.OK).json({ user });
+    res.status(StatusCodes.OK).json({ data:user });
 };
 
 const addWallet = async (req, res) => {
