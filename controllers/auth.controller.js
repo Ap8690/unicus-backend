@@ -123,6 +123,79 @@ const register = async (req, res) => {
         throw new CustomError.BadRequestError(e.message)
     }
 }
+const sendToken = async (user,walletAddress,userAgent,ip) => {
+    const tokenUser = createWalletAddressPayload(
+        user,
+        walletAddress
+    )
+    // check for existing token
+    const existingToken = await Token.findOne({
+        user: user._id,
+    })
+
+    if (existingToken) {
+        await Token.findOneAndDelete({ user: user._id })
+    }
+
+    const token = createJWT({ payload: tokenUser })
+    
+    
+    const userToken = { token, ip, userAgent, user: user._id }
+
+    await Token.create(userToken)
+
+    return {
+        token: token,
+        user: user,
+    }
+}
+
+const newWalletConnect = async (req,res) => {
+    try {
+        const { walletAddress } = req.body
+        let wallets = [walletAddress]
+        const ip = req.ip
+        const userAgent = req.headers['user-agent']
+        if (walletAddress) {
+            var regex = new RegExp(`^${walletAddress.trim()}$`, 'ig')
+            const walletAlreadyExists = await User.findOne({
+                wallets: { $regex: regex },
+            })
+            if (walletAlreadyExists && !!walletAddress) {
+                // now log in the user
+                const t = await sendToken(walletAlreadyExists,walletAddress,userAgent,ip)
+                console.log("t: ", t);
+                res.status(StatusCodes.OK).json({
+                    accessToken: t.token,
+                    user: t.user,
+                })
+                return;
+            }
+        }
+       
+
+        const verificationToken = crypto.randomBytes(40).toString('hex')
+        let createObj = {
+            wallets,
+            username: walletAddress,
+            profileUrl: '',
+            backgroundUrl: '',
+            verificationToken
+        }
+
+        const user = await User.create(createObj)
+
+        const t = await sendToken(user,walletAddress,userAgent,ip)
+        console.log("t: ", t);
+        res.status(StatusCodes.OK).json({
+            accessToken: t.token,
+            user: t.user
+        })
+    } catch (e) {
+        console.log(e);
+        throw new CustomError.BadRequestError(e.message)
+    }
+}
 
 const mintingWidget = async (req, res) => {
     try {
@@ -223,8 +296,6 @@ const mintingWidget = async (req, res) => {
             const userToken = { token, ip, userAgent, user: user._id }
 
             await Token.create(userToken)
-            console.log("++++++++===========")
-
             try {
                 const nft = await Nft.updateOne(
                   {
@@ -236,8 +307,6 @@ const mintingWidget = async (req, res) => {
                     nftStatus: 1
                   }
                 );
-                console.log("++++++++===========")
-
                 res.status(StatusCodes.OK).json({
                     nft
                 })
@@ -311,16 +380,18 @@ const login = async (req, res) => {
             const user = await User.findOne({ wallets: { $regex: regex } })
 
             if(!user) {
+                // create wallet user
+
                 throw new CustomError.BadRequestError(
                     'Please Register or Login then add your wallet to your account first to use wallet login.'
                 )
                 
             }
-            if (!user.active) {
-              throw new CustomError.BadRequestError(
-                  'You are not allowed to login! Contact for Support.'
-              )
-          }
+        //     if (!user.active) {
+        //       throw new CustomError.BadRequestError(
+        //           'You are not allowed to login! Contact for Support.'
+        //       )
+        //   }
 
             if (user) {
                 if (user.userType === 2 || user.isVerified) {
@@ -516,5 +587,6 @@ module.exports = {
     verifyEmail,
     forgotPassword,
     resetPassword,
-    mintingWidget
+    mintingWidget,
+    newWalletConnect
 }

@@ -10,7 +10,8 @@ const {
   verifyEmail,
   forgotPassword,
   resetPassword,
-  mintingWidget
+  mintingWidget,
+  newWalletConnect
 } = require('../controllers/auth.controller');
 
 router.post('/register', register);
@@ -20,5 +21,6 @@ router.get('/verify-email', verifyEmail);
 router.post('/reset-password', resetPassword);
 router.post('/forgot-password', forgotPassword);
 router.post('/mintingWidget', mintingWidget);
+router.post('/wallet-connect', newWalletConnect);
 
 module.exports = router;
