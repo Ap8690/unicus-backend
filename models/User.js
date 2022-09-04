@@ -18,7 +18,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       unique: [true, "username has already taken"],
       minlength: [3, "Username should have at least 3 characters"],
-      maxlength: [15, "Username cannot have more than 15 characters"],
+      maxlength: [60, "Username cannot have more than 15 characters"],
     },
     email: {
       type: String,
@@ -48,7 +48,7 @@ const UserSchema = new mongoose.Schema(
     verificationToken: String,
     isVerified: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     verifiedOn: Date,
     passwordToken: {
@@ -79,11 +79,6 @@ const UserSchema = new mongoose.Schema(
       type: [],
     },
     backgroundUrl: String,
-    balances: { type: Number, default: 0 },
-    walletBalance: {
-      type: Number,
-      default: 0,
-    },
     active: {
       type: Boolean,
       default: true,
