@@ -22,7 +22,6 @@ const UserSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      unique: [true, "Email has already taken"],
       validate: {
         validator: validator.isEmail,
         message: "Please provide valid email",

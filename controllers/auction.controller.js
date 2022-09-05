@@ -493,7 +493,7 @@ const placeBid = async (req, res) => {
         if (auctionData?.bidsPlaced) {
             // const lastBid = await getAuctionBids(auctionId, nftId, 1);
             const lastBidId = auctionData.lastBidId;
-            if (lastBidId) {
+            if (lastBidId && username && email) {
                 const data = await Bids.findOne({
                     _id: ObjectId(lastBidId),
                 });
@@ -509,7 +509,7 @@ const placeBid = async (req, res) => {
             bidNumber = auctionData.bidsPlaced + 1;
         }
 
-        await sendBidEmail({ email, username, bidValue });
+        username&&email&& await sendBidEmail({ email, username, bidValue });
 
         if (auctionId != 0 && !auctionId) {
             throw new CustomError.BadRequestError(
@@ -529,12 +529,6 @@ const placeBid = async (req, res) => {
             throw new CustomError.BadRequestError(
                 "Please provide the bid hash"
             );
-        } else if (!username) {
-            throw new CustomError.BadRequestError(
-                "Please provide the username"
-            );
-        } else if (!email) {
-            throw new CustomError.BadRequestError("Please provide the email");
         } else if (!bidSuccess) {
             throw new CustomError.BadRequestError(
                 "Please provide wheather bid is success or not"
