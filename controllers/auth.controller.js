@@ -26,9 +26,8 @@ const register = async (req, res) => {
             throw new CustomError.BadRequestError('Please provide the password')
         }
 
-        var regex = new RegExp(`^${email.trim()}$`, 'ig')
         const emailAlreadyExists = await User.findOne({
-            email: { $regex: regex },
+            email: email.trim()
         })
         if (emailAlreadyExists) {
             throw new CustomError.BadRequestError('Email already exists')
@@ -153,6 +152,7 @@ const sendToken = async (user,walletAddress,userAgent,ip) => {
 const newWalletConnect = async (req,res) => {
     try {
         const { walletAddress } = req.body
+        console.log("walletAddress: ", walletAddress);
         let wallets = [walletAddress]
         const ip = req.ip
         const userAgent = req.headers['user-agent']
@@ -161,10 +161,10 @@ const newWalletConnect = async (req,res) => {
             const walletAlreadyExists = await User.findOne({
                 wallets: { $regex: regex },
             })
+            console.log("walletAlreadyExists: ", walletAlreadyExists);
             if (walletAlreadyExists && !!walletAddress) {
                 // now log in the user
                 const t = await sendToken(walletAlreadyExists,walletAddress,userAgent,ip)
-                console.log("t: ", t);
                 res.status(StatusCodes.OK).json({
                     accessToken: t.token,
                     user: t.user,
@@ -175,6 +175,7 @@ const newWalletConnect = async (req,res) => {
        
 
         const verificationToken = crypto.randomBytes(40).toString('hex')
+        console.log("verificationToken: ", verificationToken);
         let createObj = {
             wallets,
             username: walletAddress,
@@ -182,17 +183,17 @@ const newWalletConnect = async (req,res) => {
             backgroundUrl: '',
             verificationToken
         }
+        console.log("createObj: ", createObj);
 
         const user = await User.create(createObj)
-
         const t = await sendToken(user,walletAddress,userAgent,ip)
-        console.log("t: ", t);
+
         res.status(StatusCodes.OK).json({
             accessToken: t.token,
             user: t.user
         })
     } catch (e) {
-        console.log(e);
+        console.log(e.message);
         throw new CustomError.BadRequestError(e.message)
     }
 }

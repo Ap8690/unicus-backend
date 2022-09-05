@@ -22,10 +22,7 @@ const UserSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      validate: {
-        validator: validator.isEmail,
-        message: "Please provide valid email",
-      },
+      sparse: true,
     },
     profileUrl: {
       
