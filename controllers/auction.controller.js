@@ -1,6 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const CustomError = require("../errors");
-const { Auction, Nft, Bids, NFTStates } = require("../models");
+const { Auction, Nft, Bids, NFTStates,User } = require("../models");
 const {
     sendBidEmail,
     sendBidRefundEmail,
