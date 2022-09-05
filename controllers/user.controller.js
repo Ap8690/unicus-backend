@@ -106,12 +106,10 @@ const addWallet = async (req, res) => {
 
         const user = await User.findOne({ wallets: { $regex: regex } });
 
-        console.log(user);
 
         res.status(StatusCodes.OK).json({ user });
     } catch (err) {
-        console.log("err", err);
-        res.status(StatusCodes.BAD_REQUEST).json({ err });
+        res.status(StatusCodes.BAD_REQUEST).json({ err:err?.message });
     }
 };
 

@@ -6,7 +6,7 @@ const { convertToLowercase, isReservedWord } = require("../utils/stringUtil");
 const validator = require("validator");
 
 const createStore = async (req, res) => {
-  try {
+  try { 
     const { storeName, email, logoUrl, country } = req.body.store;
     const owner = req.user.userId
     const subdomain = convertToLowercase(storeName)
