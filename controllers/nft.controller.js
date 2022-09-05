@@ -211,6 +211,7 @@ const getNFTByNftId = async (req, res) => {
     const auction = await Auction.findOne({
       nftId: nft._id,
       storefront,
+      $or: [{auctionStatus: 1},{auctionStatus:2}]
     });
 
     user = {
