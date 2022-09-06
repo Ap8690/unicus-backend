@@ -95,7 +95,6 @@ const create = async (req, res) => {
                     storefront,
                 },
                 {
-                    owner: "61e559cb515235e5d16373fe",
                     nftStatus: 3,
                 }
             );
@@ -180,7 +179,6 @@ const sell = async (req, res) => {
                     storefront,
                 },
                 {
-                    owner: "61e559cb515235e5d16373fe",
                     nftStatus: 2,
                 }
             );
