@@ -12,6 +12,7 @@ const {
     createLimitedTimeToken,
     createWalletAddressPayload,
 } = require('../utils')
+const {verifyTokenAddress} = require('../utils/verifyTokenAddress')
 const crypto = require('crypto')
 const Web3 = require('web3')
 var web3 = new Web3()
@@ -152,7 +153,15 @@ const sendToken = async (user,walletAddress,userAgent,ip) => {
 const newWalletConnect = async (req,res) => {
     try {
         const { walletAddress } = req.body
-        console.log("walletAddress: ", walletAddress);
+
+        const vta = await verifyTokenAddress(req.body.token, req.body.walletNetwork, req.body.message,walletAddress)
+
+        if(!vta) {
+            return res.status(401).json({
+                err: "BAD AUTHENTICATION"
+            })
+        }
+
         let wallets = [walletAddress]
         const ip = req.ip
         const userAgent = req.headers['user-agent']
