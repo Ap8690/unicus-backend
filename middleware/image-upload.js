@@ -1,10 +1,11 @@
 const multer = require("multer");
 const path = require("path");
+const os = require("os")
 
 const imageStorage = multer.diskStorage({
   // Destination to store image
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname));
+    cb(null, path.join(os.tmpdir()));
   },
   filename: (req, file, cb) => {
     const dateStamp = Date.now();
