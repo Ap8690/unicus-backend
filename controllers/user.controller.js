@@ -246,7 +246,6 @@ const updateUser = async (req, res) => {
     ) {
         throw new CustomError.BadRequestError("Username already exists");
     }
-    // if(username.toLowerCase().trim() !== user.username.toLowerCase().trim()) {
     if (username) {
         await Nft.updateMany(
             { userInfo: user.username },
@@ -275,14 +274,13 @@ const updateUser = async (req, res) => {
 
         user.username = username;
     }
-    // }
 
-    user.facebook = facebook;
-    user.discord = discord;
-    user.linkedIn = linkedIn;
-    user.twitter = twitter;
-    user.instagram = instagram;
-    user.bio = bio;
+    if(facebook) user.facebook = facebook;
+    if(discord) user.discord = discord;
+    if(linkedIn) user.linkedIn = linkedIn;
+    if(twitter) user.twitter = twitter;
+    if(instagram) user.instagram = instagram;
+    if(bio) user.bio = bio;
 
     await user.save();
     res.status(StatusCodes.OK).json({ msg: user });
