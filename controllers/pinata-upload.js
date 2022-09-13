@@ -42,6 +42,7 @@ try{
     }
     console.log(result);
     data.image = "https://unicus.mypinata.cloud/ipfs/" + result.IpfsHash;
+    data.attributes = JSON.parse(data.attributes)
     console.log(data);
     options = {
       pinataMetadata: {
