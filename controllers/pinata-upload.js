@@ -10,23 +10,12 @@ try{
     "5fe4bd174a6d80b442b67116f479e40aa6e53ec7a62ff9c8e6f3ff719d7363bb"
   );
 
-  //   pinata
-  //     .testAuthentication()
-  //     .then((result) => {
-  //       //handle successful authentication here
-  //       console.log(`Authentication successful ---->`, result);
-  //     })
-  //     .catch((err) => {
-  //       //handle error here
-  //       console.log(err);
-  //     });
-
   var data = req.body;
   const file = req.file;
   try {
     const P = file.path;
+    console.log("P: ", P);
     var readableStreamForFile = fs.createReadStream(P);
-    console.log(typeof readableStreamForFile);
     var options = {
       pinataMetadata: {
         name: `${data.name}.img`,
@@ -42,6 +31,7 @@ try{
     }
     console.log(result);
     data.image = "https://unicus.mypinata.cloud/ipfs/" + result.IpfsHash;
+    data?.attributes && (data.attributes = JSON.parse(data.attributes))
     console.log(data);
     options = {
       pinataMetadata: {
@@ -57,7 +47,8 @@ try{
     } catch (e) {
       console.log(e, "error");
     }
-    console.log(result);
+    // delete image file
+    fs.unlinkSync(P);
     res.send(result.IpfsHash);
   } catch (err) {
     console.log(err);
