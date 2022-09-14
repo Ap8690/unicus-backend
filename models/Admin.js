@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs')
 
 const AdminSchema = new mongoose.Schema(
     {
+        
         // username: {
         //     type: String,
         //     unique: [true, 'username has already taken'],
