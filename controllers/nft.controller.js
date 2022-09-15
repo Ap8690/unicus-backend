@@ -608,6 +608,7 @@ const getFeaturedNfts = async (req, res) => {
     if(Number(chain) !== 0) {
         search.chain = chain
     }
+    console.log(chain)
     const featuredNfts = await Nft.find(search)
       .limit(req.params.number)
       .skip(0)

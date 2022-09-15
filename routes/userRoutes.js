@@ -39,7 +39,6 @@ router
 router.route('/getUserById/:id').get(getUserById) // No Auth
 router.route('/getUserProfile').get(authenticateUser,getMyProfile) 
 
-
 router.route('/addWallet/:walletAddress').get(authenticateUser, addWallet)
 
 router.route('/removeWallet/:walletAddress').get(authenticateUser, removeWallet)

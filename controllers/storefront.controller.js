@@ -6,8 +6,8 @@ const { convertToLowercase, isReservedWord } = require("../utils/stringUtil");
 const validator = require("validator");
 
 const createStore = async (req, res) => {
-  try { 
-    const { storeName, email, logoUrl, country } = req.body.store;
+  try {  
+    const { storeName, email, logoUrl, country,chainName } = req.body.store;
     const owner = req.user.userId
     const subdomain = convertToLowercase(storeName)
     
@@ -47,10 +47,8 @@ const createStore = async (req, res) => {
       throw new CustomError.BadRequestError("Email already in use.");
     }
 
-    console.log("userInfo", userInfo, owner == userInfo._id);
     if(owner && userInfo && owner == userInfo._id){
       const user = await User.findOne({_id: owner})
-      console.log("db user", user);
       if(!user){
         userInfo.doNotHash = true;
         const createUser = await User.create(userInfo)
@@ -64,11 +62,11 @@ const createStore = async (req, res) => {
 
     const obj = {
       domain:[domain],
-      owner
+      owner,
+      chainName
     }
 
     const createStore = await Storefront.create(obj);
-    console.log("cre", createStore);
     
     if(createStore) {
       const obj = {

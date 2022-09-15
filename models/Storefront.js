@@ -10,6 +10,10 @@ const StorefrontSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "User",
     },
+    chainName: {
+      type: String,
+      default: "Ethereum"
+    }
   },
   { timestamps: true }
 );

@@ -9,7 +9,6 @@ const authenticateUser = async (req, res, next) => {
     // return next();
     const accessToken = req.headers["authorization"];
     const bearerToken = accessToken.split(" ")[1];
-    console.log("req",req.body)
     if (accessToken) {
       const payload = isTokenValid(bearerToken.replaceAll(",",""));
       if (!payload) {
