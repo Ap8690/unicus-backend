@@ -396,7 +396,7 @@ const getRecentPurchased = async (req, res) => {
             data = await Auction.find({
                 storefront,
                 auctionStatus: 3,
-                chain: chain,
+                chain: chain.toString(),
             })
                 .limit(20)
                 .sort([["createdAt", -1]])

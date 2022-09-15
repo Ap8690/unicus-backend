@@ -63,8 +63,7 @@ const createStore = async (req, res) => {
 
     const obj = {
       domain:[domain],
-      owner,
-      chainName
+      owner
     }
 
     const createStore = await Storefront.create(obj);
@@ -77,7 +76,8 @@ const createStore = async (req, res) => {
         country,
         contactEmail:email,
         user: owner,
-        storefront: createStore.id
+        storefront: createStore.id,
+        chainName
       }
       try{
       const result = await General.create(obj);

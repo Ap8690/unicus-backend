@@ -106,6 +106,10 @@ const GeneralSchema = new mongoose.Schema(
       ref: "Storefront",
       required: true,
     },
+    chainName: {
+      type: String,
+      default: "Ethereum"
+    }
   },
   { timestamps: true }
 );
