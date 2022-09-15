@@ -15,14 +15,15 @@ const createStore = async (req, res) => {
     const emailTaken = await General.findOne({email})
     const regex = new RegExp(/^[a-z][a-z0-9-\s]*$/i);
     let domain = "";
-    if (process.env.NODE_ENV === "prod") {
+    let node_env = (process.env.NODE_ENV).trim()
+    if (node_env === "prod") {
       domain = `${subdomain}.unicus.one`;
-    } else if (process.env.NODE_ENV === "staging") {
+    } else if (node_env === "staging") {
       domain = `${subdomain}.demo.unicus.one`;
-    } else if (process.env.NODE_ENV === "demo") {
+    } else if (node_env === "demo") {
       domain = `${subdomain}.demo.unicus.one`;
     } else {
-      domain = `${subdomain}.test.unicus.one`;
+      domain = `${subdomain}.demo.unicus.one`;
     }
 
     const alreadyCreated = await Storefront.findOne({ domain });
