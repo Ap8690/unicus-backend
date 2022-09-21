@@ -81,11 +81,11 @@ const createStore = async (req, res) => {
                 country,
                 contactEmail: email,
                 user: owner,
-                storefront: createStore.id,
+                storefront: createStore?.id,
                 chainName,
             };
             try {
-                let advObj = { user: owner, storefront: createStore.id };
+                let advObj = { user: owner, storefront: createStore?.id };
                 if (chainName) {
                     switch (chainName) {
                         case "ethereum":
@@ -110,16 +110,16 @@ const createStore = async (req, res) => {
                 const resultAd = await Advance.create(advObj);
                 const resultApp = await Appearance.create({
                     user: owner,
-                    storefront: createStore.id,
+                    storefront: createStore?.id,
                 });
                 res.status(StatusCodes.OK).json({ createStore });
             } catch (err) {
                 console.log("err", err);
                 await Storefront.deleteOne({ domain });
-                await General.findOneAndDelete({ storefront: createStore.id });
-                await Advance.findOneAndDelete({ storefront: createStore.id });
+                await General.findOneAndDelete({ storefront: createStore?.id });
+                await Advance.findOneAndDelete({ storefront: createStore?.id });
                 await Appearance.findOneAndDelete({
-                    storefront: createStore.id,
+                    storefront: createStore?.id,
                 });
                 res.json({ err });
             }
@@ -147,7 +147,10 @@ const getStoreByUser = async (req, res) => {
 
 const getStoreDetails = async (req, res) => {
     try {
-        const storefront = req.storefront.id;
+        const storefront = req.storefront?.id;
+        if(!storefront) {
+            return res.status(404).json({err: "Storefront not found!"})
+        }
         const general = await General.findOne({ storefront });
         const advance = await Advance.findOne({ storefront });
         const appearance = await Appearance.findOne({ storefront });
