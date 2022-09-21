@@ -199,7 +199,7 @@ const updateSocialLinks = async (req, res) => {
       throw new Error("No social links to update!")
     }
 
-    const result = await SocialLink.findOneAndUpdate({ storefront }, obj, {
+    const result = await SocialLink.findOneAndUpdate({ storefront }, socialLinks, {
       upsert: true,
     });
     if (result) {
