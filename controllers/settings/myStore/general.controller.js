@@ -154,23 +154,50 @@ const updateSocialLinks = async (req, res) => {
     } = req.body;
     const userId = req.user.userId;
     const storefront = req.storefront.id;
+    let socialLinks = {};
 
-    const obj = {
-      facebook,
-      instagram,
-      discord,
-      pinterest,
-      reddit,
-      behance,
-      telegram,
-      linkedIn,
-      twitter,
-      portfolio,
-      youtube,
-      dribble,
-      stackoverflow,
-      user: userId,
-    };
+    if(facebook) {
+      socialLinks = {...socialLinks, facebook}
+    }
+    if(instagram) {
+      socialLinks = {...socialLinks, instagram}
+    }
+    if(discord) {
+      socialLinks = {...socialLinks, discord}
+    }
+    if(pinterest) {
+      socialLinks = {...socialLinks, pinterest}
+    }
+    if(reddit) {
+      socialLinks = {...socialLinks, reddit}
+    }
+    if(behance) {
+      socialLinks = {...socialLinks, behance}
+    }
+    if(telegram) {
+      socialLinks = {...socialLinks, telegram}
+    }
+    if(linkedIn) {
+      socialLinks = {...socialLinks, linkedIn}
+    }
+    if(twitter) {
+      socialLinks = {...socialLinks, twitter}
+    }
+    if(portfolio) {
+      socialLinks = {...socialLinks, portfolio}
+    }
+    if(youtube) {
+      socialLinks = {...socialLinks, youtube}
+    }
+    if(dribble) {
+      socialLinks = {...socialLinks,dribble}
+    }
+    if(stackoverflow) 
+    socialLinks =  {...socialLinks, stackoverflow}
+
+    if(Object.keys(socialLinks).length === 0) {
+      throw new Error("No social links to update!")
+    }
 
     const result = await SocialLink.findOneAndUpdate({ storefront }, obj, {
       upsert: true,
@@ -183,7 +210,7 @@ const updateSocialLinks = async (req, res) => {
     }
   } catch (err) {
     console.log("err", err);
-    res.status(StatusCodes.BAD_REQUEST).json({err:err.message});
+    res.status(StatusCodes.BAD_REQUEST).json({err:err?.message ? err : err.message});
   }
 };
 
