@@ -5,7 +5,7 @@ const AdvanceSchema = new mongoose.Schema(
         showEth: {
             enabled: {
                 type: Boolean,
-                default: true,
+                default: false,
             },
             assetsMinted: {
                 type: Boolean,
@@ -15,7 +15,17 @@ const AdvanceSchema = new mongoose.Schema(
         showPoly: {
             enabled: {
                 type: Boolean,
+                default: false,
+            },
+            assetsMinted: {
+                type: Boolean,
                 default: true,
+            },
+        },
+        showAva: {
+            enabled: {
+                type: Boolean,
+                default: false,
             },
             assetsMinted: {
                 type: Boolean,
@@ -25,7 +35,7 @@ const AdvanceSchema = new mongoose.Schema(
         showBinance: {
             enabled: {
                 type: Boolean,
-                default: true,
+                default: false,
             },
             assetsMinted: {
                 type: Boolean,
@@ -35,7 +45,7 @@ const AdvanceSchema = new mongoose.Schema(
         showTron: {
             enabled: {
                 type: Boolean,
-                default: true,
+                default: false,
             },
             assetsMinted: {
                 type: Boolean,
@@ -45,7 +55,17 @@ const AdvanceSchema = new mongoose.Schema(
         showSolana: {
             enabled: {
                 type: Boolean,
+                default: false,
+            },
+            assetsMinted: {
+                type: Boolean,
                 default: true,
+            },
+        },
+        showNear: {
+            enabled: {
+                type: Boolean,
+                default: false,
             },
             assetsMinted: {
                 type: Boolean,

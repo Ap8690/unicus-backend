@@ -31,22 +31,59 @@ const updateAdvance = async (req, res) => {
     } = req.body;
     const userId = req.user.userId;
     const storefront = req.storefront.id
+    let obj = {}
 
-    
-    const obj = { 
-      showEth,
-      showPoly,
-      showBinance,
-      showCronos,
-      showSellerKyc,
-      showBuyerKyc,
-      nftCategories,
-      siteUrls,
-      privacyPolicy,
-      terms,
-      aboutUs,
-      creators,
-      user: userId };
+    if(showEth) {
+      obj = {...obj, showEth}
+    }
+    if(showPoly) {
+      obj = {...obj, showPoly}
+    }
+    if(showBinance) {
+      obj = {...obj, showBinance}
+    }
+    if(showAva) {
+      obj = {...obj, showAva}
+    }
+    if(showTron) {
+      obj = {...obj, showTron}
+    }
+    if(showNear) {
+      obj = {...obj, showNear}
+    }
+    if(showSolana) {
+      obj = {...obj, showSolana}
+    }
+    if(showCronos) {
+      obj = {...obj, showCronos}
+    }
+    if(showSellerKyc) {
+      obj = {...obj, showSellerKyc}
+    }
+    if(showBuyerKyc) {
+      obj = {...obj, showBuyerKyc}
+    }
+    if(nftCategories) {
+      obj = {...obj, nftCategories}
+    }
+    if(siteUrls) {
+      obj = {...obj, siteUrls}
+    }
+    if(privacyPolicy) {
+      obj = {...obj, privacyPolicy}
+    }
+    if(terms) {
+      obj = {...obj, terms}
+    }
+    if(aboutUs) {
+      obj = {...obj, aboutUs}
+    }
+    if(creators) {
+      obj = {...obj, creators}
+    }
+    if(userId) {
+      obj = {...obj, user:userId}
+    }
     const result = await Advance.findOneAndUpdate({ user: userId, storefront }, obj, {
       upsert: true,
     });

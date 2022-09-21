@@ -73,10 +73,7 @@ app.use("/appearance", appearanceRouter);
 app.use("/seo", seoRouter);
 app.use("/my-account", myAccountRouter);
 
-
-
 //Storefront
-
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
