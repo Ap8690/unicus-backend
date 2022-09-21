@@ -210,7 +210,7 @@ const updateSocialLinks = async (req, res) => {
     }
   } catch (err) {
     console.log("err", err);
-    res.status(StatusCodes.BAD_REQUEST).json({err:err?.message ? err : err.message});
+    res.status(StatusCodes.BAD_REQUEST).json({err:err?.message ? err.message : err});
   }
 };
 
