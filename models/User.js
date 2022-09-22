@@ -18,7 +18,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       unique: [true, "username has already taken"],
       minlength: [3, "Username should have at least 3 characters"],
-      maxlength: [60, "Username cannot have more than 15 characters"],
+      maxlength: [70, "Username cannot have more than 70 characters"],
     },
     email: {
       type: String,
