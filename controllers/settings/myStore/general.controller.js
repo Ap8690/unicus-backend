@@ -54,82 +54,78 @@ const updateGeneral = async(req, res)=>{
       storeWallet,
     } = req.body;
     const userId = req.user.userId
-    console.log("loog", req.body);
-    if(!storeName){
-      throw new CustomError.BadRequestError("Store Name is required.");
+    let generalObj = {};
+    if(storeName) {
+      generalObj = {...generalObj, storeName: storeName}
     }
-    if (showContactUs && (!phone || phone === "")) {
-      throw new CustomError.BadRequestError("Phone is required.");
+    if(email) {
+      generalObj = {...generalObj, email: email}
     }
-    // if (!locale) {
-    //   throw new CustomError.BadRequestError("Locale is required.");
-    // }
-    // if (!timeZone) {
-    //   throw new CustomError.BadRequestError("TimeZone is required.");
-    // }
-    // if (!dateFormat) {
-    //   throw new CustomError.BadRequestError("Date format is required.");
-    // }
-    // if (!timeFormat) {
-    //   throw new CustomError.BadRequestError("Time Format is required.");
-    // }
-    //  if (showCookieConsent == null) {
-    //    throw new CustomError.BadRequestError(
-    //      "Show Cookie Consent is required."
-    //    );
-    //  }
-    //  if (typeof showCookieConsent != "boolean") {
-    //    throw new CustomError.BadRequestError(
-    //      "Show Cookie Consent should be a boolean."
-    //    );
-    //  }
-    //  if (showCookieConsent && !cookieConsentText) {
-    //    throw new CustomError.BadRequestError(
-    //      "Cookie Consent text is required."
-    //    );
-    //  }
-    //  if (showCookieConsent && !infoLink) {
-    //    throw new CustomError.BadRequestError("More Info Link is required.");
-    //  }
-    // if (showContactUs == null || typeof showContactUs != "boolean") {
-    //   throw new CustomError.BadRequestError(
-    //     "Show Contact Us should be a boolean."
-    //   );
-    // }
-    // if (showNewsLetter == null || typeof showNewsLetter != "boolean") {
-    //   throw new CustomError.BadRequestError(
-    //     "Show NewsLetter should be a boolean."
-    //   );
-    // }
-    // if (showContactUs && (!email || email === "")) {
-    //   throw new CustomError.BadRequestError("Email is required.");
-    // }
-    const obj = {
-      storeName,
-      email,
-      country,
-      logoUrl,
-      showInSuperMarket,
-      marketPlaceAsHome,
-      showLanguage,
-      locale,
-      timeZone,
-      dateFormat,
-      timeFormat,
-      showCookieConsent,
-      cookieConsentText,
-      cookieInfoLink,
-      showNewsLetter, 
-      showContactUs, 
-      phone, 
-      contactEmail, 
-      address,
-      storeFees, 
-      secondaryStoreFees, 
-      storeWallet,
-      user: userId,
-    };
-    const result = await General.findOneAndUpdate({"user": userId}, obj , {upsert: true})
+    if(country) {
+      generalObj = {...generalObj, country: country}
+    }
+    if(logoUrl) {
+      generalObj = {...generalObj, logoUrl: logoUrl}
+    }
+    if(showInSuperMarket) {
+      generalObj = {...generalObj, showInSuperMarket: showInSuperMarket}
+    }
+    if(marketPlaceAsHome) {
+      generalObj = {...generalObj, marketPlaceAs}
+    }
+    if(showLanguage) {
+      generalObj = {...generalObj, showLanguage: showLanguage}
+    }
+    if(locale) {
+      generalObj = {...generalObj,locale: locale}
+    }
+    if(timeZone) {
+      generalObj = {...generalObj, timeZone: timeZone}
+    }
+    if(dateFormat) {
+      generalObj = {...generalObj, dateFormat: dateFormat}
+    }
+    if(timeFormat) {
+      generalObj = {...generalObj, timeFormat: timeFormat}
+    }
+    if(showCookieConsent) {
+      generalObj = {...generalObj, showCookieConsent: showCookieConsent}
+    }
+    if(cookieConsentText) {
+      generalObj = {...generalObj, cookieConsentText: cookieConsent}
+    }
+    if(cookieInfoLink) {
+      generalObj = {...generalObj, cookieInfoLink: cookieInfoLink}
+    }
+    if(showNewsLetter) {
+      generalObj = {...generalObj, showNewsLetter: showNewsLetter}
+    }
+    if(showContactUs) {
+      generalObj = {...generalObj, showContactUs: showContactUs}
+    }
+    if(phone) {
+      generalObj = {...generalObj, phone: phone}
+    }
+    if(contactEmail) {
+      generalObj = {...generalObj, contactEmail: contactEmail}
+    }
+    if(address) {
+      generalObj = {...generalObj, address: address}
+    }
+    if(storeFees) {
+      generalObj = {...generalObj, storeFees: storeFees}
+    }
+    if(secondaryStoreFees) {
+      generalObj = {...generalObj, secondaryStoreFees: secondaryStoreFees}
+    }
+    if(storeWallet) {
+      generalObj = {...generalObj, storeWallet: storeWallet}
+    }
+    if(Object.keys(generalObj).length === 0) {
+      throw new Error("No data to update!")
+    }
+
+    const result = await General.findOneAndUpdate({"user": userId}, generalObj , {upsert: true})
     if(result){
       res.status(StatusCodes.OK).json({result})
     }
@@ -158,25 +154,52 @@ const updateSocialLinks = async (req, res) => {
     } = req.body;
     const userId = req.user.userId;
     const storefront = req.storefront.id;
+    let socialLinks = {};
 
-    const obj = {
-      facebook,
-      instagram,
-      discord,
-      pinterest,
-      reddit,
-      behance,
-      telegram,
-      linkedIn,
-      twitter,
-      portfolio,
-      youtube,
-      dribble,
-      stackoverflow,
-      user: userId,
-    };
+    if(facebook) {
+      socialLinks = {...socialLinks, facebook}
+    }
+    if(instagram) {
+      socialLinks = {...socialLinks, instagram}
+    }
+    if(discord) {
+      socialLinks = {...socialLinks, discord}
+    }
+    if(pinterest) {
+      socialLinks = {...socialLinks, pinterest}
+    }
+    if(reddit) {
+      socialLinks = {...socialLinks, reddit}
+    }
+    if(behance) {
+      socialLinks = {...socialLinks, behance}
+    }
+    if(telegram) {
+      socialLinks = {...socialLinks, telegram}
+    }
+    if(linkedIn) {
+      socialLinks = {...socialLinks, linkedIn}
+    }
+    if(twitter) {
+      socialLinks = {...socialLinks, twitter}
+    }
+    if(portfolio) {
+      socialLinks = {...socialLinks, portfolio}
+    }
+    if(youtube) {
+      socialLinks = {...socialLinks, youtube}
+    }
+    if(dribble) {
+      socialLinks = {...socialLinks,dribble}
+    }
+    if(stackoverflow) 
+    socialLinks =  {...socialLinks, stackoverflow}
 
-    const result = await SocialLink.findOneAndUpdate({ storefront }, obj, {
+    if(Object.keys(socialLinks).length === 0) {
+      throw new Error("No social links to update!")
+    }
+
+    const result = await SocialLink.findOneAndUpdate({ storefront }, socialLinks, {
       upsert: true,
     });
     if (result) {
@@ -187,7 +210,7 @@ const updateSocialLinks = async (req, res) => {
     }
   } catch (err) {
     console.log("err", err);
-    res.status(StatusCodes.BAD_REQUEST).json({err:err.message});
+    res.status(StatusCodes.BAD_REQUEST).json({err:err?.message ? err.message : err});
   }
 };
 

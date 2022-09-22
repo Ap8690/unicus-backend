@@ -6,7 +6,7 @@ const GeneralSchema = new mongoose.Schema(
     storeName: { type: String, required: [true, "Store Name is required"] },
     email: {
       type: String,
-      unique: [true, "Email has already taken"],
+      unique: [true, "Email is already taken"],
       validate: {
         validator: validator.isEmail,
         message: "Please provide valid email",
