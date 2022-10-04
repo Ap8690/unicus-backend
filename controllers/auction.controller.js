@@ -171,7 +171,7 @@ const sell = async (req, res) => {
                 views: nftOne.views,
                 category: nftOne.category,
             };
-
+ 
             const auction = await Auction.create(createObj);
             const nft = await Nft.updateOne(
                 {

@@ -11,7 +11,7 @@ const Views = require("../models/Views");
 const Collection = require("../models/Collection");
 
 const create = async (req, res) => {
-  const {
+  let {
     jsonIpfs,
     name,
     nftType,
@@ -31,6 +31,7 @@ const create = async (req, res) => {
     tags,
     mintedInfo,
   } = req.body;
+  category = category.toLowerCase();
   const userId = req.user.userId;
   const storefront = req.storefront.id;
 
@@ -72,7 +73,7 @@ const create = async (req, res) => {
       //     contractAddress = "0x1549EabD2a47762413ee1A11e667E67A5825ff44"
       // }
 
-      const createObj = {
+      let createObj = {
         userInfo,
         jsonHash: jsonIpfs,
         name,
@@ -251,6 +252,7 @@ const getNFTByNftId = async (req, res) => {
       auction,
     });
   } catch (e) {
+    console.log("e: ", e);
     console.log(e);
   }
 };
