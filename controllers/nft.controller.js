@@ -31,6 +31,12 @@ const create = async (req, res) => {
     tags,
     mintedInfo,
   } = req.body;
+  console.log(tags)
+  if(tags.length === 1) {
+    if(tags[0].property.trim() == '' && tags[0].value.trim()=='') {
+      tags = []
+    }
+  }
   category = category.toLowerCase();
   const userId = req.user.userId;
   const storefront = req.storefront.id;
