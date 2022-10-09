@@ -11,6 +11,7 @@ const {
     createJWT,
     createLimitedTimeToken,
     createWalletAddressPayload,
+    isTokenValid
 } = require('../utils')
 const {verifyTokenAddress} = require('../utils/verifyTokenAddress')
 const crypto = require('crypto')
@@ -138,15 +139,15 @@ const sendToken = async (user,walletAddress,userAgent,ip) => {
     }
 
     const token = createJWT({ payload: tokenUser })
-    
-    
     const userToken = { token, ip, userAgent, user: user._id }
 
     await Token.create(userToken)
 
+    const decode_token = isTokenValid(token)
     return {
         token: token,
         user: user,
+        exp: decode_token.exp
     }
 }
 
@@ -177,6 +178,7 @@ const newWalletConnect = async (req,res) => {
                 res.status(StatusCodes.OK).json({
                     accessToken: t.token,
                     user: t.user,
+                    exp: t.exp
                 })
                 return;
             }
@@ -199,7 +201,8 @@ const newWalletConnect = async (req,res) => {
 
         res.status(StatusCodes.OK).json({
             accessToken: t.token,
-            user: t.user
+            user: t.user,
+            exp: t.exp
         })
     } catch (e) {
         console.log(e.message);
