@@ -94,7 +94,6 @@ else{
 const start = async () => {
 
   try {
-    console.log(DB_URL, process.env.NODE_ENV);
     await connectDB(DB_URL);
     app.listen(PORT, (err) => {
       if (err) throw err;

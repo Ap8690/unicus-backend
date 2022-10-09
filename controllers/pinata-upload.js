@@ -14,7 +14,6 @@ try{
   const file = req.file;
   try {
     const P = file.path;
-    console.log("P: ", P);
     var readableStreamForFile = fs.createReadStream(P);
     var options = {
       pinataMetadata: {
@@ -29,10 +28,10 @@ try{
     } catch (e) {
       console.log(e, "error");
     }
-    console.log(result);
+
     data.image = "https://unicus.mypinata.cloud/ipfs/" + result.IpfsHash;
     data?.attributes && (data.attributes = JSON.parse(data.attributes))
-    console.log(data);
+
     options = {
       pinataMetadata: {
         name: `${data.name}.json`,

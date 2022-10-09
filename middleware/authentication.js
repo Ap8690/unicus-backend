@@ -14,18 +14,16 @@ const authenticateUser = async (req, res, next) => {
       if (!payload) {
         return res.status(StatusCodes.UNAUTHORIZED).json({ msg: "Invalid Token" });
       }
-
       req.user = payload;
       return next();
     } else {
-      
       return res
         .status(StatusCodes.UNAUTHORIZED)
         .json({ error: "Invalid Token" });
     }
   } catch (error) {
     console.log("err", error.message);
-    throw new CustomError.UnauthenticatedError("Authentication Invalid");
+    res.status(StatusCodes.UNAUTHORIZED).send("Authentication Invalid")
   }
 };
 

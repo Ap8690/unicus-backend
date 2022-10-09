@@ -75,7 +75,6 @@ const getUserById = async (req, res) => {
 const getMyProfile = async (req, res) => {
     const userId = req.user.userId;
     const user = await User.findOne({ _id: userId });
-    console.log("user: ", user);
     if (!user) {
         throw new CustomError.NotFoundError(`No user with id : ${userId}`);
     }
@@ -176,49 +175,65 @@ const showCurrentUser = async (req, res) => {
 };
 
 const updateProfilePicture = async (req, res) => {
-    const userId = req.user.userId;
+    try {
+        const userId = req.user.userId;
     const user = await User.findOne({ _id: userId });
+    // console.log("r" , req.body.file)
+    console.log("image: ", req.files.file[0]); 
+    const image = req.files.file[0].location
     var profileToken;
-    if (user.profileUrl) {
-        const length = user.profileUrl.split("/").length;
-        profileToken = user.profileUrl.split("/")[length - 1].split(".")[0];
-        cloudinary.v2.uploader.destroy(
-            `Unicus_User/${profileToken}`,
-            function (error, result) {
-                console.log(result, error);
-            }
-        );
-    }
+    // if (user.profileUrl) {
+    //     const length = user.profileUrl.split("/").length;
+    //     profileToken = user.profileUrl.split("/")[length - 1].split(".")[0];
+    //     cloudinary.v2.uploader.destroy(
+    //         `Unicus_User/${profileToken}`,
+    //         function (error, result) {
+    //             console.log(result, error);
+    //         }
+    //     );
+    // }
     await User.updateOne(
         { _id: userId },
-        { profileUrl: req.body.cloudinaryUrl }
+        { profileUrl: image }
     );
     const finalUser = await User.findOne({ _id: userId });
     res.status(StatusCodes.OK).json({ user: finalUser });
+    }
+    catch(err) {
+        console.log("err: ", err);
+        res.status(StatusCodes.BAD_REQUEST).send("Intenal server error")
+    }
 };
 
 const updateBackgroundPicture = async (req, res) => {
-    const userId = req.user.userId;
+    try {
+        const userId = req.user.userId;
     const user = await User.findOne({ _id: userId });
     var backgroundToken;
-    if (user.backgroundUrl) {
-        const length = user.backgroundUrl.split("/").length;
-        backgroundToken = user.backgroundUrl
-            .split("/")
-            [length - 1].split(".")[0];
-        cloudinary.v2.uploader.destroy(
-            `Unicus_User/${backgroundToken}`,
-            function (error, result) {
-                console.log(result, error);
-            }
-        );
-    }
+    // if (user.backgroundUrl) {
+    //     const length = user.backgroundUrl.split("/").length;
+    //     backgroundToken = user.backgroundUrl
+    //         .split("/")
+    //         [length - 1].split(".")[0];
+    //     cloudinary.v2.uploader.destroy(
+    //         `Unicus_User/${backgroundToken}`,
+    //         function (error, result) {
+    //             console.log(result, error);
+    //         }
+    //     );
+    // }
+    const image = req.files.file[0].location
+
     await User.updateOne(
         { _id: userId },
-        { backgroundUrl: req.body.cloudinaryUrl }
+        { backgroundUrl: image }
     );
     const finalUser = await User.findOne({ _id: userId });
     res.status(StatusCodes.OK).json({ user: finalUser });
+    }
+    catch(err) {
+        res.status(StatusCodes.BAD_REQUEST).send("Internal server error!")
+    }
 };
 
 const updateUser = async (req, res) => {

@@ -24,14 +24,15 @@ const create = async (req, res) => {
         royalty,
         contractType,
         contractAddress,
-        cloudinaryUrl,
+        
         owner,
         uploadedBy,
         userInfo,
         tags,
         mintedInfo,
     } = req.body;
-    console.log(tags);
+
+    let cloudinaryUrl = req.files.image[0].location
     if (tags.length === 1) {
         if (tags[0].property.trim() == "" && tags[0].value.trim() == "") {
             tags = [];

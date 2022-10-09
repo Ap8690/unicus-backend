@@ -17,6 +17,7 @@ const {
     banUser,
     getMyProfile
 } = require('../controllers/user.controller')
+const {uploadImageToS3} = require("../services/s3_upload")
 
 router.route('/banUser').post(banUser)
 
@@ -30,11 +31,15 @@ router.route('/getSingleUser/:token').get(authenticateUser, getSingleUser)
 
 router
     .route('/update/profilePicture')
-    .post(authenticateUser, updateProfilePicture)
+    .post(authenticateUser,uploadImageToS3().fields([
+        { name: "file", maxCount: 1 },
+      ]), updateProfilePicture)
 
 router
     .route('/update/backgroundPicture')
-    .post(authenticateUser, updateBackgroundPicture)
+    .post(authenticateUser,uploadImageToS3().fields([
+        { name: "file", maxCount: 1 },
+      ]), updateBackgroundPicture)
 
 router.route('/getUserById/:id').get(getUserById) // No Auth
 router.route('/getUserProfile').get(authenticateUser,getMyProfile) 
