@@ -32,6 +32,10 @@ const create = async (req, res) => {
     } = req.body;
 
     let cloudinaryUrl = req.files.image[0].location
+    console.log("tags: ", tags);
+    if(tags.length>0) {
+        tags = JSON.parse(tags)
+    }
     if (tags.length === 1) {
         if (tags[0].property.trim() == "" && tags[0].value.trim() == "") {
             tags = [];
