@@ -36,6 +36,7 @@ const create = async (req, res) => {
     if(tags.length>0) {
         tags = JSON.parse(tags)
     }
+    
     if (tags.length === 1) {
         if (tags[0].property.trim() == "" && tags[0].value.trim() == "") {
             tags = [];
