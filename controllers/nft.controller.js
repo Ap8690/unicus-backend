@@ -24,7 +24,6 @@ const create = async (req, res) => {
         royalty,
         contractType,
         contractAddress,
-        
         owner,
         uploadedBy,
         userInfo,
@@ -403,7 +402,7 @@ const getNFTByUserId = async (req, res) => {
     const userId = req.user.userId;
     const storefront = req.storefront.id;
     const skip = Math.max(0, req.params.skip - 1);
-    const limit = 10;
+    const limit = 400;
 
     const nfts = await Nft.find({
         owner: userId,
