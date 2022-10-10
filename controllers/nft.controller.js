@@ -214,8 +214,12 @@ const getNFTByNftId = async (req, res) => {
             contractAddress,
             storefront,
         });
-        var totalViews = await Views.find({ nftId: nft._id });
-        if (totalViews.length == 0) {
+        var totalViews = null;
+        if(nft !== null) {
+            totalViews = await Views.find({ nftId: nft._id })
+        }
+
+        if (totalViews?.length == 0) {
             await Views.create({
                 nftId: ObjectId(nft._id),
                 views: [],
@@ -273,8 +277,8 @@ const getNFTByNftId = async (req, res) => {
             auction,
         });
     } catch (e) {
-        console.log("e: ", e);
         console.log(e);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({e:"Something Bad happened"})
     }
 };
 

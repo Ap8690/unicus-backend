@@ -811,9 +811,11 @@ const getAuctions = async (req, res) => {
             search.chain = chain;
           }
         const allAuctions = await Auction.find(search)
+        .populate('nftId')
         .limit(number)
         .skip(0)
-        .sort({ createdAt: -1 });
+        .sort({ createdAt: -1 })
+        ;
         res.status(200).json({
             nfts: allAuctions,
         });
