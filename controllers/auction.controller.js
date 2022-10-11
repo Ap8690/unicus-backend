@@ -344,31 +344,35 @@ const getAllExplore = async (req, res) => {
     let auction_search = {
         auctionStatus: 2,
         active: true,
-        storefront,
+        storefront: ObjectId(storefront)
     };
-    chain = Math.max(0, Number(req.params.chain)).toString();
-    console.log("chain: ", req.params.chain);
+    chain = Math.max(0, Number(req.params.chain));
     if (filter == "all") {
         if (Number(req.params.chain) == 0) chain = 0;
-        else auction_search.chain = chain;
+        else auction_search.chain = chain.toString();
     } else {
         auction_search.category = filter;
 
         if (Number(req.params.chain) == 0) chain = 0;
-        else auction_search.chain = chain;
+        else auction_search.chain = chain.toString();
     }
-    console.log("auction_search ", auction_search);
+    if(storefront !== '624a951c1db000b674636777') {
+        auction_search.storefront = storefront
+    }
     let auctions;
     auctions = await Auction.find(auction_search);
+    console.log("auction_search: ", auction_search);
+    console.log("auctions: ", auctions);
 
     if (auctions.length < skip + 30) {
         const limit = Math.max(0, auctions.length - skip);
         let data;
         data = await Auction.find(auction_search)
-            .limit(limit)
-            .skip(skip)
-            .sort(JSON.parse(sort))
-            .populate("nftId");
+        .limit(limit)
+        .skip(skip)
+        .sort(JSON.parse(sort))
+        .populate("nftId");
+        console.log("if data: ", data);
         res.status(StatusCodes.OK).json({
             data: data,
             totalAuctions: auctions.length,
@@ -376,10 +380,11 @@ const getAllExplore = async (req, res) => {
         });
     } else {
         const data = await Auction.find(auction_search)
-            .limit(30)
-            .skip(skip)
-            .sort(JSON.parse(sort))
-            .populate("nftId");
+        .limit(30)
+        .skip(skip)
+        .sort(JSON.parse(sort))
+        .populate("nftId");
+        console.log("data: ", data);
         res.status(StatusCodes.OK).json({
             data: data,
             totalAuctions: auctions.length,

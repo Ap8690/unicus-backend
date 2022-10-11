@@ -30,7 +30,7 @@ const AuctionSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "Nft",
     },
-    chain: Number,
+    chain: String,
     lastBid: {
       type: Number,
       default: 0,
