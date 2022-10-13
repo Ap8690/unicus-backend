@@ -19,6 +19,7 @@ const {
     oldNFt,
     getFeaturedNfts,
     getTrendingNfts,
+    verifyCollectionName
 } = require("../controllers/nft.controller");
 const { uploadToPinata } = require("../controllers/pinata-upload");
 const router = express.Router();
@@ -30,12 +31,12 @@ const {uploadImageToS3} = require("../services/s3_upload")
 router.route("/banNFT").post(banNFT);
 router.route("/unbanNFT").post(unbanNFT);
 router.route("/getAllExplore/:skip").get(getAll);
-router.route("/getallCollections/:skip").get(getallCollections);
-router.route("/getNftByCollections/:collection").get(getNftByCollections);
+router.route("/getallCollections/:limit/:skip").get(getallCollections);
+router.route("/getNftByCollections/:collection/:limit/:skip").get(getNftByCollections);
 router.route("/getTrendingCollections").get(getTrendingCollections);
 
 router
-    .route("/getCollectionsByUser")
+    .route("/getCollectionsByUser/:limit/:skip")
     .post(authenticateUser, getCollectionsByUser);
 
 router
@@ -61,6 +62,7 @@ router.route("/getTrendingNfts/:number/:category/:chain").get(getTrendingNfts);
 router
     .route("/upload-pinata")
     .post(imageUpload.single("image"), uploadToPinata);
+router.route("/verify-collection-name/:collectionName",authenticateUser, verifyCollectionName)
 
 router.route("/old").get(oldNFt);
 module.exports = router;

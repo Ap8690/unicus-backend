@@ -31,12 +31,12 @@ const create = async (req, res) => {
         mintedInfo,
     } = req.body;
 
-    let cloudinaryUrl = req.files.image[0].location
+    let cloudinaryUrl = req.files.image[0].location;
     console.log("tags: ", tags);
-    if(tags.length>0) {
-        tags = JSON.parse(tags)
+    if (tags.length > 0) {
+        tags = JSON.parse(tags);
     }
-    
+
     if (tags.length === 1) {
         if (tags[0].property.trim() == "" && tags[0].value.trim() == "") {
             tags = [];
@@ -130,7 +130,7 @@ const create = async (req, res) => {
             res.status(StatusCodes.CREATED).json({ data });
         } else {
             throw new CustomError.BadRequestError(
-                "Collection name already exists"
+                "Collection name already exists with another user!"
             );
         }
     } else {
@@ -219,8 +219,8 @@ const getNFTByNftId = async (req, res) => {
             storefront,
         });
         var totalViews = null;
-        if(nft !== null) {
-            totalViews = await Views.find({ nftId: nft._id })
+        if (nft !== null) {
+            totalViews = await Views.find({ nftId: nft._id });
         }
 
         if (totalViews?.length == 0) {
@@ -251,7 +251,6 @@ const getNFTByNftId = async (req, res) => {
             bio: mintedUser.bio,
             id: mintedUser._id,
         };
-        console.log("user", user);
         if (user && filter.length === 0) {
             const data = {
                 profileUrl: user.profileUrl,
@@ -282,7 +281,9 @@ const getNFTByNftId = async (req, res) => {
         });
     } catch (e) {
         console.log(e);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({e:"Something Bad happened"})
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+            e: "Something Bad happened",
+        });
     }
 };
 
@@ -331,8 +332,12 @@ const getCollectionsByUser = async (req, res) => {
     try {
         const storefront = req.storefront.id;
         const owner = req.user.userid;
+        const limit = req.params.limit;
+        const skip = req.params.skip;
 
-        const collections = await Collection.find({ owner, storefront });
+        const collections = await Collection.find({ owner, storefront })
+            .skip(skip)
+            .limit(limit);
         res.status(StatusCodes.OK).json({
             collections,
         });
@@ -343,30 +348,30 @@ const getCollectionsByUser = async (req, res) => {
 };
 
 const getallCollections = async (req, res) => {
-    // const sort = req.params.sort
-    // console.log("---------->", sort)
-    // console.log("+++++++++++", JSON.parse(sort))
-    const storefront = req.storefront.id;
-    const skip = Math.max(0, req.params.skip);
-    const collections = await Collection.find({ active: true, storefront });
-    if (collections.length < skip + 30) {
-        const limit = Math.max(0, collections.length - skip);
-        const data = await Collection.find({ storefront })
-            .limit(limit)
-            .skip(skip);
-        res.status(StatusCodes.OK).json({
-            data: data,
-            totalCollections: collections.length,
-            msg: "Done",
-        });
-    } else {
-        const data = await Collection.find({ active: true, storefront })
-            .limit(30)
-            .skip(skip);
-        res.status(StatusCodes.OK).json({
-            data: data,
-            totalCollections: collections.length,
-        });
+    try {
+        const storefront = req.storefront.id;
+        const skip = Math.max(0, req.params.skip);
+        const collections = await Collection.find({ active: true, storefront });
+        if (collections.length < skip + 30) {
+            const limit = Math.max(0, collections.length - skip);
+            const data = await Collection.find({ storefront, active: true })
+                .limit(limit)
+                .skip(skip);
+            res.status(StatusCodes.OK).json({
+                data,
+                total: collections.length,
+            });
+        } else {
+            const data = await Collection.find({ active: true, storefront })
+                .limit(30)
+                .skip(skip);
+            res.status(StatusCodes.OK).json({
+                data,
+                total: collections.length,
+            });
+        }
+    } catch (err) {
+        res.status(StatusCodes.ERROR).send();
     }
 };
 
@@ -411,7 +416,7 @@ const getNFTByUserId = async (req, res) => {
 
     const nfts = await Nft.find({
         owner: userId,
-        nftStatus: 1,
+        // nftStatus: 1,
         active: true,
         storefront,
     })
@@ -419,7 +424,7 @@ const getNFTByUserId = async (req, res) => {
         .skip(skip);
     const nftLength = await Nft.find({
         owner: userId,
-        nftStatus: 1,
+        // nftStatus: 1,
         active: true,
         storefront,
     }).countDocuments();
@@ -736,6 +741,24 @@ const oldNFt = async (req, res) => {
     // );
     // console.log("oldNft", toal.length);
 };
+
+const verifyCollectionName = async (req, res) => {
+    try {
+        const { collectionName } = req.params;
+        const regex = new RegExp(`^${collectionName.trim()}$`, "ig");
+        const nftCollection = await Collection.exists({
+            collectionName: { $regex: regex },
+            storefront,
+        });
+        console.log("nftCollection", nftCollection);
+
+        res.status(200).json({
+            msg: "",
+        });
+    } catch (err) {
+        res.status(500).send("");
+    }
+};
 module.exports = {
     oldNFt,
     create,
@@ -755,4 +778,5 @@ module.exports = {
     getCollectionsByUser,
     getFeaturedNfts,
     getTrendingNfts,
+    verifyCollectionName,
 };
