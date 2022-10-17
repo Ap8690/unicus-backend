@@ -93,6 +93,10 @@ const NftSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "Storefront",
     },
+    quantity: {
+      type: Number,
+      default: 1
+    }
   },
   { timestamps: true }
 );
