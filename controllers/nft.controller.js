@@ -29,6 +29,7 @@ const create = async (req, res) => {
         userInfo,
         tags,
         mintedInfo,
+        quantity
     } = req.body;
 
     let cloudinaryUrl = req.files.image[0].location;
@@ -111,6 +112,7 @@ const create = async (req, res) => {
                 contractType,
                 contractAddress,
                 storefront,
+                quantity
             };
 
             const data = await Nft.create(createObj);
@@ -178,6 +180,7 @@ const create = async (req, res) => {
             contractType,
             contractAddress,
             storefront,
+            quantity
         };
 
         let data = await Nft.create(createObj);

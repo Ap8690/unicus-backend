@@ -63,6 +63,10 @@ const NftSchema = new mongoose.Schema(
     royalty: {
       type: Number,
     },
+    quantity: {
+      type: Number,
+      default : 1
+    },
     category: {
       type: String,
     },
