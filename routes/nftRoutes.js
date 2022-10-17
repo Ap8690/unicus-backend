@@ -19,7 +19,8 @@ const {
     oldNFt,
     getFeaturedNfts,
     getTrendingNfts,
-    verifyCollectionName
+    verifyCollectionName,
+    createCollection
 } = require("../controllers/nft.controller");
 const { uploadToPinata } = require("../controllers/pinata-upload");
 const router = express.Router();
@@ -46,6 +47,7 @@ router
         uploadImageToS3().fields([{ name: "image", maxCount: 1 }]),
         create
     );
+router.route("/createCollection").post(authenticateUser,uploadImageToS3().fields([{ name: "logo", maxCount: 1 }, {name: 'banner', maxCount: 1} ]), createCollection)
 router.route("/getNFTViews/:nftId").get(getNFTViews);
 router.route("/getNFTByUserId/:skip").get(authenticateUser, getNFTByUserId);
 router.route("/getNftById/:chain/:contractAddress/:nftId").get(getNFTByNftId);
