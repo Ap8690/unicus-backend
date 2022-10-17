@@ -31,7 +31,6 @@ const create = async (req, res) => {
         mintedInfo,
         quantity
     } = req.body;
-    console.log("quantity ",quantity);
     let cloudinaryUrl = req.files.image[0].location;
     if (tags.length > 0) {
         tags = JSON.parse(tags);

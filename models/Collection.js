@@ -4,19 +4,24 @@ const CollectionSchema = new mongoose.Schema(
   {
     collectionName: {
       type: String,
+      required: true,
+      unique: true
     },
     owner: {
       type: mongoose.Types.ObjectId,
       ref: "User",
     },
     logoUrl: {
-      type: String
+      type: String,
+      required: true
     },
     bannerUrl: {
-      type: String
+      type: String,
+      required: true
     },
     description: {
-      type: String
+      type: String,
+      required: true
     },
     category: {
       type: String

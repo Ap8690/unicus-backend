@@ -20,8 +20,10 @@ const {
     getFeaturedNfts,
     getTrendingNfts,
     verifyCollectionName,
-    createCollection
+    createCollection,
+    
 } = require("../controllers/nft.controller");
+const {getCollectionById} = require("../controllers/collection.controller")
 const { uploadToPinata } = require("../controllers/pinata-upload");
 const router = express.Router();
 const { authenticateUser } = require("../middleware/authentication");
@@ -65,6 +67,8 @@ router
     .route("/upload-pinata")
     .post(imageUpload.single("image"), uploadToPinata);
 router.route("/verify-collection-name/:collectionName",authenticateUser, verifyCollectionName)
+router.route("/getCollectionById/:id", getCollectionById)
+
 
 router.route("/old").get(oldNFt);
 module.exports = router;
