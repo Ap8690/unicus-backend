@@ -29,10 +29,10 @@ const create = async (req, res) => {
         userInfo,
         tags,
         mintedInfo,
+        quantity
     } = req.body;
-
+    console.log("quantity ",quantity);
     let cloudinaryUrl = req.files.image[0].location;
-    console.log("tags: ", tags);
     if (tags.length > 0) {
         tags = JSON.parse(tags);
     }
@@ -63,7 +63,6 @@ const create = async (req, res) => {
             storefront,
         });
     }
-    console.log(nftCollection);
     if (nftCollection) {
         if (userId == nftCollection.owner) {
             console.log(req.body);
@@ -81,16 +80,29 @@ const create = async (req, res) => {
                 );
             }
 
-            // var contractAddress
-            // if (chain == "56") {
-            //     contractAddress = "0x2f376c69feEC2a4cbb17a001EdB862573898E95a"
-            // } else if (chain == "1") {
-            //     contractAddress = "0x424bb7731c056a52b45CBD613Ef08c69c628735f"
-            // } else if (chain == "137") {
-            //     contractAddress = "0x1549EabD2a47762413ee1A11e667E67A5825ff44"
-            // }
-
-            let createObj = {
+            let createObj = quantity ? {
+                userInfo,
+                jsonHash: jsonIpfs,
+                name,
+                description,
+                nftType,
+                uploadedBy,
+                mintedInfo,
+                chain,
+                tokenId,
+                mintedBy,
+                collectionName: nftCollection.collectionName,
+                collectionId: nftCollection._id,
+                category,
+                tags,
+                cloudinaryUrl,
+                royalty,
+                owner,
+                contractType,
+                contractAddress,
+                storefront,
+                quantity
+            } : {
                 userInfo,
                 jsonHash: jsonIpfs,
                 name,
@@ -134,7 +146,7 @@ const create = async (req, res) => {
             );
         }
     } else {
-        console.log(req.body);
+        
         if (!jsonIpfs) {
             throw new CustomError.BadRequestError(
                 "Please provide the json IPFS"
@@ -149,16 +161,28 @@ const create = async (req, res) => {
             );
         }
 
-        // var contractAddress
-        // if (chain == "56") {
-        //     contractAddress = "0x2f376c69feEC2a4cbb17a001EdB862573898E95a"
-        // } else if (chain == "1") {
-        //     contractAddress = "0x424bb7731c056a52b45CBD613Ef08c69c628735f"
-        // } else if (chain == "137") {
-        //     contractAddress = "0x1549EabD2a47762413ee1A11e667E67A5825ff44"
-        // }
-
-        const createObj = {
+        const createObj = quantity ?  {
+            userInfo,
+            jsonHash: jsonIpfs,
+            name,
+            description,
+            nftType,
+            uploadedBy,
+            mintedInfo,
+            chain,
+            tokenId,
+            mintedBy,
+            collectionName,
+            category,
+            tags,
+            cloudinaryUrl,
+            royalty,
+            owner,
+            contractType,
+            contractAddress,
+            storefront,
+            quantity
+        } : {
             userInfo,
             jsonHash: jsonIpfs,
             name,
@@ -192,7 +216,6 @@ const create = async (req, res) => {
                 collectionId: col._id,
             });
         }
-        console.log(data.collectionId);
         await NFTStates.create({
             nftId: ObjectId(data._id),
             name,
