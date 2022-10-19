@@ -66,34 +66,13 @@ const create = async (req, res) => {
             // const dateString = `${auctionTimer.getUTCDate} ++ ${auctionTimer.getUTCMonth + 1} ++ ${auctionTimer.getUTCFullYear} ++ ${auctionTimer.getUTCHours} ++ ${auctionTimer.getUTCMinutes}`
             const nftOne = await Nft.findOne({ _id: nftId, storefront });
             console.log(nftOne);
-            let createObj = {
-                nftId,
-                auctionId,
-                startBid,
-                auctionType,
-                auctionTimer,
-                auctionStartOn: new Date(),
-                auctionStartTxnHash: auctionHash,
-                tokenId,
-                highestBidder: userId,
-                chain,
-                auctionStatus: 2,
-                auctionStartOn: new Date(),
-                name,
-                sellerWallet,
-                sellerId,
-                sellerInfo,
-                cloudinaryUrl,
-                storefront,
-                views: nftOne.views,
-                category: nftOne.category,
-            };
+            
             var nft = await Nft.findOne({
                 _id: nftId,
                 storefront,
             })
             let auction;
-
+            let nftOnMarket;
             
 
             if(nft.quantity !==1){
@@ -124,7 +103,29 @@ const create = async (req, res) => {
                     storefront: nft.storefront,
                 }
 
-                await Nft.create(newNft)
+                nftOnMarket = await Nft.create(newNft)
+                let createObj = {
+                    nftId:nftOnMarket._id,
+                    auctionId,
+                    startBid,
+                    auctionType,
+                    auctionTimer,
+                    auctionStartOn: new Date(),
+                    auctionStartTxnHash: auctionHash,
+                    tokenId,
+                    highestBidder: userId,
+                    chain,
+                    auctionStatus: 2,
+                    auctionStartOn: new Date(),
+                    name,
+                    sellerWallet,
+                    sellerId,
+                    sellerInfo,
+                    cloudinaryUrl,
+                    storefront,
+                    views: nftOne.views,
+                    category: nftOne.category,
+                };
                 auction = await Auction.create(createObj);
                 await Nft.updateOne(
                     {
@@ -137,8 +138,30 @@ const create = async (req, res) => {
                 );
             }
             else{
+                let createObj = {
+                    nftId,
+                    auctionId,
+                    startBid,
+                    auctionType,
+                    auctionTimer,
+                    auctionStartOn: new Date(),
+                    auctionStartTxnHash: auctionHash,
+                    tokenId,
+                    highestBidder: userId,
+                    chain,
+                    auctionStatus: 2,
+                    auctionStartOn: new Date(),
+                    name,
+                    sellerWallet,
+                    sellerId,
+                    sellerInfo,
+                    cloudinaryUrl,
+                    storefront,
+                    views: nftOne.views,
+                    category: nftOne.category,
+                };
                 auction = await Auction.create(createObj);
-                await Nft.updateOne(
+                nftOnMarket = await Nft.updateOne(
                     {
                         _id: nftId,
                         storefront,
@@ -205,25 +228,6 @@ const sell = async (req, res) => {
             );
         } else {
             const nftOne = await Nft.findOne({ _id: nftId });
-            let createObj = {
-                nftId,
-                auctionId,
-                startBid,
-                auctionType,
-                auctionStartOn: new Date(),
-                auctionStartTxnHash: auctionHash,
-                tokenId,
-                chain,
-                auctionStatus: 2,
-                name,
-                sellerWallet,
-                sellerId,
-                sellerInfo,
-                cloudinaryUrl,
-                storefront,
-                views: nftOne.views,
-                category: nftOne.category,
-            };
 
             var nft = await Nft.findOne({
                 _id: nftId,
@@ -261,6 +265,25 @@ const sell = async (req, res) => {
                 }
 
                 nftOnMarket = await Nft.create(newNft)
+                let createObj = {
+                    nftId:nftOnMarket._id,
+                    auctionId,
+                    startBid,
+                    auctionType,
+                    auctionStartOn: new Date(),
+                    auctionStartTxnHash: auctionHash,
+                    tokenId,
+                    chain,
+                    auctionStatus: 2,
+                    name,
+                    sellerWallet,
+                    sellerId,
+                    sellerInfo,
+                    cloudinaryUrl,
+                    storefront,
+                    views: nftOne.views,
+                    category: nftOne.category,
+                };
                 auction = await Auction.create(createObj);
                 await Nft.updateOne(
                     {
@@ -273,6 +296,25 @@ const sell = async (req, res) => {
                 );
             }
             else{
+                let createObj = {
+                    nftId,
+                    auctionId,
+                    startBid,
+                    auctionType,
+                    auctionStartOn: new Date(),
+                    auctionStartTxnHash: auctionHash,
+                    tokenId,
+                    chain,
+                    auctionStatus: 2,
+                    name,
+                    sellerWallet,
+                    sellerId,
+                    sellerInfo,
+                    cloudinaryUrl,
+                    storefront,
+                    views: nftOne.views,
+                    category: nftOne.category,
+                };
                 auction = await Auction.create(createObj);
                 nftOnMarket = await Nft.updateOne(
                     {
