@@ -242,66 +242,66 @@ const getNFTByNftId = async (req, res) => {
             chain,
             contractAddress,
             storefront,
-        });
+        }).populate('mintedBy');
+        let mintedUser = await nft.mintedBy;
         var totalViews = null;
-        if (nft !== null) {
-            totalViews = await Views.find({ nftId: nft._id });
-        }
+        // if (nft !== null) {
+        //     totalViews = await Views.find({ nftId: nft._id });
+        // }
 
-        if (totalViews?.length == 0) {
-            await Views.create({
-                nftId: ObjectId(nft._id),
-                views: [],
-                heart: [],
-            });
-            totalViews = await Views.find({ nftId: nft._id });
-        }
-
-        var user;
+        // if (totalViews?.length == 0) {
+        //     await Views.create({
+        //         nftId: ObjectId(nft._id),
+        //         views: [],
+        //         heart: [],
+        //     });
+        //     totalViews = await Views.find({ nftId: nft._id });
+        // }
         var filter = [];
 
         const nftStates = await NFTStates.find({ nftId: nft._id });
         const bids = await Bids.find({ nftId: nft._id });
-        let mintedUser = await User.findOne({ _id: nft.mintedBy });
+        console.log("bids: ", bids);
+        
         const auction = await Auction.findOne({
             nftId: nft._id,
             storefront,
             $or: [{ auctionStatus: 1 }, { auctionStatus: 2 }],
         });
 
-        user = {
-            profileUrl: mintedUser.profileUrl,
-            username: mintedUser.username,
-            email: mintedUser.email,
-            bio: mintedUser.bio,
-            id: mintedUser._id,
-        };
-        if (user && filter.length === 0) {
-            const data = {
-                profileUrl: user.profileUrl,
-                username: user.username,
-                bio: user.bio,
-                userId: user._id,
-            };
-            await Views.updateOne(
-                { nftId: nft._id },
-                { $push: { views: data } },
-                { new: true, upsert: true }
-            );
-            await Nft.updateOne(
-                { _id: nft._id, storefront },
-                { views: nft.views + 1 }
-            );
-            await Auction.updateOne(
-                { nftId: nft._id, storefront },
-                { views: nft.views + 1 }
-            );
-        }
+
+        // if (user && filter.length === 0) {
+        //     const data = {
+        //         profileUrl: user.profileUrl,
+        //         username: user.username,
+        //         bio: user.bio,
+        //         userId: user._id,
+        //     };
+        //     await Views.updateOne(
+        //         { nftId: nft._id },
+        //         { $push: { views: data } },
+        //         { new: true, upsert: true }
+        //     );
+        //     await Nft.updateOne(
+        //         { _id: nft._id, storefront },
+        //         { views: nft.views + 1 }
+        //     );
+        //     await Auction.updateOne(
+        //         { nftId: nft._id, storefront },
+        //         { views: nft.views + 1 }
+        //     );
+        // }
         res.status(StatusCodes.OK).json({
             nft,
             nftStates,
             bids,
-            user,
+            user: {
+                profileUrl: mintedUser.profileUrl,
+                username: mintedUser.username,
+                email: mintedUser.email,
+                bio: mintedUser.bio,
+                id: mintedUser._id,
+            },
             auction,
         });
     } catch (e) {
@@ -353,39 +353,15 @@ const getNftByCollections = async (req, res) => {
     }
 };
 
-const getallCollections = async (req, res) => {
-    try {
-        const storefront = req.storefront.id;
-        const skip = Math.max(0, req.params.skip);
-        const collections = await Collection.find({ active: true, storefront }).countDocuments();
-        if (collections < skip + 30) {
-            const limit = Math.max(0, collections - skip);
-            const data = await Collection.find({ storefront, active: true })
-                .limit(limit)
-                .skip(skip);
-            res.status(StatusCodes.OK).json({
-                data,
-                total: collections,
-            });
-        } else {
-            const data = await Collection.find({ active: true, storefront })
-                .limit(30)
-                .skip(skip);
-            res.status(StatusCodes.OK).json({
-                data,
-                total: collections,
-            });
-        }
-    } catch (err) {
-        res.status(StatusCodes.ERROR).send();
-    }
-};
+
 
 const getTrendingCollections = async (req, res) => {
     try {
         const storefront = req.storefront.id;
 
-        const collections = await Collections.find({ storefront }).countDocuments();
+        const collections = await Collections.find({
+            storefront,
+        }).countDocuments();
 
         let trendingCollection = [];
         for (let i = 0; i < collections; i++) {
@@ -418,7 +394,7 @@ const getNFTByUserId = async (req, res) => {
     const userId = req.user.userId;
     const storefront = req.storefront.id;
     const skip = Math.max(0, req.params.skip - 1);
-    const limit = 400;
+    const limit = 10;
 
     const nfts = await Nft.find({
         owner: userId,
@@ -427,7 +403,8 @@ const getNFTByUserId = async (req, res) => {
         storefront,
     })
         .limit(limit)
-        .skip(skip);
+        .skip(skip)
+        .sort({'createdAt':-1});
     const nftLength = await Nft.find({
         owner: userId,
         // nftStatus: 1,
@@ -442,7 +419,8 @@ const getNFTByUserId = async (req, res) => {
     })
         .populate("nftId")
         .limit(limit)
-        .skip(skip);
+        .skip(skip)
+        .sort({'createdAt':-1});
     const auctionLength = await Auction.find({
         sellerId: userId,
         auctionStatus: 2,
@@ -776,7 +754,7 @@ const createCollection = async (req, res) => {
             discord,
             twitter,
             telegram,
-            chain
+            chain,
         } = req.body;
         const logoUrl = req.files.logo[0].location;
         const bannerUrl = req.files.banner[0].location;
@@ -802,7 +780,7 @@ const createCollection = async (req, res) => {
             twitterUrl: twitter,
             telegramUrl: telegram,
             storefront,
-            chain
+            chain,
         };
         console.log(createObj);
         const ct = await Collection.create(createObj);
@@ -826,10 +804,8 @@ module.exports = {
     getNFTViews,
     unbanNFT,
     banNFT,
-    getallCollections,
     getNftByCollections,
     getTrendingCollections,
-
     getFeaturedNfts,
     getTrendingNfts,
     verifyCollectionName,
