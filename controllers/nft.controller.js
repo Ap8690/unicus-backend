@@ -394,7 +394,7 @@ const getNFTByUserId = async (req, res) => {
     const userId = req.user.userId;
     const storefront = req.storefront.id;
     const skip = Math.max(0, req.params.skip - 1);
-    const limit = 400;
+    const limit = 10;
 
     const nfts = await Nft.find({
         owner: userId,
@@ -403,7 +403,8 @@ const getNFTByUserId = async (req, res) => {
         storefront,
     })
         .limit(limit)
-        .skip(skip);
+        .skip(skip)
+        .sort({'createdAt':-1});
     const nftLength = await Nft.find({
         owner: userId,
         // nftStatus: 1,
@@ -418,7 +419,8 @@ const getNFTByUserId = async (req, res) => {
     })
         .populate("nftId")
         .limit(limit)
-        .skip(skip);
+        .skip(skip)
+        .sort({'createdAt':-1});
     const auctionLength = await Auction.find({
         sellerId: userId,
         auctionStatus: 2,
