@@ -236,12 +236,14 @@ const getNFTByNftId = async (req, res) => {
         const chain = Math.max(0, req.params.chain);
         const contractAddress = req.params.contractAddress;
         const storefront = req.storefront.id;
+        const nftDbId = req.params.nftDbId;
 
         const nft = await Nft.findOne({
             tokenId,
             chain,
             contractAddress,
             storefront,
+            _id: nftDbId
         }).populate('mintedBy');
         let mintedUser = await nft.mintedBy;
         var totalViews = null;
@@ -393,6 +395,7 @@ const getTrendingCollections = async (req, res) => {
 const getNFTByUserId = async (req, res) => {
     const userId = req.user.userId;
     const storefront = req.storefront.id;
+    
     const skip = Math.max(0, req.params.skip - 1);
     const limit = 10;
 
