@@ -92,14 +92,39 @@ const create = async (req, res) => {
                 _id: nftId,
                 storefront,
             })
-            console.log(nft,"nft")
             let auction;
 
+            
+
             if(nft.quantity !==1){
-                nft._id = new ObjectId()
-                nft.quantity = 1
-                nft.nftStatus = 3
-                await Nft.create(nft)
+                const newNft = {
+                    name: nft.name,
+                    jsonHash: nft.jsonHash,
+                    nftType: nft.nftType,
+                    description:nft.description,
+                    tags: nft.tags,
+                    isApproved:nft.isApproved,
+                    tokenId:nft.tokenId,
+                    views: nft.views,
+                    uploadedBy: nft.uploadedBy,
+                    cloudinaryUrl: nft.cloudinaryUrl,
+                    mintedBy: nft.mintedBy,
+                    mintedInfo: nft.mintedInfo,
+                    userInfo: nft.userInfo,
+                    contractType: nft.contractType,
+                    contractAddress: nft.contractAddress,
+                    nftStatus: 3,
+                    chain: nft.chain,
+                    royalty: nft.royalty,
+                    quantity: 1,
+                    category: nft.category,
+                    collectionName: nft.collectionName,
+                    owner: nft.owner,
+                    active: nft.active,
+                    storefront: nft.storefront,
+                }
+
+                await Nft.create(newNft)
                 auction = await Auction.create(createObj);
                 await Nft.updateOne(
                     {
@@ -107,7 +132,7 @@ const create = async (req, res) => {
                         storefront,
                     },
                     {
-                        $inc: {quantity: -1},
+                        quantity: nft.quantity-1,
                     }
                 );
             }
@@ -199,19 +224,69 @@ const sell = async (req, res) => {
                 views: nftOne.views,
                 category: nftOne.category,
             };
- 
-            const auction = await Auction.create(createObj);
-            const nft = await Nft.updateOne(
-                {
-                    _id: nftId,
-                    storefront,
-                },
-                {
+
+            var nft = await Nft.findOne({
+                _id: nftId,
+                storefront,
+            })
+            var nftOnMarket
+            let auction;
+
+            if(nft.quantity !==1){
+                const newNft = {
+                    name: nft.name,
+                    jsonHash: nft.jsonHash,
+                    nftType: nft.nftType,
+                    description:nft.description,
+                    tags: nft.tags,
+                    isApproved:nft.isApproved,
+                    tokenId:nft.tokenId,
+                    views: nft.views,
+                    uploadedBy: nft.uploadedBy,
+                    cloudinaryUrl: nft.cloudinaryUrl,
+                    mintedBy: nft.mintedBy,
+                    mintedInfo: nft.mintedInfo,
+                    userInfo: nft.userInfo,
+                    contractType: nft.contractType,
+                    contractAddress: nft.contractAddress,
                     nftStatus: 2,
+                    chain: nft.chain,
+                    royalty: nft.royalty,
+                    quantity: 1,
+                    category: nft.category,
+                    collectionName: nft.collectionName,
+                    owner: nft.owner,
+                    active: nft.active,
+                    storefront: nft.storefront,
                 }
-            );
+
+                nftOnMarket = await Nft.create(newNft)
+                auction = await Auction.create(createObj);
+                await Nft.updateOne(
+                    {
+                        _id: nftId,
+                        storefront,
+                    },
+                    {
+                        quantity: nft.quantity-1,
+                    }
+                );
+            }
+            else{
+                auction = await Auction.create(createObj);
+                nftOnMarket = await Nft.updateOne(
+                    {
+                        _id: nftId,
+                        storefront,
+                    },
+                    {
+                        nftStatus: 2,
+                    }
+                );
+            }
+ 
             console.log(auction, nft);
-            res.status(StatusCodes.OK).json({ auction, nft });
+            res.status(StatusCodes.OK).json({ auction, nftOnMarket });
         }
     } catch (e) {
         throw new CustomError.BadRequestError(e);
