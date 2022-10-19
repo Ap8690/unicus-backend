@@ -140,9 +140,42 @@ const searchCollection = async (req, res) => {
     }
 };
 
+const getallCollections = async (req, res) => {
+    try {
+        const storefront = req.storefront.id;
+        const skip = Math.max(0, req.params.skip);
+        const limit = req.params.limit;
+        const filter = req.query.filter;
+        const queryCollection = {
+            active: true,
+            storefront,
+        }
+        if(filter.toLowerCase() !== 'all' && filter !== undefined) {
+            queryCollection.category = filter.toLowerCase();
+        }
+        console.log("queryCollection: ", queryCollection);
+        const collections = await Collection.find(queryCollection).countDocuments();
+        let data;
+        
+        data = await Collection.find(queryCollection)
+            .limit(limit)
+            .skip(skip)
+            .populate('owner', {'wallets':1})
+            .sort({'createdAt':-1});
+        res.status(StatusCodes.OK).json({
+            data,
+            total: collections,
+        });
+    } catch (err) {
+        console.log("err: ", err);
+        res.status(StatusCodes.ERROR).send();
+    }
+};
+
 module.exports = {
     getCollectionDetails,
     searchCollection,
     getCollectionsByUser,
     getCollections,
+    getallCollections
 };

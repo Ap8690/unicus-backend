@@ -12,7 +12,6 @@ const {
     getNFTViews,
     banNFT,
     unbanNFT,
-    getallCollections,
     getNftByCollections,
     getTrendingCollections,
     oldNFt,
@@ -34,7 +33,6 @@ const { uploadImageToS3 } = require("../services/s3_upload");
 router.route("/banNFT").post(banNFT);
 router.route("/unbanNFT").post(unbanNFT);
 router.route("/getAllExplore/:skip").get(getAll);
-router.route("/getallCollections/:limit/:skip").get(getallCollections);
 router
     .route("/getNftByCollections/:collection/:limit/:skip")
     .get(getNftByCollections);
