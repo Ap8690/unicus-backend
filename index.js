@@ -28,6 +28,8 @@ const advanceRouter = require("./routes/settings/myStore/advanceRoutes");
 const analyticsRouter = require("./routes/settings/myStore/analyticsRoutes");
 const appearanceRouter = require("./routes/settings/myStore/appearanceRoutes");
 const seoRouter = require("./routes/settings/myStore/seoRoutes");
+const collectionRouter = require("./routes/collectionRoutes");
+
 
 const storefrontRouter = require("./routes/storefrontRoutes");
 const myAccountRouter = require("./routes/settings/myAccount/myAccountRoutes")
@@ -65,6 +67,7 @@ app.use("/nft", nftRouter);
 app.use("/auction", auctionRouter);
 app.use("/admin", adminRouter);
 app.use("/store", storefrontRouter);
+app.use("/collection", collectionRouter);
 //Storefront
 app.use("/general", generalRouter);
 app.use("/advance", advanceRouter);

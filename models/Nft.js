@@ -70,9 +70,6 @@ const NftSchema = new mongoose.Schema(
     category: {
       type: String,
     },
-    collectionName: {
-      type: String,
-    },
     collectionId: {
       type: mongoose.Types.ObjectId,
       ref: "Collection",

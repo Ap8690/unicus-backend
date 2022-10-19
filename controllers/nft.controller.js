@@ -29,7 +29,7 @@ const create = async (req, res) => {
         userInfo,
         tags,
         mintedInfo,
-        quantity
+        quantity,
     } = req.body;
     let cloudinaryUrl = req.files.image[0].location;
     if (tags.length > 0) {
@@ -79,51 +79,52 @@ const create = async (req, res) => {
                 );
             }
 
-            let createObj = quantity ? {
-                userInfo,
-                jsonHash: jsonIpfs,
-                name,
-                description,
-                nftType,
-                uploadedBy,
-                mintedInfo,
-                chain,
-                tokenId,
-                mintedBy,
-                collectionName: nftCollection.collectionName,
-                collectionId: nftCollection._id,
-                category,
-                tags,
-                cloudinaryUrl,
-                royalty,
-                owner,
-                contractType,
-                contractAddress,
-                storefront,
-                quantity
-            } : {
-                userInfo,
-                jsonHash: jsonIpfs,
-                name,
-                description,
-                nftType,
-                uploadedBy,
-                mintedInfo,
-                chain,
-                tokenId,
-                mintedBy,
-                collectionName: nftCollection.collectionName,
-                collectionId: nftCollection._id,
-                category,
-                tags,
-                cloudinaryUrl,
-                royalty,
-                owner,
-                contractType,
-                contractAddress,
-                storefront,
-                quantity
-            };
+            let createObj = quantity
+                ? {
+                      userInfo,
+                      jsonHash: jsonIpfs,
+                      name,
+                      description,
+                      nftType,
+                      uploadedBy,
+                      mintedInfo,
+                      chain,
+                      tokenId,
+                      mintedBy,
+                      collectionName: nftCollection.collectionName,
+                      collectionId: nftCollection._id,
+                      category,
+                      tags,
+                      cloudinaryUrl,
+                      royalty,
+                      owner,
+                      contractType,
+                      contractAddress,
+                      storefront,
+                      quantity,
+                  }
+                : {
+                      userInfo,
+                      jsonHash: jsonIpfs,
+                      name,
+                      description,
+                      nftType,
+                      uploadedBy,
+                      mintedInfo,
+                      chain,
+                      tokenId,
+                      mintedBy,
+                      collectionName: nftCollection.collectionName,
+                      collectionId: nftCollection._id,
+                      category,
+                      tags,
+                      cloudinaryUrl,
+                      royalty,
+                      owner,
+                      contractType,
+                      contractAddress,
+                      storefront,
+                  };
 
             const data = await Nft.create(createObj);
             await Collection.updateOne(
@@ -146,7 +147,6 @@ const create = async (req, res) => {
             );
         }
     } else {
-        
         if (!jsonIpfs) {
             throw new CustomError.BadRequestError(
                 "Please provide the json IPFS"
@@ -161,49 +161,50 @@ const create = async (req, res) => {
             );
         }
 
-        const createObj = quantity ?  {
-            userInfo,
-            jsonHash: jsonIpfs,
-            name,
-            description,
-            nftType,
-            uploadedBy,
-            mintedInfo,
-            chain,
-            tokenId,
-            mintedBy,
-            collectionName,
-            category,
-            tags,
-            cloudinaryUrl,
-            royalty,
-            owner,
-            contractType,
-            contractAddress,
-            storefront,
-            quantity
-        } : {
-            userInfo,
-            jsonHash: jsonIpfs,
-            name,
-            description,
-            nftType,
-            uploadedBy,
-            mintedInfo,
-            chain,
-            tokenId,
-            mintedBy,
-            collectionName,
-            category,
-            tags,
-            cloudinaryUrl,
-            royalty,
-            owner,
-            contractType,
-            contractAddress,
-            storefront,
-            quantity
-        };
+        const createObj = quantity
+            ? {
+                  userInfo,
+                  jsonHash: jsonIpfs,
+                  name,
+                  description,
+                  nftType,
+                  uploadedBy,
+                  mintedInfo,
+                  chain,
+                  tokenId,
+                  mintedBy,
+                  collectionName,
+                  category,
+                  tags,
+                  cloudinaryUrl,
+                  royalty,
+                  owner,
+                  contractType,
+                  contractAddress,
+                  storefront,
+                  quantity,
+              }
+            : {
+                  userInfo,
+                  jsonHash: jsonIpfs,
+                  name,
+                  description,
+                  nftType,
+                  uploadedBy,
+                  mintedInfo,
+                  chain,
+                  tokenId,
+                  mintedBy,
+                  collectionName,
+                  category,
+                  tags,
+                  cloudinaryUrl,
+                  royalty,
+                  owner,
+                  contractType,
+                  contractAddress,
+                  storefront,
+              };
 
         let data = await Nft.create(createObj);
         if (collectionName) {
@@ -342,28 +343,9 @@ const getNftByCollections = async (req, res) => {
         const storefront = req.storefront.id;
         const collection = req.params.collection;
 
-        const nft = await Nft.find({ collectionName: collection, storefront });
+        const nft = await Nft.find({ collectionId: collection, storefront });
         res.status(StatusCodes.OK).json({
             nft,
-        });
-    } catch (e) {
-        console.log(e);
-        res.status(StatusCodes.BAD_REQUEST);
-    }
-};
-
-const getCollectionsByUser = async (req, res) => {
-    try {
-        const storefront = req.storefront.id;
-        const owner = req.user.userid;
-        const limit = req.params.limit;
-        const skip = req.params.skip;
-
-        const collections = await Collection.find({ owner, storefront })
-            .skip(skip)
-            .limit(limit);
-        res.status(StatusCodes.OK).json({
-            collections,
         });
     } catch (e) {
         console.log(e);
@@ -375,15 +357,15 @@ const getallCollections = async (req, res) => {
     try {
         const storefront = req.storefront.id;
         const skip = Math.max(0, req.params.skip);
-        const collections = await Collection.find({ active: true, storefront });
-        if (collections.length < skip + 30) {
-            const limit = Math.max(0, collections.length - skip);
+        const collections = await Collection.find({ active: true, storefront }).countDocuments();
+        if (collections < skip + 30) {
+            const limit = Math.max(0, collections - skip);
             const data = await Collection.find({ storefront, active: true })
                 .limit(limit)
                 .skip(skip);
             res.status(StatusCodes.OK).json({
                 data,
-                total: collections.length,
+                total: collections,
             });
         } else {
             const data = await Collection.find({ active: true, storefront })
@@ -391,7 +373,7 @@ const getallCollections = async (req, res) => {
                 .skip(skip);
             res.status(StatusCodes.OK).json({
                 data,
-                total: collections.length,
+                total: collections,
             });
         }
     } catch (err) {
@@ -403,10 +385,10 @@ const getTrendingCollections = async (req, res) => {
     try {
         const storefront = req.storefront.id;
 
-        const collections = await Collections.find({ storefront });
+        const collections = await Collections.find({ storefront }).countDocuments();
 
         let trendingCollection = [];
-        for (let i = 0; i < collections.length; i++) {
+        for (let i = 0; i < collections; i++) {
             const nfts = Nft.aggregate([
                 {
                     $match: {
@@ -784,47 +766,52 @@ const verifyCollectionName = async (req, res) => {
     }
 };
 
-const createCollection = async (req, res)=>{
-    try{
-        const { collectionName, description, category, website, discord, twitter, telegram } = req.body
-        const logoUrl = req.files.logo[0].location
-        const bannerUrl = req.files.banner[0].location
+const createCollection = async (req, res) => {
+    try {
+        const {
+            collectionName,
+            description,
+            category,
+            website,
+            discord,
+            twitter,
+            telegram,
+            chain
+        } = req.body;
+        const logoUrl = req.files.logo[0].location;
+        const bannerUrl = req.files.banner[0].location;
         const userId = req.user.userId;
         const storefront = req.storefront.id;
-        const regex = new RegExp(`^${collectionName.trim()}$`, "ig")
+        const regex = new RegExp(`^${collectionName.trim()}$`, "ig");
         const nftCollection = await Collection.exists({
             collectionName: { $regex: regex },
             storefront,
         });
-        if(nftCollection) {
-            res.status(400).send('Collection name already exists')
-        } else {
-            try {
-                const createObj = {
-                    collectionName: collectionName.trim(),
-                    owner: userId,
-                    logoUrl: logoUrl,
-                    bannerUrl: bannerUrl,
-                    description,
-                    category,
-                    websiteUrl: website,
-                    discordUrl: discord,
-                    twitterUrl: twitter,
-                    telegramUrl: telegram,
-                    storefront
-                }
-                console.log(createObj)
-                await Collection.create(createObj)
-                res.status(StatusCodes.CREATED).json({ createObj })
-            } catch (err) {
-                res.status(400).send(err)
-            }
+        if (nftCollection) {
+            return res.status(400).send("Collection name already exists");
         }
-
+        const createObj = {
+            collectionName: collectionName.trim(),
+            owner: userId,
+            logoUrl: logoUrl,
+            bannerUrl: bannerUrl,
+            description,
+            category,
+            websiteUrl: website,
+            discordUrl: discord,
+            twitterUrl: twitter,
+            telegramUrl: telegram,
+            storefront,
+            chain
+        };
+        console.log(createObj);
+        const ct = await Collection.create(createObj);
+        console.log("ct: ", ct);
+        res.status(StatusCodes.CREATED).json({ ct });
     } catch (err) {
-        res.status(400).send(err)
+        res.status(StatusCodes.BAD_REQUEST).send();
     }
-}
+};
 
 module.exports = {
     oldNFt,
@@ -842,9 +829,9 @@ module.exports = {
     getallCollections,
     getNftByCollections,
     getTrendingCollections,
-    getCollectionsByUser,
+
     getFeaturedNfts,
     getTrendingNfts,
     verifyCollectionName,
-    createCollection
+    createCollection,
 };

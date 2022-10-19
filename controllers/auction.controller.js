@@ -455,7 +455,6 @@ const getAllExplore = async (req, res) => {
         else auction_search.chain = chain.toString();
     } else {
         auction_search.category = filter;
-
         if (Number(req.params.chain) == 0) chain = 0;
         else auction_search.chain = chain.toString();
     }
@@ -464,8 +463,6 @@ const getAllExplore = async (req, res) => {
     }
     let auctions;
     auctions = await Auction.find(auction_search);
-    console.log("auction_search: ", auction_search);
-    console.log("auctions: ", auctions);
 
     if (auctions.length < skip + 30) {
         const limit = Math.max(0, auctions.length - skip);

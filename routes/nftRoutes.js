@@ -14,28 +14,30 @@ const {
     unbanNFT,
     getallCollections,
     getNftByCollections,
-    getCollectionsByUser,
     getTrendingCollections,
     oldNFt,
     getFeaturedNfts,
     getTrendingNfts,
     verifyCollectionName,
     createCollection,
-    
 } = require("../controllers/nft.controller");
-const {getCollectionById} = require("../controllers/collection.controller")
+const {
+    getCollectionsByUser,
+} = require("../controllers/collection.controller");
 const { uploadToPinata } = require("../controllers/pinata-upload");
 const router = express.Router();
 const { authenticateUser } = require("../middleware/authentication");
 const imageUpload = require("../middleware/image-upload");
-const {uploadImageToS3} = require("../services/s3_upload")
+const { uploadImageToS3 } = require("../services/s3_upload");
 
 // router.route("/nfts").get(getAllNFTS
 router.route("/banNFT").post(banNFT);
 router.route("/unbanNFT").post(unbanNFT);
 router.route("/getAllExplore/:skip").get(getAll);
 router.route("/getallCollections/:limit/:skip").get(getallCollections);
-router.route("/getNftByCollections/:collection/:limit/:skip").get(getNftByCollections);
+router
+    .route("/getNftByCollections/:collection/:limit/:skip")
+    .get(getNftByCollections);
 router.route("/getTrendingCollections").get(getTrendingCollections);
 
 router
@@ -49,7 +51,14 @@ router
         uploadImageToS3().fields([{ name: "image", maxCount: 1 }]),
         create
     );
-router.route("/createCollection").post(authenticateUser,uploadImageToS3().fields([{ name: "logo", maxCount: 1 }, {name: 'banner', maxCount: 1} ]), createCollection)
+router.route("/createCollection").post(
+    authenticateUser,
+    uploadImageToS3().fields([
+        { name: "logo", maxCount: 1 },
+        { name: "banner", maxCount: 1 },
+    ]),
+    createCollection
+);
 router.route("/getNFTViews/:nftId").get(getNFTViews);
 router.route("/getNFTByUserId/:skip").get(authenticateUser, getNFTByUserId);
 router.route("/getNftById/:chain/:contractAddress/:nftId").get(getNFTByNftId);
@@ -62,13 +71,15 @@ router.route("/getRecent/:chain").get(getRecentlyCreatedNFTS);
 router.route("/approve").post(authenticateUser, approveNFT);
 router.route("/getFeaturedNfts/:number/:chain").get(getFeaturedNfts);
 router.route("/getTrendingNfts/:number/:category/:chain").get(getTrendingNfts);
-
 router
     .route("/upload-pinata")
     .post(imageUpload.single("image"), uploadToPinata);
-router.route("/verify-collection-name/:collectionName",authenticateUser, verifyCollectionName)
-router.route("/getCollectionById/:id", getCollectionById)
-
+router.route(
+    "/verify-collection-name/:collectionName",
+    authenticateUser,
+    verifyCollectionName
+);
 
 router.route("/old").get(oldNFt);
+
 module.exports = router;
