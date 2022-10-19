@@ -88,30 +88,31 @@ const create = async (req, res) => {
                 views: nftOne.views,
                 category: nftOne.category,
             };
-            let nft = await nft.findOne({
+            var nft = await Nft.findOne({
                 _id: nftId,
                 storefront,
             })
             console.log(nft,"nft")
+            let auction;
 
             if(nft.quantity !==1){
                 nft._id = new ObjectId()
                 nft.quantity = 1
                 nft.nftStatus = 3
-                await nft.create()
-                const auction = await Auction.create(nft);
+                await Nft.create(nft)
+                auction = await Auction.create(createObj);
                 await Nft.updateOne(
                     {
                         _id: nftId,
                         storefront,
                     },
                     {
-                        quantity: nft.quantity-1,
+                        $inc: {quantity: -1},
                     }
                 );
             }
             else{
-                const auction = await Auction.create(createObj);
+                auction = await Auction.create(createObj);
                 await Nft.updateOne(
                     {
                         _id: nftId,
