@@ -55,13 +55,13 @@ const create = async (req, res) => {
         throw new CustomError.BadRequestError("NFT already listed");
     }
     var nftCollection;
-    if (collectionName) {
-        var regex = new RegExp(`^${collectionName.trim()}$`, "ig");
-        nftCollection = await Collection.findOne({
-            collectionName: { $regex: regex },
-            storefront,
-        });
-    }
+    // if (collectionName) {
+    //     var regex = new RegExp(`^${collectionName.trim()}$`, "ig");
+    //     nftCollection = await Collection.findOne({
+    //         collectionName: { $regex: regex },
+    //         storefront,
+    //     });
+    // }
     if (nftCollection) {
         if (userId == nftCollection.owner) {
             console.log(req.body);
