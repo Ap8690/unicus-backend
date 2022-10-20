@@ -216,7 +216,7 @@ const updateSocialLinks = async (req, res) => {
 
 const uploadLogo = async (req,res) => {
   try {
-    const imageUrl = req.files.logoUrl[0].location
+    const imageUrl = req.files.logo[0].location
     const result = await General.findOneAndUpdate({"user": req.user.userId}, generalObj , {upsert: true})
     console.log("result: ", result);
 
