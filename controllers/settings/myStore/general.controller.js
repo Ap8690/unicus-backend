@@ -214,9 +214,23 @@ const updateSocialLinks = async (req, res) => {
   }
 };
 
+const uploadLogo = async (req,res) => {
+  try {
+    const imageUrl = req.files.logoUrl[0].location
+    const result = await General.findOneAndUpdate({"user": req.user.userId}, generalObj , {upsert: true})
+    console.log("result: ", result);
+
+    res.status(200).send(imageUrl)
+  }
+  catch(err) {
+    res.status(StatusCodes.BAD_REQUEST).send
+  }
+}
+
 module.exports = {
   getGeneral,
   getSocialLinks,
   updateGeneral,
-  updateSocialLinks
+  updateSocialLinks,
+  uploadLogo
 };
