@@ -223,7 +223,7 @@ const uploadLogo = async (req,res) => {
     res.status(200).send(imageUrl)
   }
   catch(err) {
-    res.status(StatusCodes.BAD_REQUEST).send
+    res.status(StatusCodes.BAD_REQUEST).send(err)
   }
 }
 
