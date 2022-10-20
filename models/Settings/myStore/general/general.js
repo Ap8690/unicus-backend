@@ -14,7 +14,7 @@ const GeneralSchema = new mongoose.Schema(
       required: true,
     },
     country: { type: String, required: false, default: "" },
-    logoUrl: { type: String, required: false, default: "" },
+    logoUrl: { type: String, required: true},
     showInSuperMarket: {
       type: Boolean,
       default: false,
