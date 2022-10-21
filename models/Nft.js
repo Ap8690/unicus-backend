@@ -93,6 +93,9 @@ const NftSchema = new mongoose.Schema(
     quantity: {
       type: Number,
       default: 1
+    },
+    externalLink: {
+      type: String
     }
   },
   { timestamps: true }

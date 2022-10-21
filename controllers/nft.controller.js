@@ -30,6 +30,7 @@ const create = async (req, res) => {
         tags,
         mintedInfo,
         quantity,
+        externalLink
     } = req.body;
     let cloudinaryUrl = req.files.image[0].location;
     if (tags.length > 0) {
@@ -55,16 +56,17 @@ const create = async (req, res) => {
         throw new CustomError.BadRequestError("NFT already listed");
     }
     var nftCollection;
-    // if (collectionName) {
-    //     var regex = new RegExp(`^${collectionName.trim()}$`, "ig");
-    //     nftCollection = await Collection.findOne({
-    //         collectionName: { $regex: regex },
-    //         storefront,
-    //     });
-    // }
+    if (collectionName) {
+        var regex = new RegExp(`^${collectionName.trim()}$`, "ig");
+        nftCollection = await Collection.findOne({
+            collectionName: { $regex: regex },
+            storefront,
+        });
+    }
     if (nftCollection) {
+        console.log("1: ", nftCollection);
         if (userId == nftCollection.owner) {
-            console.log(req.body);
+            console.log("nftCollection: ", nftCollection);
             if (!jsonIpfs) {
                 throw new CustomError.BadRequestError(
                     "Please provide the json IPFS"
@@ -102,6 +104,7 @@ const create = async (req, res) => {
                       contractAddress,
                       storefront,
                       quantity,
+                      externalLink
                   }
                 : {
                       userInfo,
@@ -124,6 +127,7 @@ const create = async (req, res) => {
                       contractType,
                       contractAddress,
                       storefront,
+                      externalLink
                   };
 
             const data = await Nft.create(createObj);
@@ -131,7 +135,6 @@ const create = async (req, res) => {
                 { collectionName: { $regex: regex }, storefront },
                 { total: nftCollection.total + 1 }
             );
-            console.log(data._id);
             await NFTStates.create({
                 nftId: ObjectId(data._id),
                 name,
@@ -207,17 +210,17 @@ const create = async (req, res) => {
               };
 
         let data = await Nft.create(createObj);
-        if (collectionName) {
-            const collectionObj = {
-                owner: mintedBy,
-                collectionName,
-                storefront,
-            };
-            const col = await Collection.create(collectionObj);
-            data = await Nft.findByIdAndUpdate(data._id, {
-                collectionId: col._id,
-            });
-        }
+        // if (collectionName) {
+        //     const collectionObj = {
+        //         owner: mintedBy,
+        //         collectionName,
+        //         storefront,
+        //     };
+        //     const col = await Collection.create(collectionObj);
+        //     data = await Nft.findByIdAndUpdate(data._id, {
+        //         collectionId: col._id,
+        //     });
+        // }
         await NFTStates.create({
             nftId: ObjectId(data._id),
             name,
@@ -749,23 +752,6 @@ const oldNFt = async (req, res) => {
     // console.log("oldNft", toal.length);
 };
 
-const verifyCollectionName = async (req, res) => {
-    try {
-        const { collectionName } = req.params;
-        const regex = new RegExp(`^${collectionName.trim()}$`, "ig");
-        const nftCollection = await Collection.exists({
-            collectionName: { $regex: regex },
-            storefront,
-        });
-        console.log("nftCollection", nftCollection);
-
-        res.status(200).json({
-            msg: "",
-        });
-    } catch (err) {
-        res.status(500).send("");
-    }
-};
 
 const createCollection = async (req, res) => {
     try {
@@ -778,6 +764,8 @@ const createCollection = async (req, res) => {
             twitter,
             telegram,
             chain,
+            linkedInUrl,
+            instagramUrl
         } = req.body;
         const logoUrl = req.files.logo[0].location;
         const bannerUrl = req.files.banner[0].location;
@@ -802,6 +790,8 @@ const createCollection = async (req, res) => {
             discordUrl: discord,
             twitterUrl: twitter,
             telegramUrl: telegram,
+            linkedInUrl: linkedInUrl,
+            instagramUrl: instagramUrl,
             storefront,
             chain,
         };
@@ -831,6 +821,5 @@ module.exports = {
     getTrendingCollections,
     getFeaturedNfts,
     getTrendingNfts,
-    verifyCollectionName,
     createCollection,
 };

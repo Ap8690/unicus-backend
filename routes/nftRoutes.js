@@ -59,12 +59,13 @@ router.route("/createCollection").post(
 );
 router.route("/getNFTViews/:nftId").get(getNFTViews);
 router.route("/getNFTByUserId/:skip").get(authenticateUser, getNFTByUserId);
-router.route("/getNftById/:chain/:contractAddress/:nftId/:nftDbId").get(getNFTByNftId);
+router
+    .route("/getNftById/:chain/:contractAddress/:nftId/:nftDbId")
+    .get(getNFTByNftId);
 router.route("/getNFTByUserName").post(getNFTByUserName);
 router.route("/mint").post(authenticateUser, mintNFT);
 // router.route("/getNftBids/:id").get(getNftBids);
 router.route("/approve").post(authenticateUser, approveNFT);
-
 router.route("/getRecent/:chain").get(getRecentlyCreatedNFTS);
 router.route("/approve").post(authenticateUser, approveNFT);
 router.route("/getFeaturedNfts/:number/:chain").get(getFeaturedNfts);
@@ -72,12 +73,6 @@ router.route("/getTrendingNfts/:number/:category/:chain").get(getTrendingNfts);
 router
     .route("/upload-pinata")
     .post(imageUpload.single("image"), uploadToPinata);
-router.route(
-    "/verify-collection-name/:collectionName",
-    authenticateUser,
-    verifyCollectionName
-);
-
 router.route("/old").get(oldNFt);
 
 module.exports = router;

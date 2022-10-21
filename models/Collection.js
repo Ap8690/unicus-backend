@@ -38,10 +38,20 @@ const CollectionSchema = new mongoose.Schema(
     telegramUrl: {
       type: String
     },
+    instagramUrl: {
+      type:String
+    },
+    linkedInUrl: {
+      type:String
+    },
     storefront: {
       type: mongoose.Types.ObjectId,
       ref: "Storefront",
     },
+    total: {
+      type: Number,
+      default: 0
+    }
   },
   { timestamps: true }
 );

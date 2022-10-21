@@ -172,10 +172,31 @@ const getallCollections = async (req, res) => {
     }
 };
 
+const verifyCollectionName = async (req, res) => {
+    try {
+        const { collectionName } = req.params;
+        const regex = new RegExp(`^${collectionName.trim()}$`, "ig");
+        const nftCollection = await Collection.exists({
+            collectionName: { $regex: regex },
+            storefront:req.storefront.id,
+        });
+
+        res.status(200).json({
+            msg: nftCollection ? "Exists" : "Doesn't Exists",
+            data: nftCollection,
+            status: nftCollection.hasOwnProperty('_id') ? true : false
+        });
+    } catch (err) {
+        console.log("err: ", err);
+        res.status(500).send("");
+    }
+};
+
 module.exports = {
     getCollectionDetails,
     searchCollection,
     getCollectionsByUser,
     getCollections,
-    getallCollections
+    getallCollections,
+    verifyCollectionName
 };
