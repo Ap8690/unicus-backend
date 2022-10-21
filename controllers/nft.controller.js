@@ -243,8 +243,8 @@ const getNFTByNftId = async (req, res) => {
             chain,
             contractAddress,
             storefront,
-            _id: nftDbId
-        }).populate('mintedBy');
+            _id: nftDbId,
+        }).populate("mintedBy");
         let mintedUser = await nft.mintedBy;
         var totalViews = null;
         // if (nft !== null) {
@@ -264,13 +264,12 @@ const getNFTByNftId = async (req, res) => {
         const nftStates = await NFTStates.find({ nftId: nft._id });
         const bids = await Bids.find({ nftId: nft._id });
         console.log("bids: ", bids);
-        
+
         const auction = await Auction.findOne({
             nftId: nft._id,
             storefront,
             $or: [{ auctionStatus: 1 }, { auctionStatus: 2 }],
         });
-
 
         // if (user && filter.length === 0) {
         //     const data = {
@@ -355,8 +354,6 @@ const getNftByCollections = async (req, res) => {
     }
 };
 
-
-
 const getTrendingCollections = async (req, res) => {
     try {
         const storefront = req.storefront.id;
@@ -395,10 +392,11 @@ const getTrendingCollections = async (req, res) => {
 const getNFTByUserId = async (req, res) => {
     const userId = req.user.userId;
     const storefront = req.storefront.id;
-    
+
     const skip = Math.max(0, req.params.skip - 1);
     const limit = 10;
 
+    //1 NFTS
     const nfts = await Nft.find({
         owner: userId,
         // nftStatus: 1,
@@ -407,13 +405,15 @@ const getNFTByUserId = async (req, res) => {
     })
         .limit(limit)
         .skip(skip)
-        .sort({'createdAt':-1});
+        .sort({ createdAt: -1 });
     const nftLength = await Nft.find({
         owner: userId,
         // nftStatus: 1,
         active: true,
         storefront,
     }).countDocuments();
+
+    //2 Auctions
     const auctions = await Auction.find({
         sellerId: userId,
         auctionStatus: 2,
@@ -423,21 +423,41 @@ const getNFTByUserId = async (req, res) => {
         .populate("nftId")
         .limit(limit)
         .skip(skip)
-        .sort({'createdAt':-1});
+        .sort({ createdAt: -1 });
     const auctionLength = await Auction.find({
         sellerId: userId,
         auctionStatus: 2,
         active: true,
         storefront,
     }).countDocuments();
+
+    //3 Collections
+    const collections = await Collection.find({
+        owner: userId,
+        storefront,
+    })
+        .limit(limit)
+        .skip(skip)
+        .sort({ createdAt: -1 });
+
+    const collectionLength = await Collection.find({
+        owner: userId,
+        storefront,
+    })
+        .limit(limit)
+        .skip(skip)
+        .countDocuments();
+
     res.status(StatusCodes.OK).json({
         nfts,
         auctions,
+        collections,
         metadata: {
             limit: limit,
             skip: skip,
             totalNfts: nftLength,
             totalAuctions: auctionLength,
+            totalCollections: collectionLength
         },
     });
 };
