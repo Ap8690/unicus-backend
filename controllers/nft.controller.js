@@ -148,7 +148,7 @@ const create = async (req, res) => {
             throw new CustomError.BadRequestError(
                 "Collection name already exists with another user!"
             );
-        }
+        } 
     } else {
         if (!jsonIpfs) {
             throw new CustomError.BadRequestError(
@@ -249,21 +249,7 @@ const getNFTByNftId = async (req, res) => {
             _id: nftDbId,
         }).populate("mintedBy");
         let mintedUser = await nft.mintedBy;
-        var totalViews = null;
-        // if (nft !== null) {
-        //     totalViews = await Views.find({ nftId: nft._id });
-        // }
-
-        // if (totalViews?.length == 0) {
-        //     await Views.create({
-        //         nftId: ObjectId(nft._id),
-        //         views: [],
-        //         heart: [],
-        //     });
-        //     totalViews = await Views.find({ nftId: nft._id });
-        // }
-        var filter = [];
-
+       
         const nftStates = await NFTStates.find({ nftId: nft._id });
         const bids = await Bids.find({ nftId: nft._id });
         console.log("bids: ", bids);
@@ -274,27 +260,6 @@ const getNFTByNftId = async (req, res) => {
             $or: [{ auctionStatus: 1 }, { auctionStatus: 2 }],
         });
 
-        // if (user && filter.length === 0) {
-        //     const data = {
-        //         profileUrl: user.profileUrl,
-        //         username: user.username,
-        //         bio: user.bio,
-        //         userId: user._id,
-        //     };
-        //     await Views.updateOne(
-        //         { nftId: nft._id },
-        //         { $push: { views: data } },
-        //         { new: true, upsert: true }
-        //     );
-        //     await Nft.updateOne(
-        //         { _id: nft._id, storefront },
-        //         { views: nft.views + 1 }
-        //     );
-        //     await Auction.updateOne(
-        //         { nftId: nft._id, storefront },
-        //         { views: nft.views + 1 }
-        //     );
-        // }
         res.status(StatusCodes.OK).json({
             nft,
             nftStates,
