@@ -239,7 +239,6 @@ const getNFTByNftId = async (req, res) => {
         const chain = Math.max(0, req.params.chain);
         const contractAddress = req.params.contractAddress;
         const storefront = req.storefront.id;
-        const nftDbId = req.params.nftDbId;
 
         // auction id
         const assetListed = req.query.asset_listed;
@@ -249,8 +248,8 @@ const getNFTByNftId = async (req, res) => {
             chain,
             contractAddress,
             storefront,
-            _id: nftDbId,
         }).populate("mintedBy");
+        console.log("nft: ", nft);
         let mintedUser = await nft.mintedBy;
 
         const nftStates = await NFTStates.find({ nftId: nft._id });
@@ -269,7 +268,7 @@ const getNFTByNftId = async (req, res) => {
         for(let i=0;i<auction.length;i++) {
             total_quantity_listed += Number(auction[i].quantity);
         }
-
+        // const auction = []
         res.status(StatusCodes.OK).json({
             nft,
             nftStates,

@@ -60,7 +60,7 @@ router.route("/createCollection").post(
 router.route("/getNFTViews/:nftId").get(getNFTViews);
 router.route("/getNFTByUserId/:skip").get(authenticateUser, getNFTByUserId);
 router
-    .route("/getNftById/:chain/:contractAddress/:nftId/:nftDbId")
+    .route("/getNftById/:chain/:contractAddress/:nftId")
     .get(getNFTByNftId);
 router.route("/getNFTByUserName").post(getNFTByUserName);
 router.route("/mint").post(authenticateUser, mintNFT);
