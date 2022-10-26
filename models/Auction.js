@@ -64,6 +64,10 @@ const AuctionSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "User",
     },
+    quantity: {
+      type: Number,
+      default : 1
+    },
     views: {
       type: Number,
       default: 0,

@@ -26,6 +26,7 @@ const create = async (req, res) => {
             sellerId,
             sellerInfo,
             cloudinaryUrl,
+            quantity
         } = req.body;
         var auctionTimer = new Date();
         const userId = req.user.userId;
@@ -75,69 +76,69 @@ const create = async (req, res) => {
             let nftOnMarket;
             
 
-            if(nft.quantity !==1){
-                const newNft = {
-                    name: nft.name,
-                    jsonHash: nft.jsonHash,
-                    nftType: nft.nftType,
-                    description:nft.description,
-                    tags: nft.tags,
-                    isApproved:nft.isApproved,
-                    tokenId:nft.tokenId,
-                    views: nft.views,
-                    uploadedBy: nft.uploadedBy,
-                    cloudinaryUrl: nft.cloudinaryUrl,
-                    mintedBy: nft.mintedBy,
-                    mintedInfo: nft.mintedInfo,
-                    userInfo: nft.userInfo,
-                    contractType: nft.contractType,
-                    contractAddress: nft.contractAddress,
-                    nftStatus: 3,
-                    chain: nft.chain,
-                    royalty: nft.royalty,
-                    quantity: 1,
-                    category: nft.category,
-                    collectionName: nft.collectionName,
-                    owner: nft.owner,
-                    active: nft.active,
-                    storefront: nft.storefront,
-                }
+            // if(nft.quantity !==1){
+            //     const newNft = {
+            //         name: nft.name,
+            //         jsonHash: nft.jsonHash,
+            //         nftType: nft.nftType,
+            //         description:nft.description,
+            //         tags: nft.tags,
+            //         isApproved:nft.isApproved,
+            //         tokenId:nft.tokenId,
+            //         views: nft.views,
+            //         uploadedBy: nft.uploadedBy,
+            //         cloudinaryUrl: nft.cloudinaryUrl,
+            //         mintedBy: nft.mintedBy,
+            //         mintedInfo: nft.mintedInfo,
+            //         userInfo: nft.userInfo,
+            //         contractType: nft.contractType,
+            //         contractAddress: nft.contractAddress,
+            //         nftStatus: 3,
+            //         chain: nft.chain,
+            //         royalty: nft.royalty,
+            //         quantity: 1,
+            //         category: nft.category,
+            //         collectionName: nft.collectionName,
+            //         owner: nft.owner,
+            //         active: nft.active,
+            //         storefront: nft.storefront,
+            //     }
 
-                nftOnMarket = await Nft.create(newNft)
-                let createObj = {
-                    nftId:nftOnMarket._id,
-                    auctionId,
-                    startBid,
-                    auctionType,
-                    auctionTimer,
-                    auctionStartOn: new Date(),
-                    auctionStartTxnHash: auctionHash,
-                    tokenId,
-                    highestBidder: userId,
-                    chain,
-                    auctionStatus: 2,
-                    auctionStartOn: new Date(),
-                    name,
-                    sellerWallet,
-                    sellerId,
-                    sellerInfo,
-                    cloudinaryUrl,
-                    storefront,
-                    views: nftOne.views,
-                    category: nftOne.category,
-                };
-                auction = await Auction.create(createObj);
-                await Nft.updateOne(
-                    {
-                        _id: nftId,
-                        storefront,
-                    },
-                    {
-                        quantity: nft.quantity-1,
-                    }
-                );
-            }
-            else{
+            //     nftOnMarket = await Nft.create(newNft)
+            //     let createObj = {
+            //         nftId:nftOnMarket._id,
+            //         auctionId,
+            //         startBid,
+            //         auctionType,
+            //         auctionTimer,
+            //         auctionStartOn: new Date(),
+            //         auctionStartTxnHash: auctionHash,
+            //         tokenId,
+            //         highestBidder: userId,
+            //         chain,
+            //         auctionStatus: 2,
+            //         auctionStartOn: new Date(),
+            //         name,
+            //         sellerWallet,
+            //         sellerId,
+            //         sellerInfo,
+            //         cloudinaryUrl,
+            //         storefront,
+            //         views: nftOne.views,
+            //         category: nftOne.category,
+            //     };
+            //     auction = await Auction.create(createObj);
+            //     await Nft.updateOne(
+            //         {
+            //             _id: nftId,
+            //             storefront,
+            //         },
+            //         {
+            //             quantity: nft.quantity-1,
+            //         }
+            //     );
+            // }
+            // else{
                 let createObj = {
                     nftId,
                     auctionId,
@@ -159,6 +160,7 @@ const create = async (req, res) => {
                     storefront,
                     views: nftOne.views,
                     category: nftOne.category,
+                    quantity:quantity
                 };
                 auction = await Auction.create(createObj);
                 nftOnMarket = await Nft.updateOne(
@@ -170,7 +172,7 @@ const create = async (req, res) => {
                         nftStatus: 3,
                     }
                 );
-            }
+            // }
 
            
             
@@ -197,6 +199,7 @@ const sell = async (req, res) => {
             sellerId,
             sellerInfo,
             cloudinaryUrl,
+            quantity
         } = req.body;
         const storefront = req.storefront.id;
 
@@ -236,66 +239,66 @@ const sell = async (req, res) => {
             var nftOnMarket
             let auction;
 
-            if(nft.quantity !==1){
-                const newNft = {
-                    name: nft.name,
-                    jsonHash: nft.jsonHash,
-                    nftType: nft.nftType,
-                    description:nft.description,
-                    tags: nft.tags,
-                    isApproved:nft.isApproved,
-                    tokenId:nft.tokenId,
-                    views: nft.views,
-                    uploadedBy: nft.uploadedBy,
-                    cloudinaryUrl: nft.cloudinaryUrl,
-                    mintedBy: nft.mintedBy,
-                    mintedInfo: nft.mintedInfo,
-                    userInfo: nft.userInfo,
-                    contractType: nft.contractType,
-                    contractAddress: nft.contractAddress,
-                    nftStatus: 2,
-                    chain: nft.chain,
-                    royalty: nft.royalty,
-                    quantity: 1,
-                    category: nft.category,
-                    collectionName: nft.collectionName,
-                    owner: nft.owner,
-                    active: nft.active,
-                    storefront: nft.storefront,
-                }
+            // if(nft.quantity !==1){
+            //     const newNft = {
+            //         name: nft.name,
+            //         jsonHash: nft.jsonHash,
+            //         nftType: nft.nftType,
+            //         description:nft.description,
+            //         tags: nft.tags,
+            //         isApproved:nft.isApproved,
+            //         tokenId:nft.tokenId,
+            //         views: nft.views,
+            //         uploadedBy: nft.uploadedBy,
+            //         cloudinaryUrl: nft.cloudinaryUrl,
+            //         mintedBy: nft.mintedBy,
+            //         mintedInfo: nft.mintedInfo,
+            //         userInfo: nft.userInfo,
+            //         contractType: nft.contractType,
+            //         contractAddress: nft.contractAddress,
+            //         nftStatus: 2,
+            //         chain: nft.chain,
+            //         royalty: nft.royalty,
+            //         quantity: 1,
+            //         category: nft.category,
+            //         collectionName: nft.collectionName,
+            //         owner: nft.owner,
+            //         active: nft.active,
+            //         storefront: nft.storefront,
+            //     }
 
-                nftOnMarket = await Nft.create(newNft)
-                let createObj = {
-                    nftId:nftOnMarket._id,
-                    auctionId,
-                    startBid,
-                    auctionType,
-                    auctionStartOn: new Date(),
-                    auctionStartTxnHash: auctionHash,
-                    tokenId,
-                    chain,
-                    auctionStatus: 2,
-                    name,
-                    sellerWallet,
-                    sellerId,
-                    sellerInfo,
-                    cloudinaryUrl,
-                    storefront,
-                    views: nftOne.views,
-                    category: nftOne.category,
-                };
-                auction = await Auction.create(createObj);
-                await Nft.updateOne(
-                    {
-                        _id: nftId,
-                        storefront,
-                    },
-                    {
-                        quantity: nft.quantity-1,
-                    }
-                );
-            }
-            else{
+            //     nftOnMarket = await Nft.create(newNft)
+            //     let createObj = {
+            //         nftId:nftOnMarket._id,
+            //         auctionId,
+            //         startBid,
+            //         auctionType,
+            //         auctionStartOn: new Date(),
+            //         auctionStartTxnHash: auctionHash,
+            //         tokenId,
+            //         chain,
+            //         auctionStatus: 2,
+            //         name,
+            //         sellerWallet,
+            //         sellerId,
+            //         sellerInfo,
+            //         cloudinaryUrl,
+            //         storefront,
+            //         views: nftOne.views,
+            //         category: nftOne.category,
+            //     };
+            //     auction = await Auction.create(createObj);
+            //     await Nft.updateOne(
+            //         {
+            //             _id: nftId,
+            //             storefront,
+            //         },
+            //         {
+            //             quantity: nft.quantity-1,
+            //         }
+            //     );
+            // }
+            // else{
                 let createObj = {
                     nftId,
                     auctionId,
@@ -314,6 +317,7 @@ const sell = async (req, res) => {
                     storefront,
                     views: nftOne.views,
                     category: nftOne.category,
+                    quantity:quantity
                 };
                 auction = await Auction.create(createObj);
                 nftOnMarket = await Nft.updateOne(
@@ -325,7 +329,7 @@ const sell = async (req, res) => {
                         nftStatus: 2,
                     }
                 );
-            }
+            // }
  
             console.log(auction, nft);
             res.status(StatusCodes.OK).json({ auction, nftOnMarket });

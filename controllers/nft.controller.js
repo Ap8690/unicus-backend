@@ -30,7 +30,7 @@ const create = async (req, res) => {
         tags,
         mintedInfo,
         quantity,
-        externalLink
+        externalLink,
     } = req.body;
     let cloudinaryUrl = req.files.image[0].location;
     if (tags.length > 0) {
