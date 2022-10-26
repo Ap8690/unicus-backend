@@ -104,7 +104,7 @@ const create = async (req, res) => {
                       contractAddress,
                       storefront,
                       quantity,
-                      externalLink
+                      externalLink,
                   }
                 : {
                       userInfo,
@@ -127,7 +127,7 @@ const create = async (req, res) => {
                       contractType,
                       contractAddress,
                       storefront,
-                      externalLink
+                      externalLink,
                   };
 
             const data = await Nft.create(createObj);
@@ -148,7 +148,7 @@ const create = async (req, res) => {
             throw new CustomError.BadRequestError(
                 "Collection name already exists with another user!"
             );
-        } 
+        }
     } else {
         if (!jsonIpfs) {
             throw new CustomError.BadRequestError(
@@ -241,6 +241,9 @@ const getNFTByNftId = async (req, res) => {
         const storefront = req.storefront.id;
         const nftDbId = req.params.nftDbId;
 
+        // auction id
+        const assetListed = req.query.asset_listed;
+
         const nft = await Nft.findOne({
             tokenId,
             chain,
@@ -249,16 +252,23 @@ const getNFTByNftId = async (req, res) => {
             _id: nftDbId,
         }).populate("mintedBy");
         let mintedUser = await nft.mintedBy;
-       
+
         const nftStates = await NFTStates.find({ nftId: nft._id });
         const bids = await Bids.find({ nftId: nft._id });
-        console.log("bids: ", bids);
 
-        const auction = await Auction.findOne({
+        let auction_search = {
             nftId: nft._id,
             storefront,
-            $or: [{ auctionStatus: 1 }, { auctionStatus: 2 }],
-        });
+            $or: [{ auctionStatus: 1 }, { auctionStatus: 2 }]
+        };
+        if (assetListed !== 'null') {
+            auction_search._id = ObjectId(assetListed);
+        }
+        const auction = await Auction.find(auction_search);
+        let total_quantity_listed = 0;
+        for(let i=0;i<auction.length;i++) {
+            total_quantity_listed += Number(auction[i].quantity);
+        }
 
         res.status(StatusCodes.OK).json({
             nft,
@@ -271,6 +281,7 @@ const getNFTByNftId = async (req, res) => {
                 bio: mintedUser.bio,
                 id: mintedUser._id,
             },
+            total_quantity_listed,
             auction,
         });
     } catch (e) {
@@ -425,7 +436,7 @@ const getNFTByUserId = async (req, res) => {
             skip: skip,
             totalNfts: nftLength,
             totalAuctions: auctionLength,
-            totalCollections: collectionLength
+            totalCollections: collectionLength,
         },
     });
 };
@@ -717,7 +728,6 @@ const oldNFt = async (req, res) => {
     // console.log("oldNft", toal.length);
 };
 
-
 const createCollection = async (req, res) => {
     try {
         const {
@@ -730,7 +740,7 @@ const createCollection = async (req, res) => {
             telegram,
             chain,
             linkedInUrl,
-            instagramUrl
+            instagramUrl,
         } = req.body;
         const logoUrl = req.files.logo[0].location;
         const bannerUrl = req.files.banner[0].location;
