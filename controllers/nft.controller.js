@@ -11,6 +11,7 @@ const Views = require("../models/Views");
 const Collection = require("../models/Collection");
 
 const create = async (req, res) => {
+  try {
     let {
         jsonIpfs,
         name,
@@ -32,6 +33,7 @@ const create = async (req, res) => {
         quantity,
         externalLink,
     } = req.body;
+    console.log(req.files)
     let cloudinaryUrl = req.files.image[0].location;
     if (tags.length > 0) {
         tags = JSON.parse(tags);
@@ -231,6 +233,10 @@ const create = async (req, res) => {
         });
         res.status(StatusCodes.CREATED).json({ data });
     }
+  }
+  catch(err) {
+    res.status(400).send('')
+  }
 };
 
 const getNFTByNftId = async (req, res) => {

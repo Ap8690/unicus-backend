@@ -79,11 +79,12 @@ function uploadImageToS3() {
                 file.mimetype == "image/jpg" ||
                 file.mimetype == "image/png" ||
                 file.mimetype == "image/gif" ||
-                file.mimetype == "image/webm" ||
-                file.mimetype == "image/mp4" ||
-                file.mimetype == "image/webp";
+                file.mimetype == "video/webm" ||
+                file.mimetype == "video/mp4" ||
+                file.mimetype == "video/webp";
 
             if (isAllowedFileType) {
+                console.log("isAllowedFileType: ", isAllowedFileType);
                 cb(null, true);
                 return;
             }
