@@ -175,11 +175,14 @@ const getallCollections = async (req, res) => {
 const verifyCollectionName = async (req, res) => {
     try {
         const { collectionName } = req.params;
+        console.log("collectionName: ", collectionName);
         const regex = new RegExp(`^${collectionName.trim()}$`, "ig");
+        console.log("regex: ", regex);
         const nftCollection = await Collection.exists({
             collectionName: { $regex: regex },
             storefront:req.storefront.id,
         });
+        console.log("nftCollection: ", nftCollection);
 
         res.status(200).json({
             msg: nftCollection ? "Exists" : "Doesn't Exists",
@@ -188,7 +191,7 @@ const verifyCollectionName = async (req, res) => {
         });
     } catch (err) {
         console.log("err: ", err);
-        res.status(500).send("");
+        res.status(500).send(err);
     }
 };
 
