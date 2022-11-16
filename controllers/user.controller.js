@@ -348,6 +348,20 @@ const unbanUser = async (req, res) => {
     }
 };
 
+const subscribeEmail = async (req,res) => {
+    try {
+  
+      const up = await User.findOneAndUpdate({ _id: req.user.userId }, {"email": req.body.email})
+      console.log("up: ", up);
+      res.status(200).json({
+        msg: "Email subscription successfull!"
+      })
+    }
+    catch(err) {
+      res.staus(500).send("internal server err: 500")
+    }
+  }
+
 module.exports = {
     getAllUsers,
     getSingleUser,
@@ -363,4 +377,5 @@ module.exports = {
     unbanUser,
     banUser,
     getMyProfile,
+    subscribeEmail
 };

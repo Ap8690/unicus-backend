@@ -4,6 +4,8 @@ const {
   SocialLink,
 } = require("./../../../models");
 const CustomError = require("./../../../errors");
+const User = require("../../../models/User");
+
 
 const getGeneral = async(req, res)=>{
   try{
@@ -224,7 +226,7 @@ const uploadLogo = async (req,res) => {
   }
   catch(err) {
     res.status(StatusCodes.BAD_REQUEST).send(err)
-  }
+  } 
 }
 
 module.exports = {
@@ -232,5 +234,6 @@ module.exports = {
   getSocialLinks,
   updateGeneral,
   updateSocialLinks,
-  uploadLogo
+  uploadLogo,
+  
 };

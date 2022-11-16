@@ -15,7 +15,8 @@ const {
     getUserNonceByAddress,
     unbanUser,
     banUser,
-    getMyProfile
+    getMyProfile,
+    subscribeEmail
 } = require('../controllers/user.controller')
 const {uploadImageToS3} = require("../services/s3_upload")
 
@@ -51,5 +52,7 @@ router.route('/removeWallet/:walletAddress').get(authenticateUser, removeWallet)
 router.route('/nonce/:publicAddress').get(getUserNonceByAddress)
 
 router.route('/globalSearch/:search').get(getGlobalSearch)
+
+router.route("/subscribeEmail").post(authenticateUser, subscribeEmail);
 
 module.exports = router
